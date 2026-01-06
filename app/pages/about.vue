@@ -23,7 +23,7 @@ const values = [
         <div class="max-w-4xl mx-auto text-center">
           <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-[var(--text-primary)] mb-6 opacity-0 animate-fade-in-up">
             О сообществе
-            <span class="text-gradient-primary">ПЖ19</span>
+            <img src="/logo.png" alt="ПЖ19" class="inline-block h-10 md:h-14 lg:h-16 align-baseline ml-2" />
           </h1>
           <p class="text-xl text-[var(--text-muted)] opacity-0 animate-fade-in-up stagger-1">
             Закрытое сообщество из более чем 100 000 участников,
@@ -39,7 +39,9 @@ const values = [
         <div class="max-w-3xl mx-auto">
           <div class="space-y-12">
             <div class="opacity-0 animate-fade-in-up">
-              <h2 class="text-2xl md:text-3xl font-bold text-[var(--text-primary)] mb-4">ПЖ19 — сообщество, а не провайдер</h2>
+              <h2 class="text-2xl md:text-3xl font-bold text-[var(--text-primary)] mb-4">
+                <img src="/logo.png" alt="ПЖ19" class="inline-block h-7 md:h-8 align-baseline mr-1" /> — сообщество, а не провайдер
+              </h2>
               <p class="text-[var(--text-muted)] leading-relaxed">
                 Мы не продаём интернет — мы вместе строим и развиваем инфраструктуру для себя.
                 В условиях, когда коммерческие провайдеры ориентированы исключительно на прибыль,

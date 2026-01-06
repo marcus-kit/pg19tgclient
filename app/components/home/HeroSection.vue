@@ -38,7 +38,8 @@ const stats = [
             <h1
               class="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 leading-[1.1] opacity-0 animate-fade-in-up stagger-1"
             >
-              <span class="text-[var(--text-primary)]">ПЖ19 —</span>
+              <img src="/logo.png" alt="ПЖ19" class="inline-block h-12 md:h-16 lg:h-20 align-baseline mr-2" />
+              <span class="text-[var(--text-primary)]">—</span>
               <br class="hidden sm:block" />
               <span class="text-gradient-primary">сообщество</span>
               <span class="text-[var(--text-primary)]">,</span>
@@ -103,20 +104,6 @@ const stats = [
                 <p class="text-[var(--text-muted)] text-sm mt-1">{{ stat.label }}</p>
               </div>
 
-              <!-- Additional info card -->
-              <div
-                class="glass-card rounded-2xl p-6 opacity-0 animate-fade-in-up stagger-5"
-              >
-                <div class="flex items-center gap-4">
-                  <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10 flex items-center justify-center">
-                    <Icon name="heroicons:shield-check" class="w-6 h-6 text-primary" />
-                  </div>
-                  <div>
-                    <p class="text-[var(--text-primary)] font-medium">Некоммерческий</p>
-                    <p class="text-[var(--text-muted)] text-sm">потребительский кооператив</p>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
