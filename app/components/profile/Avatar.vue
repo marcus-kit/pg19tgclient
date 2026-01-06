@@ -49,18 +49,27 @@ const handleFileChange = async (event: Event) => {
 
   isUploading.value = true
 
-  // Convert to base64 for demo (in production would upload to server)
+  // Convert to base64 and save to Supabase
   const reader = new FileReader()
-  reader.onload = (e) => {
+  reader.onload = async (e) => {
     const result = e.target?.result as string
-    authStore.updateAvatar(result)
+    const success = await authStore.updateUserData({ avatar: result })
+    if (!success) {
+      // Fallback to local storage only
+      authStore.updateAvatar(result)
+    }
     isUploading.value = false
   }
   reader.readAsDataURL(file)
 }
 
-const removeAvatar = () => {
-  authStore.updateAvatar(null)
+const removeAvatar = async () => {
+  isUploading.value = true
+  const success = await authStore.updateUserData({ avatar: null })
+  if (!success) {
+    authStore.updateAvatar(null)
+  }
+  isUploading.value = false
 }
 </script>
 

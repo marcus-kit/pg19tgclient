@@ -350,6 +350,35 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
+    // Обновление данных пользователя через API с сохранением в Supabase
+    async updateUserData(data: Partial<User>): Promise<boolean> {
+      if (!this.user?.id) return false
+
+      try {
+        const response = await $fetch<{ success: boolean; user: User }>('/api/user/update', {
+          method: 'POST',
+          body: {
+            userId: this.user.id,
+            data
+          }
+        })
+
+        if (response.success && response.user) {
+          // Обновляем локальный state
+          this.user = {
+            ...this.user,
+            ...response.user
+          }
+          this.persist()
+          return true
+        }
+        return false
+      } catch (error) {
+        console.error('Failed to update user data:', error)
+        return false
+      }
+    },
+
     terminateSession(sessionId: string) {
       this.sessions = this.sessions.filter(s => s.id !== sessionId)
       this.persist()

@@ -59,6 +59,9 @@ export default defineEventHandler(async (event) => {
       phone,
       telegram_id,
       telegram_username,
+      birth_date,
+      avatar,
+      vk_id,
       status
     `)
     .eq('id', account.user_id)
@@ -137,11 +140,11 @@ export default defineEventHandler(async (event) => {
       middleName: user.middle_name,
       phone: user.phone || '',
       email: user.email || '',
-      telegram: user.telegram_username || '',
+      telegram: user.telegram_username ? `@${user.telegram_username}` : '',
       telegramId: user.telegram_id || null,
-      vkId: '',
-      avatar: null,
-      birthDate: null
+      vkId: user.vk_id || '',
+      avatar: user.avatar || null,
+      birthDate: user.birth_date || null
     },
     account: {
       contractNumber: account.contract_number,
