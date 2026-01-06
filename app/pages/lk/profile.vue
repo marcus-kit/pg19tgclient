@@ -8,10 +8,11 @@ definePageMeta({
 
 const authStore = useAuthStore()
 
-const activeTab = ref<'personal' | 'contract' | 'notifications' | 'security'>('personal')
+const activeTab = ref<'profile' | 'personal' | 'contract' | 'notifications' | 'security'>('profile')
 
 const tabs = [
-  { id: 'personal' as const, label: 'Персональные данные', icon: 'heroicons:user' },
+  { id: 'profile' as const, label: 'Профиль', icon: 'heroicons:user-circle' },
+  { id: 'personal' as const, label: 'Персональные данные', icon: 'heroicons:identification' },
   { id: 'contract' as const, label: 'Договор', icon: 'heroicons:document-text' },
   { id: 'notifications' as const, label: 'Уведомления', icon: 'heroicons:bell' },
   { id: 'security' as const, label: 'Безопасность', icon: 'heroicons:shield-check' }
@@ -26,7 +27,7 @@ const profileFields = computed(() => [
   { name: 'Дата рождения', filled: !!authStore.user?.birthDate, points: 10 },
   { name: 'Телефон', filled: !!authStore.user?.phone, points: 15 },
   { name: 'Email', filled: !!authStore.user?.email, points: 15 },
-  { name: 'Telegram', filled: !!authStore.user?.telegram, points: 10 },
+  { name: 'Telegram', filled: !!authStore.user?.telegramId, points: 10 },
   { name: 'VK ID', filled: !!authStore.user?.vkId, points: 15 }
 ])
 
@@ -63,55 +64,7 @@ const levelInfo = computed(() => {
       <p class="text-[var(--text-muted)] mt-1">Управление личными данными</p>
     </div>
 
-    <!-- Profile Completion Card -->
-    <UCard class="p-0 overflow-hidden">
-      <div class="px-5 py-4">
-        <div class="flex items-center gap-4">
-          <!-- Level Icon -->
-          <div :class="['w-10 h-10 rounded-xl bg-gradient-to-br flex items-center justify-center flex-shrink-0', levelInfo.color]">
-            <Icon :name="levelInfo.icon" class="w-5 h-5 text-white" />
-          </div>
-
-          <!-- Progress Section -->
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center justify-between mb-1.5">
-              <span class="text-sm font-medium text-[var(--text-primary)]">{{ levelInfo.level }}</span>
-              <span class="text-sm font-bold text-primary">{{ completionPercent }}%</span>
-            </div>
-            <!-- Progress Bar -->
-            <div class="relative h-2 rounded-full overflow-hidden bg-gray-200 dark:bg-white/10">
-              <div
-                class="absolute inset-y-0 left-0 bg-gradient-to-r from-primary to-secondary rounded-full transition-all duration-500"
-                :style="{ width: `${completionPercent}%` }"
-              />
-            </div>
-          </div>
-
-          <!-- Missing Fields (compact) -->
-          <div v-if="missingFields.length > 0" class="hidden sm:flex items-center gap-2 flex-shrink-0">
-            <span class="text-xs text-[var(--text-muted)]">Заполните:</span>
-            <div class="flex gap-1">
-              <span
-                v-for="field in missingFields.slice(0, 3)"
-                :key="field.name"
-                class="px-2 py-0.5 text-xs rounded-full text-[var(--text-secondary)] hover:bg-primary/20 hover:text-primary cursor-pointer transition-colors bg-gray-100 dark:bg-white/5"
-              >
-                {{ field.name }}
-              </span>
-              <span v-if="missingFields.length > 3" class="px-2 py-0.5 text-xs rounded-full text-[var(--text-muted)] bg-gray-100 dark:bg-white/5">
-                +{{ missingFields.length - 3 }}
-              </span>
-            </div>
-          </div>
-          <div v-else class="hidden sm:flex items-center gap-1 text-accent flex-shrink-0">
-            <Icon name="heroicons:check-circle" class="w-4 h-4" />
-            <span class="text-xs font-medium">Заполнен</span>
-          </div>
-        </div>
-      </div>
-    </UCard>
-
-    <!-- Tabs -->
+    <!-- Tabs (moved above completion card) -->
     <div class="flex gap-2 overflow-x-auto pb-2">
       <button
         v-for="tab in tabs"
@@ -128,8 +81,56 @@ const levelInfo = computed(() => {
       </button>
     </div>
 
-    <!-- Personal Data Tab -->
-    <div v-if="activeTab === 'personal'" class="space-y-6">
+    <!-- Profile Tab -->
+    <div v-if="activeTab === 'profile'" class="space-y-6">
+      <!-- Profile Completion Card -->
+      <UCard class="p-0 overflow-hidden">
+        <div class="px-5 py-4">
+          <div class="flex items-center gap-4">
+            <!-- Level Icon -->
+            <div :class="['w-10 h-10 rounded-xl bg-gradient-to-br flex items-center justify-center flex-shrink-0', levelInfo.color]">
+              <Icon :name="levelInfo.icon" class="w-5 h-5 text-white" />
+            </div>
+
+            <!-- Progress Section -->
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-sm font-medium text-[var(--text-primary)]">{{ levelInfo.level }}</span>
+                <span class="text-sm font-bold text-primary">{{ completionPercent }}%</span>
+              </div>
+              <!-- Progress Bar -->
+              <div class="relative h-2 rounded-full overflow-hidden bg-gray-200 dark:bg-white/10">
+                <div
+                  class="absolute inset-y-0 left-0 bg-gradient-to-r from-primary to-secondary rounded-full transition-all duration-500"
+                  :style="{ width: `${completionPercent}%` }"
+                />
+              </div>
+            </div>
+
+            <!-- Missing Fields (compact) -->
+            <div v-if="missingFields.length > 0" class="hidden sm:flex items-center gap-2 flex-shrink-0">
+              <span class="text-xs text-[var(--text-muted)]">Заполните:</span>
+              <div class="flex gap-1">
+                <span
+                  v-for="field in missingFields.slice(0, 3)"
+                  :key="field.name"
+                  class="px-2 py-0.5 text-xs rounded-full text-[var(--text-secondary)] hover:bg-primary/20 hover:text-primary cursor-pointer transition-colors bg-gray-100 dark:bg-white/5"
+                >
+                  {{ field.name }}
+                </span>
+                <span v-if="missingFields.length > 3" class="px-2 py-0.5 text-xs rounded-full text-[var(--text-muted)] bg-gray-100 dark:bg-white/5">
+                  +{{ missingFields.length - 3 }}
+                </span>
+              </div>
+            </div>
+            <div v-else class="hidden sm:flex items-center gap-1 text-accent flex-shrink-0">
+              <Icon name="heroicons:check-circle" class="w-4 h-4" />
+              <span class="text-xs font-medium">Заполнен</span>
+            </div>
+          </div>
+        </div>
+      </UCard>
+
       <!-- Avatar & Personal Info -->
       <div class="grid lg:grid-cols-3 gap-6">
         <ProfileAvatar />
@@ -138,14 +139,20 @@ const levelInfo = computed(() => {
         </div>
       </div>
 
-      <!-- Contact Info -->
-      <ProfileContactInfo />
-
       <!-- Achievements -->
       <ProfileAchievements />
 
       <!-- Referral Program -->
       <ProfileReferral />
+    </div>
+
+    <!-- Personal Data Tab -->
+    <div v-if="activeTab === 'personal'" class="space-y-6">
+      <!-- Contact Info -->
+      <ProfileContactInfo />
+
+      <!-- Telegram Link -->
+      <ProfileTelegramLink />
     </div>
 
     <!-- Contract Tab -->

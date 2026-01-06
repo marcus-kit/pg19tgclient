@@ -8,6 +8,7 @@ interface User {
   phone: string
   email: string
   telegram: string
+  telegramId: string | null
   vkId: string
   avatar: string | null
   birthDate: string | null
@@ -90,6 +91,7 @@ const mockUser: User = {
   phone: '+7 (999) 123-45-67',
   email: 'ivan@example.com',
   telegram: '@ivan_petrov',
+  telegramId: null,
   vkId: '',
   avatar: null,
   birthDate: '1990-05-15'
@@ -259,6 +261,39 @@ export const useAuthStore = defineStore('auth', {
   },
 
   actions: {
+    // Установка данных авторизации от API
+    setAuthData(user: Partial<User>, account: Partial<Account>) {
+      this.isAuthenticated = true
+      this.user = {
+        id: user.id || 0,
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        middleName: user.middleName || '',
+        phone: user.phone || '',
+        email: user.email || '',
+        telegram: user.telegram || '',
+        telegramId: user.telegramId || null,
+        vkId: user.vkId || '',
+        avatar: user.avatar || null,
+        birthDate: user.birthDate || null
+      }
+      this.account = {
+        contractNumber: account.contractNumber || 0,
+        balance: account.balance || 0,
+        status: account.status || 'active',
+        tariff: account.tariff || '',
+        address: account.address || '',
+        startDate: account.startDate || ''
+      }
+      // Пока используем mock для остальных данных
+      this.notifications = mockNotifications
+      this.sessions = mockSessions
+      this.achievements = mockAchievements
+      this.referralProgram = mockReferralProgram
+      this.persist()
+    },
+
+    // Устаревший метод для совместимости
     login(contractNumber: string, fullName: string) {
       // Mock login - always succeeds
       this.isAuthenticated = true
@@ -303,6 +338,14 @@ export const useAuthStore = defineStore('auth', {
     updateAvatar(avatar: string | null) {
       if (this.user) {
         this.user.avatar = avatar
+        this.persist()
+      }
+    },
+
+    updateTelegram(telegramId: string, telegramUsername?: string) {
+      if (this.user) {
+        this.user.telegramId = telegramId
+        this.user.telegram = telegramUsername ? `@${telegramUsername}` : ''
         this.persist()
       }
     },

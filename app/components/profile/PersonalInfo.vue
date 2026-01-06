@@ -36,68 +36,58 @@ const ageLabel = computed(() => {
 </script>
 
 <template>
-  <UCard>
-    <div class="flex items-center justify-between mb-5">
-      <h2 class="text-lg font-semibold text-[var(--text-primary)]">Персональные данные</h2>
+  <UCard class="!p-4">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-base font-semibold text-[var(--text-primary)]">Персональные данные</h2>
       <button class="text-sm text-primary hover:text-primary/80 transition-colors">
         Редактировать
       </button>
     </div>
 
-    <div class="space-y-4">
-      <div class="grid gap-4">
-        <div class="flex items-center justify-between py-3" style="border-bottom: 1px solid var(--glass-border);">
-          <div class="flex items-center gap-3">
-            <div class="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10">
-              <Icon name="heroicons:user" class="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <p class="text-xs text-[var(--text-muted)]">Фамилия</p>
-              <p class="text-[var(--text-primary)]">{{ authStore.user?.lastName }}</p>
-            </div>
-          </div>
+    <div class="grid grid-cols-2 gap-x-4 gap-y-2">
+      <div class="flex items-center gap-2 py-1.5" style="border-bottom: 1px solid var(--glass-border);">
+        <div class="p-1.5 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/10">
+          <Icon name="heroicons:user" class="w-4 h-4 text-primary" />
         </div>
-
-        <div class="flex items-center justify-between py-3" style="border-bottom: 1px solid var(--glass-border);">
-          <div class="flex items-center gap-3">
-            <div class="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10">
-              <Icon name="heroicons:user" class="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <p class="text-xs text-[var(--text-muted)]">Имя</p>
-              <p class="text-[var(--text-primary)]">{{ authStore.user?.firstName }}</p>
-            </div>
-          </div>
+        <div>
+          <p class="text-xs text-[var(--text-muted)]">Фамилия</p>
+          <p class="text-sm text-[var(--text-primary)]">{{ authStore.user?.lastName }}</p>
         </div>
+      </div>
 
-        <div class="flex items-center justify-between py-3" style="border-bottom: 1px solid var(--glass-border);">
-          <div class="flex items-center gap-3">
-            <div class="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10">
-              <Icon name="heroicons:user" class="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <p class="text-xs text-[var(--text-muted)]">Отчество</p>
-              <p class="text-[var(--text-primary)]">{{ authStore.user?.middleName || '—' }}</p>
-            </div>
-          </div>
+      <div class="flex items-center gap-2 py-1.5" style="border-bottom: 1px solid var(--glass-border);">
+        <div class="p-1.5 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/10">
+          <Icon name="heroicons:user" class="w-4 h-4 text-primary" />
         </div>
+        <div>
+          <p class="text-xs text-[var(--text-muted)]">Имя</p>
+          <p class="text-sm text-[var(--text-primary)]">{{ authStore.user?.firstName }}</p>
+        </div>
+      </div>
 
-        <div class="flex items-center justify-between py-3">
-          <div class="flex items-center gap-3">
-            <div class="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10">
-              <Icon name="heroicons:cake" class="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <p class="text-xs text-[var(--text-muted)]">Дата рождения</p>
-              <p class="text-[var(--text-primary)]">
-                <template v-if="formattedBirthDate">
-                  {{ formattedBirthDate }}
-                  <span class="text-[var(--text-muted)] text-sm">({{ age }} {{ ageLabel }})</span>
-                </template>
-                <template v-else>—</template>
-              </p>
-            </div>
-          </div>
+      <div class="flex items-center gap-2 py-1.5">
+        <div class="p-1.5 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/10">
+          <Icon name="heroicons:user" class="w-4 h-4 text-primary" />
+        </div>
+        <div>
+          <p class="text-xs text-[var(--text-muted)]">Отчество</p>
+          <p class="text-sm text-[var(--text-primary)]">{{ authStore.user?.middleName || '—' }}</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 py-1.5">
+        <div class="p-1.5 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/10">
+          <Icon name="heroicons:cake" class="w-4 h-4 text-primary" />
+        </div>
+        <div>
+          <p class="text-xs text-[var(--text-muted)]">Дата рождения</p>
+          <p class="text-sm text-[var(--text-primary)]">
+            <template v-if="formattedBirthDate">
+              {{ formattedBirthDate }}
+              <span class="text-[var(--text-muted)] text-xs">({{ age }} {{ ageLabel }})</span>
+            </template>
+            <template v-else>—</template>
+          </p>
         </div>
       </div>
     </div>

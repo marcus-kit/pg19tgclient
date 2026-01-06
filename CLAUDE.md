@@ -4,71 +4,101 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-ПЖ19 (PG19) website - a Russian ISP cooperative landing page. The site emphasizes that PG19 is a community (сообщество), not a commercial provider, with no artificial speed limits.
+PG19 (ПЖ19) — a community ISP website built with Nuxt 4. Includes a public landing site and a personal cabinet (личный кабинет) for subscribers.
+
+**Language**: Russian UI, Russian comments acceptable.
 
 ## Commands
 
 ```bash
-npm run dev          # Start dev server on http://localhost:3000
-npm run build        # Production build
-npm run preview      # Preview production build
-npm run generate     # Static site generation
+npm run dev      # Development server on http://localhost:3000
+npm run build    # Production build
+npm run preview  # Preview production build
 ```
-
-## Tech Stack
-
-- **Nuxt 4** with `app/` directory structure (not `src/`)
-- **Tailwind CSS** with custom theme colors
-- **@nuxtjs/color-mode** for light/dark theme switching
-- **@nuxt/icon** with Heroicons (`heroicons:*`)
-- **Google Fonts**: Outfit (400-800 weights)
 
 ## Architecture
 
 ### Directory Structure
 ```
 app/
-├── assets/css/main.css    # CSS variables for theming
+├── pages/
+│   ├── index.vue          # Landing page
+│   ├── internet.vue       # Service pages (tv, mobile, cctv, intercom)
+│   └── lk/                # Personal cabinet (requires auth)
+│       ├── login.vue
+│       ├── dashboard.vue
+│       ├── profile.vue
+│       ├── invoices.vue
+│       ├── services.vue
+│       └── support.vue
 ├── components/
-│   ├── home/              # Homepage sections (HeroSection, ServicesGrid, WhyUsSection)
-│   └── layout/            # AppHeader, AppFooter
-├── layouts/default.vue    # Main layout with header/footer
-└── pages/                 # Route pages (internet, tv, mobile, etc.)
+│   ├── ui/                # Reusable UI: UButton, UCard, UBadge, UInput
+│   ├── lk/                # LK layout: LkHeader, LkMobileNav
+│   ├── dashboard/         # Dashboard widgets
+│   ├── profile/           # Profile sections
+│   └── layout/            # Public site: AppHeader, AppFooter
+├── layouts/
+│   ├── default.vue        # Public pages
+│   ├── lk.vue             # Personal cabinet
+│   └── guest.vue          # Login page
+├── stores/
+│   └── auth.ts            # Pinia store: user, account, notifications, sessions, achievements
+└── middleware/
+    └── auth.ts            # Route protection
 ```
 
-### Theming System
+### Key Patterns
+
+**Component auto-import**: Components in `ui/` and `lk/` have `pathPrefix: false` — use `UButton` not `UiUButton`.
+
+**State management**: Pinia store `useAuthStore()` handles auth state with localStorage persistence. Uses mock data for development. Call `hydrate()` on app init to restore session.
+
+**Layouts**: Pages in `/lk/*` use `definePageMeta({ layout: 'lk', middleware: 'auth' })`.
+
+**Styling**: Dark theme with glassmorphism. Brand colors defined in `tailwind.config.ts`:
+- `primary`: #F7941D (orange)
+- `secondary`: #E91E8C (pink)
+- `accent`: #00A651 (green)
+
+**Icons**: Use `@nuxt/icon` with heroicons and simple-icons: `<Icon name="heroicons:user" />`.
+
+## Theming System
 
 Theme is controlled via CSS variables in `app/assets/css/main.css`:
 - Light theme: `:root { ... }`
 - Dark theme: `.dark { ... }`
 
-Key variables: `--bg-base`, `--text-primary`, `--text-muted`, `--glass-bg`, `--header-bg`
+Key variables: `--bg-base`, `--bg-surface`, `--text-primary`, `--text-secondary`, `--text-muted`, `--glass-bg`, `--glass-border`
 
-Use `useColorMode()` composable to toggle themes:
+Always use CSS variables for colors: `text-[var(--text-primary)]` instead of hardcoded values.
+
+For light/dark specific styling use Tailwind's `dark:` modifier: `bg-gray-200 dark:bg-white/10`
+
+Toggle theme with:
 ```vue
 const colorMode = useColorMode()
-colorMode.preference = 'dark' // or 'light'
+colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
 ```
 
-### Brand Colors (tailwind.config.ts)
+## Auth Store Structure
 
-| Color | Hex | Usage |
-|-------|-----|-------|
-| primary | #F7941D | Orange - main accent |
-| secondary | #E91E8C | Magenta - highlights |
-| accent | #00A651 | Green - success/positive |
-| info | #0054A6 | Blue - informational |
+```typescript
+interface AuthState {
+  isAuthenticated: boolean
+  user: User | null           // firstName, lastName, phone, email, telegram, vkId, avatar, birthDate
+  account: Account | null     // contractNumber, balance (kopeks), status, tariff, address
+  notifications: NotificationSettings
+  sessions: LoginSession[]
+  achievements: Achievement[]
+  referralProgram: ReferralProgram | null
+}
+```
 
-### Component Patterns
+Balance stored in kopeks (копейки), divide by 100 for rubles display.
+
+## Component Patterns
 
 - Use `glass-card` class for glassmorphism cards
-- Animation classes: `animate-fade-in-up`, `stagger-1` through `stagger-6` for staggered animations
+- Icon containers: `bg-gradient-to-br from-primary/20 to-secondary/10`
+- Animation classes: `animate-fade-in-up`, `stagger-1` through `stagger-6`
 - Mesh gradient backgrounds: `mesh-gradient-hero`, `mesh-gradient-dark`
-- Always use CSS variables for colors: `text-[var(--text-primary)]` instead of hardcoded values
-
-### Auto-imports
-
-Nuxt auto-imports Vue composables and components. No need to import:
-- `ref`, `reactive`, `computed`, `onMounted`
-- Components from `components/` (prefix with folder: `HomeHeroSection`, `LayoutAppHeader`)
-- `useHead()`, `useColorMode()`, `NuxtLink`, `Icon`

@@ -65,9 +65,9 @@ const removeAvatar = () => {
 </script>
 
 <template>
-  <UCard>
-    <div class="flex items-center justify-between mb-5">
-      <h2 class="text-lg font-semibold text-[var(--text-primary)]">Фото профиля</h2>
+  <UCard class="!p-4">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-base font-semibold text-[var(--text-primary)]">Фото профиля</h2>
       <button
         v-if="authStore.user?.avatar"
         class="text-sm text-red-400 hover:text-red-300 transition-colors"
@@ -77,11 +77,11 @@ const removeAvatar = () => {
       </button>
     </div>
 
-    <div class="flex items-center gap-6">
+    <div class="flex items-center gap-4">
       <!-- Avatar -->
       <div class="relative group">
         <button
-          class="relative w-24 h-24 rounded-2xl overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+          class="relative w-16 h-16 rounded-xl overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
           @click="handleAvatarClick"
         >
           <!-- Avatar Image or Initials -->
@@ -95,14 +95,14 @@ const removeAvatar = () => {
             v-else
             :class="['w-full h-full bg-gradient-to-br flex items-center justify-center', avatarGradient]"
           >
-            <span class="text-2xl font-bold text-white">{{ initials }}</span>
+            <span class="text-xl font-bold text-white">{{ initials }}</span>
           </div>
 
           <!-- Hover Overlay -->
           <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
             <Icon
               :name="isUploading ? 'heroicons:arrow-path' : 'heroicons:camera'"
-              :class="['w-8 h-8 text-white', { 'animate-spin': isUploading }]"
+              :class="['w-6 h-6 text-white', { 'animate-spin': isUploading }]"
             />
           </div>
         </button>
@@ -119,14 +119,10 @@ const removeAvatar = () => {
 
       <!-- Info -->
       <div class="flex-1">
-        <p class="text-[var(--text-primary)] font-medium mb-1">{{ authStore.fullName }}</p>
-        <p class="text-sm text-[var(--text-secondary)] mb-3">
-          Нажмите на фото, чтобы загрузить новое
+        <p class="text-[var(--text-primary)] font-medium text-sm">{{ authStore.fullName }}</p>
+        <p class="text-xs text-[var(--text-muted)] mt-0.5">
+          Нажмите на фото для загрузки · JPG, PNG до 5 МБ
         </p>
-        <div class="flex items-center gap-2 text-xs text-[var(--text-muted)]">
-          <Icon name="heroicons:information-circle" class="w-4 h-4" />
-          <span>JPG, PNG до 5 МБ</span>
-        </div>
       </div>
     </div>
   </UCard>

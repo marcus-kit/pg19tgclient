@@ -10,8 +10,26 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     '@nuxtjs/google-fonts',
     '@nuxtjs/color-mode',
-    '@pinia/nuxt'
+    '@pinia/nuxt',
+    '@nuxtjs/supabase'
   ],
+
+  supabase: {
+    // Отключаем встроенный redirect - используем свой middleware
+    redirect: false
+  },
+
+  runtimeConfig: {
+    // Server-only (не попадают в клиентский бандл)
+    telegramBotToken: process.env.TELEGRAM_BOT_TOKEN || '',
+    supabaseServiceKey: process.env.SUPABASE_SERVICE_KEY || '',
+    // Public (доступны и на клиенте)
+    public: {
+      supabaseUrl: process.env.SUPABASE_URL || 'https://supabase.doka.team',
+      supabaseKey: process.env.SUPABASE_KEY || '',
+      telegramBotUsername: process.env.TELEGRAM_BOT_USERNAME || 'PG19CONNECTBOT'
+    }
+  },
 
   colorMode: {
     classSuffix: '',
