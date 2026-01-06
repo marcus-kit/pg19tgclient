@@ -43,8 +43,8 @@ const handleSubmit = async () => {
     <UCard padding="lg">
       <!-- Header -->
       <div class="text-center mb-8">
-        <h1 class="text-2xl font-bold text-white mb-2">Вход в личный кабинет</h1>
-        <p class="text-gray-400">Введите данные вашего договора</p>
+        <h1 class="text-2xl font-bold text-[var(--text-primary)] mb-2">Вход в личный кабинет</h1>
+        <p class="text-[var(--text-muted)]">Введите данные вашего договора</p>
       </div>
 
       <!-- Form -->
@@ -80,8 +80,8 @@ const handleSubmit = async () => {
       </form>
 
       <!-- Footer -->
-      <div class="mt-6 pt-6 border-t border-white/10 text-center">
-        <NuxtLink to="/" class="text-sm text-gray-400 hover:text-primary transition-colors">
+      <div class="mt-6 pt-6 text-center" style="border-top: 1px solid var(--glass-border);">
+        <NuxtLink to="/" class="text-sm text-[var(--text-muted)] hover:text-primary transition-colors">
           Вернуться на главную
         </NuxtLink>
       </div>

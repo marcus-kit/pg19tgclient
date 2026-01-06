@@ -40,7 +40,7 @@ const colorClasses: Record<string, string> = {
 
 <template>
   <div>
-    <h2 class="text-lg font-semibold text-white mb-4">Быстрые действия</h2>
+    <h2 class="text-lg font-semibold text-[var(--text-primary)] mb-4">Быстрые действия</h2>
     <div class="grid grid-cols-2 gap-3">
       <NuxtLink
         v-for="action in actions"
@@ -50,12 +50,12 @@ const colorClasses: Record<string, string> = {
       >
         <UCard hover padding="sm">
           <div class="flex items-center gap-3">
-            <div class="p-2.5 rounded-xl transition-transform group-hover:scale-110" :class="colorClasses[action.color]">
+            <div class="p-2.5 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10 transition-transform group-hover:scale-110" :class="colorClasses[action.color]">
               <Icon :name="action.icon" class="w-5 h-5" />
             </div>
             <div>
-              <p class="font-medium text-white text-sm">{{ action.name }}</p>
-              <p class="text-xs text-gray-500">{{ action.description }}</p>
+              <p class="font-medium text-[var(--text-primary)] text-sm">{{ action.name }}</p>
+              <p class="text-xs text-[var(--text-muted)]">{{ action.description }}</p>
             </div>
           </div>
         </UCard>

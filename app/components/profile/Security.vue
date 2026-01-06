@@ -76,19 +76,19 @@ const terminateAllSessions = () => {
 <template>
   <UCard>
     <div class="flex items-center justify-between mb-5">
-      <h2 class="text-lg font-semibold text-white">Безопасность</h2>
+      <h2 class="text-lg font-semibold text-[var(--text-primary)]">Безопасность</h2>
     </div>
 
     <!-- Password Section -->
-    <div class="mb-6 pb-6 border-b border-white/10">
+    <div class="mb-6 pb-6" style="border-bottom: 1px solid var(--glass-border);">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <div class="p-2 rounded-lg bg-white/5">
-            <Icon name="heroicons:key" class="w-5 h-5 text-gray-400" />
+          <div class="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10">
+            <Icon name="heroicons:key" class="w-5 h-5 text-primary" />
           </div>
           <div>
-            <p class="text-white font-medium">Пароль</p>
-            <p class="text-sm text-gray-500">Последнее изменение: 3 месяца назад</p>
+            <p class="text-[var(--text-primary)] font-medium">Пароль</p>
+            <p class="text-sm text-[var(--text-muted)]">Последнее изменение: 3 месяца назад</p>
           </div>
         </div>
         <UButton size="sm" variant="secondary" @click="showPasswordModal = true">
@@ -100,7 +100,7 @@ const terminateAllSessions = () => {
     <!-- Active Sessions -->
     <div>
       <div class="flex items-center justify-between mb-4">
-        <p class="text-sm text-gray-400">Активные сессии</p>
+        <p class="text-sm text-[var(--text-muted)]">Активные сессии</p>
         <button
           v-if="authStore.sessions.length > 1"
           class="text-xs text-red-400 hover:text-red-300 transition-colors"
@@ -116,35 +116,36 @@ const terminateAllSessions = () => {
           :key="session.id"
           :class="[
             'p-3 rounded-xl',
-            session.current ? 'bg-primary/10 border border-primary/30' : 'bg-white/5'
+            session.current ? 'bg-primary/10 border border-primary/30' : ''
           ]"
+          :style="!session.current ? 'background: var(--glass-bg);' : ''"
         >
           <div class="flex items-start justify-between">
             <div class="flex items-center gap-3">
               <div :class="[
-                'p-2 rounded-lg',
-                session.current ? 'bg-primary/20' : 'bg-white/5'
-              ]">
+                'p-2 rounded-xl',
+                session.current ? 'bg-gradient-to-br from-primary/20 to-secondary/10' : ''
+              ]" :style="!session.current ? 'background: var(--glass-bg);' : ''">
                 <Icon
                   :name="getDeviceIcon(session.device)"
-                  :class="['w-5 h-5', session.current ? 'text-primary' : 'text-gray-400']"
+                  :class="['w-5 h-5', session.current ? 'text-primary' : 'text-[var(--text-muted)]']"
                 />
               </div>
               <div>
                 <div class="flex items-center gap-2">
-                  <p class="text-white font-medium text-sm">{{ session.device }}</p>
+                  <p class="text-[var(--text-primary)] font-medium text-sm">{{ session.device }}</p>
                   <UBadge v-if="session.current" variant="success" size="sm">
                     Текущая
                   </UBadge>
                 </div>
-                <p class="text-xs text-gray-500">{{ session.browser }}</p>
-                <p class="text-xs text-gray-500 mt-1">
+                <p class="text-xs text-[var(--text-muted)]">{{ session.browser }}</p>
+                <p class="text-xs text-[var(--text-muted)] mt-1">
                   {{ session.location }} · {{ session.ip }}
                 </p>
               </div>
             </div>
             <div class="text-right">
-              <p class="text-xs text-gray-500 mb-2">{{ formatDate(session.lastActive) }}</p>
+              <p class="text-xs text-[var(--text-muted)] mb-2">{{ formatDate(session.lastActive) }}</p>
               <button
                 v-if="!session.current"
                 class="text-xs text-red-400 hover:text-red-300 transition-colors"
@@ -171,46 +172,49 @@ const terminateAllSessions = () => {
           class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
           @click.self="showPasswordModal = false"
         >
-          <div class="w-full max-w-md bg-gray-900 rounded-2xl border border-white/10 p-6">
+          <div class="w-full max-w-md rounded-2xl p-6" style="background: var(--bg-surface); border: 1px solid var(--glass-border);">
             <div class="flex items-center justify-between mb-6">
-              <h3 class="text-lg font-semibold text-white">Изменить пароль</h3>
+              <h3 class="text-lg font-semibold text-[var(--text-primary)]">Изменить пароль</h3>
               <button
-                class="p-1 rounded-lg hover:bg-white/10 transition-colors"
+                class="p-1 rounded-lg hover:bg-[var(--glass-bg)] transition-colors"
                 @click="showPasswordModal = false"
               >
-                <Icon name="heroicons:x-mark" class="w-5 h-5 text-gray-400" />
+                <Icon name="heroicons:x-mark" class="w-5 h-5 text-[var(--text-muted)]" />
               </button>
             </div>
 
             <form class="space-y-4" @submit.prevent="handlePasswordChange">
               <div>
-                <label class="block text-sm text-gray-400 mb-2">Текущий пароль</label>
+                <label class="block text-sm text-[var(--text-muted)] mb-2">Текущий пароль</label>
                 <input
                   v-model="passwordForm.current"
                   type="password"
-                  class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-primary focus:outline-none"
+                  class="w-full px-4 py-3 rounded-xl text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  style="background: var(--glass-bg); border: 1px solid var(--glass-border);"
                   placeholder="Введите текущий пароль"
                   required
                 />
               </div>
 
               <div>
-                <label class="block text-sm text-gray-400 mb-2">Новый пароль</label>
+                <label class="block text-sm text-[var(--text-muted)] mb-2">Новый пароль</label>
                 <input
                   v-model="passwordForm.new"
                   type="password"
-                  class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-primary focus:outline-none"
+                  class="w-full px-4 py-3 rounded-xl text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  style="background: var(--glass-bg); border: 1px solid var(--glass-border);"
                   placeholder="Минимум 8 символов"
                   required
                 />
               </div>
 
               <div>
-                <label class="block text-sm text-gray-400 mb-2">Подтвердите пароль</label>
+                <label class="block text-sm text-[var(--text-muted)] mb-2">Подтвердите пароль</label>
                 <input
                   v-model="passwordForm.confirm"
                   type="password"
-                  class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:border-primary focus:outline-none"
+                  class="w-full px-4 py-3 rounded-xl text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  style="background: var(--glass-bg); border: 1px solid var(--glass-border);"
                   placeholder="Повторите новый пароль"
                   required
                 />

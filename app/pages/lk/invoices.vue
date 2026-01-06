@@ -81,8 +81,8 @@ const filters = [
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-bold text-white">Счета</h1>
-        <p class="text-gray-400 mt-1">История выставленных счетов</p>
+        <h1 class="text-2xl font-bold text-[var(--text-primary)]">Счета</h1>
+        <p class="text-[var(--text-muted)] mt-1">История выставленных счетов</p>
       </div>
     </div>
 
@@ -95,7 +95,8 @@ const filters = [
         class="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
         :class="filter === f.value
           ? 'bg-primary text-white'
-          : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'"
+          : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'"
+        :style="filter !== f.value ? 'background: var(--glass-bg);' : ''"
       >
         {{ f.label }}
       </button>
@@ -112,8 +113,8 @@ const filters = [
       <!-- Empty State -->
       <UCard v-if="filteredInvoices.length === 0" padding="lg">
         <div class="text-center py-8">
-          <Icon name="heroicons:document-text" class="w-12 h-12 text-gray-600 mx-auto mb-4" />
-          <p class="text-gray-400">Счетов не найдено</p>
+          <Icon name="heroicons:document-text" class="w-12 h-12 text-[var(--text-muted)] mx-auto mb-4" />
+          <p class="text-[var(--text-muted)]">Счетов не найдено</p>
         </div>
       </UCard>
     </div>

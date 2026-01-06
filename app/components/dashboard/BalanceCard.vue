@@ -18,27 +18,27 @@ const nextPaymentDate = computed(() => {
   <UCard hover>
     <div class="flex items-start justify-between mb-4">
       <div>
-        <p class="text-sm text-gray-400 mb-1">Статус услуги</p>
+        <p class="text-sm text-[var(--text-muted)] mb-1">Статус услуги</p>
         <div class="flex items-center gap-3 mt-2">
           <span class="relative flex h-3 w-3">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
             <span class="relative inline-flex rounded-full h-3 w-3 bg-accent"></span>
           </span>
-          <span class="text-xl font-semibold text-white">
+          <span class="text-xl font-semibold text-[var(--text-primary)]">
             {{ authStore.isBlocked ? 'Заблокирован' : 'Активен' }}
           </span>
         </div>
       </div>
-      <div class="p-3 rounded-xl bg-accent/20">
+      <div class="icon-container">
         <Icon name="heroicons:check-circle" class="w-6 h-6 text-accent" />
       </div>
     </div>
 
     <div class="flex items-center justify-between">
-      <div class="flex items-center gap-2 text-gray-400">
+      <div class="flex items-center gap-2 text-[var(--text-muted)]">
         <Icon name="heroicons:calendar" class="w-4 h-4" />
         <span class="text-sm">
-          Следующая оплата: <span class="text-white font-medium">{{ nextPaymentDate }}</span>
+          Следующая оплата: <span class="text-[var(--text-primary)] font-medium">{{ nextPaymentDate }}</span>
         </span>
       </div>
       <UButton size="sm" variant="secondary">

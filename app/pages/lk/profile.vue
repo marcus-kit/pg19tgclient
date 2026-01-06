@@ -8,6 +8,15 @@ definePageMeta({
 
 const authStore = useAuthStore()
 
+const activeTab = ref<'personal' | 'contract' | 'notifications' | 'security'>('personal')
+
+const tabs = [
+  { id: 'personal' as const, label: 'Персональные данные', icon: 'heroicons:user' },
+  { id: 'contract' as const, label: 'Договор', icon: 'heroicons:document-text' },
+  { id: 'notifications' as const, label: 'Уведомления', icon: 'heroicons:bell' },
+  { id: 'security' as const, label: 'Безопасность', icon: 'heroicons:shield-check' }
+]
+
 // Profile completion calculation
 const profileFields = computed(() => [
   { name: 'Фото', filled: !!authStore.user?.avatar, points: 10 },
@@ -50,82 +59,109 @@ const levelInfo = computed(() => {
   <div class="space-y-6">
     <!-- Page Header -->
     <div>
-      <h1 class="text-2xl font-bold text-white">Профиль</h1>
-      <p class="text-gray-400 mt-1">Управление личными данными</p>
+      <h1 class="text-2xl font-bold text-[var(--text-primary)]">Профиль</h1>
+      <p class="text-[var(--text-muted)] mt-1">Управление личными данными</p>
     </div>
 
     <!-- Profile Completion Card -->
     <UCard class="p-0 overflow-hidden">
-      <div class="p-6">
-        <div class="flex items-center justify-between mb-4">
-          <div class="flex items-center gap-3">
-            <div :class="['w-12 h-12 rounded-xl bg-gradient-to-br flex items-center justify-center', levelInfo.color]">
-              <Icon :name="levelInfo.icon" class="w-6 h-6 text-white" />
+      <div class="px-5 py-4">
+        <div class="flex items-center gap-4">
+          <!-- Level Icon -->
+          <div :class="['w-10 h-10 rounded-xl bg-gradient-to-br flex items-center justify-center flex-shrink-0', levelInfo.color]">
+            <Icon :name="levelInfo.icon" class="w-5 h-5 text-white" />
+          </div>
+
+          <!-- Progress Section -->
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-sm font-medium text-[var(--text-primary)]">{{ levelInfo.level }}</span>
+              <span class="text-sm font-bold text-primary">{{ completionPercent }}%</span>
             </div>
-            <div>
-              <p class="text-sm text-gray-400">Ваш уровень</p>
-              <p class="text-lg font-bold text-white">{{ levelInfo.level }}</p>
+            <!-- Progress Bar -->
+            <div class="relative h-2 rounded-full overflow-hidden bg-gray-200 dark:bg-white/10">
+              <div
+                class="absolute inset-y-0 left-0 bg-gradient-to-r from-primary to-secondary rounded-full transition-all duration-500"
+                :style="{ width: `${completionPercent}%` }"
+              />
             </div>
           </div>
-          <div class="text-right">
-            <p class="text-3xl font-bold text-white">{{ completionPercent }}%</p>
-            <p class="text-sm text-gray-400">заполнено</p>
+
+          <!-- Missing Fields (compact) -->
+          <div v-if="missingFields.length > 0" class="hidden sm:flex items-center gap-2 flex-shrink-0">
+            <span class="text-xs text-[var(--text-muted)]">Заполните:</span>
+            <div class="flex gap-1">
+              <span
+                v-for="field in missingFields.slice(0, 3)"
+                :key="field.name"
+                class="px-2 py-0.5 text-xs rounded-full text-[var(--text-secondary)] hover:bg-primary/20 hover:text-primary cursor-pointer transition-colors bg-gray-100 dark:bg-white/5"
+              >
+                {{ field.name }}
+              </span>
+              <span v-if="missingFields.length > 3" class="px-2 py-0.5 text-xs rounded-full text-[var(--text-muted)] bg-gray-100 dark:bg-white/5">
+                +{{ missingFields.length - 3 }}
+              </span>
+            </div>
           </div>
-        </div>
-
-        <!-- Progress Bar -->
-        <div class="relative h-3 bg-white/10 rounded-full overflow-hidden mb-4">
-          <div
-            class="absolute inset-y-0 left-0 bg-gradient-to-r from-primary to-secondary rounded-full transition-all duration-500"
-            :style="{ width: `${completionPercent}%` }"
-          />
-        </div>
-
-        <!-- Missing Fields -->
-        <div v-if="missingFields.length > 0" class="flex flex-wrap gap-2">
-          <span class="text-sm text-gray-400">Заполните:</span>
-          <span
-            v-for="field in missingFields"
-            :key="field.name"
-            class="px-2 py-1 text-xs rounded-full bg-white/5 text-gray-300 hover:bg-primary/20 hover:text-primary cursor-pointer transition-colors"
-          >
-            {{ field.name }} <span class="text-primary">+{{ field.points }}</span>
-          </span>
-        </div>
-        <div v-else class="flex items-center gap-2 text-accent">
-          <Icon name="heroicons:check-circle" class="w-5 h-5" />
-          <span class="text-sm font-medium">Профиль заполнен полностью!</span>
+          <div v-else class="hidden sm:flex items-center gap-1 text-accent flex-shrink-0">
+            <Icon name="heroicons:check-circle" class="w-4 h-4" />
+            <span class="text-xs font-medium">Заполнен</span>
+          </div>
         </div>
       </div>
     </UCard>
 
-    <!-- Avatar & Personal Info -->
-    <div class="grid lg:grid-cols-3 gap-6">
-      <ProfileAvatar />
-      <div class="lg:col-span-2">
-        <ProfilePersonalInfo />
+    <!-- Tabs -->
+    <div class="flex gap-2 overflow-x-auto pb-2">
+      <button
+        v-for="tab in tabs"
+        :key="tab.id"
+        @click="activeTab = tab.id"
+        class="px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-2"
+        :class="activeTab === tab.id
+          ? 'bg-primary text-white'
+          : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'"
+        :style="activeTab !== tab.id ? 'background: var(--glass-bg);' : ''"
+      >
+        <Icon :name="tab.icon" class="w-4 h-4" />
+        {{ tab.label }}
+      </button>
+    </div>
+
+    <!-- Personal Data Tab -->
+    <div v-if="activeTab === 'personal'" class="space-y-6">
+      <!-- Avatar & Personal Info -->
+      <div class="grid lg:grid-cols-3 gap-6">
+        <ProfileAvatar />
+        <div class="lg:col-span-2">
+          <ProfilePersonalInfo />
+        </div>
       </div>
-    </div>
 
-    <!-- Achievements -->
-    <ProfileAchievements />
-
-    <!-- Referral Program -->
-    <ProfileReferral />
-
-    <!-- Contact & Notifications -->
-    <div class="grid lg:grid-cols-2 gap-6">
+      <!-- Contact Info -->
       <ProfileContactInfo />
-      <ProfileNotifications />
+
+      <!-- Achievements -->
+      <ProfileAchievements />
+
+      <!-- Referral Program -->
+      <ProfileReferral />
     </div>
 
-    <!-- Security & Address -->
-    <div class="grid lg:grid-cols-2 gap-6">
-      <ProfileSecurity />
+    <!-- Contract Tab -->
+    <div v-if="activeTab === 'contract'" class="space-y-6">
+      <ProfileContractInfo />
       <ProfileAddressInfo />
     </div>
 
-    <!-- Contract Info -->
-    <ProfileContractInfo />
+    <!-- Notifications Tab -->
+    <div v-if="activeTab === 'notifications'" class="space-y-6">
+      <ProfileNotifications />
+    </div>
+
+    <!-- Security Tab -->
+    <div v-if="activeTab === 'security'" class="space-y-6">
+      <ProfileSecurity />
+    </div>
   </div>
 </template>

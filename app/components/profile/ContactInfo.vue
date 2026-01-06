@@ -34,7 +34,7 @@ const contacts = computed(() => [
 <template>
   <UCard>
     <div class="flex items-center justify-between mb-5">
-      <h2 class="text-lg font-semibold text-white">Контакты</h2>
+      <h2 class="text-lg font-semibold text-[var(--text-primary)]">Контакты</h2>
       <button class="text-sm text-primary hover:text-primary/80 transition-colors">
         Редактировать
       </button>
@@ -44,15 +44,16 @@ const contacts = computed(() => [
       <div
         v-for="contact in contacts"
         :key="contact.label"
-        class="flex items-center justify-between py-3 border-b border-white/5 last:border-0"
+        class="flex items-center justify-between py-3 last:border-0"
+        style="border-bottom: 1px solid var(--glass-border);"
       >
         <div class="flex items-center gap-3">
-          <div class="p-2 rounded-lg bg-white/5">
-            <Icon :name="contact.icon" class="w-5 h-5 text-gray-400" />
+          <div class="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10">
+            <Icon :name="contact.icon" class="w-5 h-5 text-primary" />
           </div>
           <div>
-            <p class="text-xs text-gray-500">{{ contact.label }}</p>
-            <p class="text-white">{{ contact.value || '—' }}</p>
+            <p class="text-xs text-[var(--text-muted)]">{{ contact.label }}</p>
+            <p class="text-[var(--text-primary)]">{{ contact.value || '—' }}</p>
           </div>
         </div>
         <UBadge v-if="contact.value && contact.verified" variant="success" size="sm">

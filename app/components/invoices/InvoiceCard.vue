@@ -43,7 +43,7 @@ const formatDate = (date: string) => {
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <!-- Invoice Info -->
       <div class="flex items-start gap-4">
-        <div class="p-3 rounded-xl" :class="invoice.status === 'paid' ? 'bg-accent/20' : 'bg-primary/20'">
+        <div class="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10">
           <Icon
             :name="invoice.status === 'paid' ? 'heroicons:check-circle' : 'heroicons:document-text'"
             class="w-6 h-6"
@@ -51,9 +51,9 @@ const formatDate = (date: string) => {
           />
         </div>
         <div>
-          <p class="font-semibold text-white">{{ invoice.number }}</p>
-          <p class="text-sm text-gray-400 mt-0.5">{{ invoice.period }}</p>
-          <div class="flex items-center gap-3 mt-2 text-xs text-gray-500">
+          <p class="font-semibold text-[var(--text-primary)]">{{ invoice.number }}</p>
+          <p class="text-sm text-[var(--text-muted)] mt-0.5">{{ invoice.period }}</p>
+          <div class="flex items-center gap-3 mt-2 text-xs text-[var(--text-muted)]">
             <span>Выставлен: {{ formatDate(invoice.issuedAt) }}</span>
             <span v-if="invoice.status !== 'paid'">&middot; До: {{ formatDate(invoice.dueDate) }}</span>
             <span v-else>&middot; Оплачен: {{ formatDate(invoice.paidAt!) }}</span>
@@ -63,7 +63,7 @@ const formatDate = (date: string) => {
 
       <!-- Amount & Status -->
       <div class="flex items-center justify-between sm:flex-col sm:items-end gap-2">
-        <p class="text-xl font-bold text-white">{{ formatMoney(invoice.amount) }}</p>
+        <p class="text-xl font-bold text-[var(--text-primary)]">{{ formatMoney(invoice.amount) }}</p>
         <UBadge :variant="statusConfig[invoice.status].variant">
           {{ statusConfig[invoice.status].label }}
         </UBadge>
@@ -71,7 +71,7 @@ const formatDate = (date: string) => {
     </div>
 
     <!-- Actions -->
-    <div v-if="invoice.status !== 'paid'" class="mt-4 pt-4 border-t border-white/10 flex gap-3">
+    <div v-if="invoice.status !== 'paid'" class="mt-4 pt-4 flex gap-3" style="border-top: 1px solid var(--glass-border);">
       <UButton variant="primary" size="sm">
         <Icon name="heroicons:credit-card" class="w-4 h-4" />
         Оплатить

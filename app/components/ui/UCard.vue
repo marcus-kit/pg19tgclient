@@ -19,10 +19,10 @@ const paddingClasses = {
 
 <template>
   <div
-    class="rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] shadow-lg"
+    class="glass-card rounded-2xl"
     :class="[
       paddingClasses[padding],
-      hover && 'transition-all duration-300 hover:bg-white/[0.06] hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-0.5'
+      hover && 'cursor-pointer'
     ]"
   >
     <slot />

@@ -67,7 +67,7 @@ const removeAvatar = () => {
 <template>
   <UCard>
     <div class="flex items-center justify-between mb-5">
-      <h2 class="text-lg font-semibold text-white">Фото профиля</h2>
+      <h2 class="text-lg font-semibold text-[var(--text-primary)]">Фото профиля</h2>
       <button
         v-if="authStore.user?.avatar"
         class="text-sm text-red-400 hover:text-red-300 transition-colors"
@@ -119,11 +119,11 @@ const removeAvatar = () => {
 
       <!-- Info -->
       <div class="flex-1">
-        <p class="text-white font-medium mb-1">{{ authStore.fullName }}</p>
-        <p class="text-sm text-gray-400 mb-3">
+        <p class="text-[var(--text-primary)] font-medium mb-1">{{ authStore.fullName }}</p>
+        <p class="text-sm text-[var(--text-secondary)] mb-3">
           Нажмите на фото, чтобы загрузить новое
         </p>
-        <div class="flex items-center gap-2 text-xs text-gray-500">
+        <div class="flex items-center gap-2 text-xs text-[var(--text-muted)]">
           <Icon name="heroicons:information-circle" class="w-4 h-4" />
           <span>JPG, PNG до 5 МБ</span>
         </div>

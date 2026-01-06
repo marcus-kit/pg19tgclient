@@ -29,21 +29,21 @@ const formatDate = (date: string) => {
 
 <template>
   <div v-if="unpaidInvoices.length > 0">
-    <h2 class="text-lg font-semibold text-white mb-4">Неоплаченные счета</h2>
+    <h2 class="text-lg font-semibold text-[var(--text-primary)] mb-4">Неоплаченные счета</h2>
     <div class="space-y-3">
       <UCard v-for="invoice in unpaidInvoices" :key="invoice.id" hover padding="sm">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <div class="p-2 rounded-lg bg-primary/20">
+            <div class="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10">
               <Icon name="heroicons:document-text" class="w-5 h-5 text-primary" />
             </div>
             <div>
-              <p class="font-medium text-white text-sm">{{ invoice.number }}</p>
-              <p class="text-xs text-gray-500">{{ invoice.period }} &middot; до {{ formatDate(invoice.dueDate) }}</p>
+              <p class="font-medium text-[var(--text-primary)] text-sm">{{ invoice.number }}</p>
+              <p class="text-xs text-[var(--text-muted)]">{{ invoice.period }} &middot; до {{ formatDate(invoice.dueDate) }}</p>
             </div>
           </div>
           <div class="text-right">
-            <p class="font-semibold text-white">{{ formatMoney(invoice.amount) }}</p>
+            <p class="font-semibold text-[var(--text-primary)]">{{ formatMoney(invoice.amount) }}</p>
             <UBadge variant="warning" size="sm">К оплате</UBadge>
           </div>
         </div>

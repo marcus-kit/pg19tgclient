@@ -16,12 +16,12 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const classes = computed(() => {
-  const base = 'inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900'
+  const base = 'inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2'
 
   const variants = {
-    primary: 'bg-gradient-to-r from-primary to-primary-dark text-white shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:-translate-y-0.5 focus:ring-primary',
-    secondary: 'bg-transparent border-2 border-white/20 text-white hover:border-primary hover:text-primary hover:bg-primary/10 focus:ring-primary',
-    ghost: 'bg-transparent text-gray-300 hover:text-white hover:bg-white/5 focus:ring-white/20',
+    primary: 'bg-gradient-to-r from-primary to-primary-600 text-white shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:-translate-y-0.5 focus:ring-primary',
+    secondary: 'btn-secondary focus:ring-primary',
+    ghost: 'bg-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--glass-bg)] focus:ring-primary/20',
     danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500'
   }
 

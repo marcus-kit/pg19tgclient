@@ -35,10 +35,10 @@ const news = [
   <div class="space-y-6">
     <!-- Page Header -->
     <div>
-      <h1 class="text-2xl font-bold text-white">
+      <h1 class="text-2xl font-bold text-[var(--text-primary)]">
         Добро пожаловать, {{ authStore.user?.firstName }}!
       </h1>
-      <p class="text-gray-400 mt-1">Договор № {{ authStore.account?.contractNumber }}</p>
+      <p class="text-[var(--text-muted)] mt-1">Договор № {{ authStore.account?.contractNumber }}</p>
     </div>
 
     <!-- Main Grid -->
@@ -60,10 +60,10 @@ const news = [
                 Специальное предложение
               </span>
             </div>
-            <h3 class="text-xl font-bold text-white mb-1">
+            <h3 class="text-xl font-bold text-[var(--text-primary)] mb-1">
               ТВ Расширенный — месяц бесплатно
             </h3>
-            <p class="text-gray-400 text-sm">
+            <p class="text-[var(--text-muted)] text-sm">
               191 канал + кинозалы. Подключите сейчас и смотрите бесплатно до 28 февраля!
             </p>
           </div>
@@ -79,16 +79,16 @@ const news = [
     <!-- Community News -->
     <section>
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-semibold text-white">Новости сообщества</h2>
+        <h2 class="text-lg font-semibold text-[var(--text-primary)]">Новости сообщества</h2>
         <NuxtLink to="/lk/support" class="text-sm text-primary hover:text-primary-400 transition-colors">
           Все новости
         </NuxtLink>
       </div>
       <div class="grid md:grid-cols-3 gap-4">
         <UCard v-for="item in news" :key="item.id" hover class="p-5">
-          <p class="text-xs text-gray-500 mb-2">{{ item.date }}</p>
-          <h3 class="font-medium text-white mb-2">{{ item.title }}</h3>
-          <p class="text-sm text-gray-400 line-clamp-2">{{ item.preview }}</p>
+          <p class="text-xs text-[var(--text-muted)] mb-2">{{ item.date }}</p>
+          <h3 class="font-medium text-[var(--text-primary)] mb-2">{{ item.title }}</h3>
+          <p class="text-sm text-[var(--text-secondary)] line-clamp-2">{{ item.preview }}</p>
         </UCard>
       </div>
     </section>

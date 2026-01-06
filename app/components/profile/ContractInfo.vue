@@ -15,27 +15,27 @@ const formatDate = (date: string) => {
 <template>
   <UCard>
     <div class="flex items-center justify-between mb-5">
-      <h2 class="text-lg font-semibold text-white">Договор</h2>
+      <h2 class="text-lg font-semibold text-[var(--text-primary)]">Договор</h2>
     </div>
 
     <div class="space-y-4">
-      <div class="flex items-center justify-between py-3 border-b border-white/5">
-        <span class="text-gray-400">Номер договора</span>
-        <span class="text-white font-medium">{{ authStore.account?.contractNumber }}</span>
+      <div class="flex items-center justify-between py-3" style="border-bottom: 1px solid var(--glass-border);">
+        <span class="text-[var(--text-muted)]">Номер договора</span>
+        <span class="text-[var(--text-primary)] font-medium">{{ authStore.account?.contractNumber }}</span>
       </div>
-      <div class="flex items-center justify-between py-3 border-b border-white/5">
-        <span class="text-gray-400">Статус</span>
+      <div class="flex items-center justify-between py-3" style="border-bottom: 1px solid var(--glass-border);">
+        <span class="text-[var(--text-muted)]">Статус</span>
         <UBadge :variant="authStore.isBlocked ? 'danger' : 'success'">
           {{ authStore.isBlocked ? 'Приостановлен' : 'Активен' }}
         </UBadge>
       </div>
-      <div class="flex items-center justify-between py-3 border-b border-white/5">
-        <span class="text-gray-400">Тариф</span>
-        <span class="text-white">{{ authStore.account?.tariff }}</span>
+      <div class="flex items-center justify-between py-3" style="border-bottom: 1px solid var(--glass-border);">
+        <span class="text-[var(--text-muted)]">Тариф</span>
+        <span class="text-[var(--text-primary)]">{{ authStore.account?.tariff }}</span>
       </div>
       <div class="flex items-center justify-between py-3">
-        <span class="text-gray-400">Дата заключения</span>
-        <span class="text-white">{{ formatDate(authStore.account?.startDate || '') }}</span>
+        <span class="text-[var(--text-muted)]">Дата заключения</span>
+        <span class="text-[var(--text-primary)]">{{ formatDate(authStore.account?.startDate || '') }}</span>
       </div>
     </div>
   </UCard>

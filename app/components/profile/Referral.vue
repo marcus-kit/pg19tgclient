@@ -65,7 +65,7 @@ const shareOptions = [
 <template>
   <UCard class="lg:col-span-2">
     <div class="flex items-center justify-between mb-5">
-      <h2 class="text-lg font-semibold text-white">Пригласи друга</h2>
+      <h2 class="text-lg font-semibold text-[var(--text-primary)]">Пригласи друга</h2>
       <UBadge variant="success" size="sm">
         +300 ₽ за друга
       </UBadge>
@@ -76,18 +76,19 @@ const shareOptions = [
       <div>
         <!-- Referral Code -->
         <div class="p-4 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10 border border-primary/30 mb-4">
-          <p class="text-sm text-gray-400 mb-2">Ваш промокод</p>
+          <p class="text-sm text-[var(--text-muted)] mb-2">Ваш промокод</p>
           <div class="flex items-center gap-3">
-            <span class="text-2xl font-bold text-white tracking-wider">
+            <span class="text-2xl font-bold text-[var(--text-primary)] tracking-wider">
               {{ authStore.referralProgram?.code }}
             </span>
             <button
-              class="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+              class="p-2 rounded-lg hover:bg-[var(--glass-bg)] transition-colors"
+              style="background: var(--glass-bg);"
               @click="copyCode"
             >
               <Icon
                 :name="copySuccess ? 'heroicons:check' : 'heroicons:clipboard-document'"
-                :class="['w-5 h-5', copySuccess ? 'text-accent' : 'text-white']"
+                :class="['w-5 h-5', copySuccess ? 'text-accent' : 'text-[var(--text-primary)]']"
               />
             </button>
           </div>
@@ -95,19 +96,19 @@ const shareOptions = [
 
         <!-- Stats -->
         <div class="grid grid-cols-2 gap-3 mb-4">
-          <div class="p-4 rounded-xl bg-white/5">
-            <p class="text-2xl font-bold text-white">{{ authStore.referralProgram?.totalInvited }}</p>
-            <p class="text-sm text-gray-400">Приглашено</p>
+          <div class="p-4 rounded-xl" style="background: var(--glass-bg);">
+            <p class="text-2xl font-bold text-[var(--text-primary)]">{{ authStore.referralProgram?.totalInvited }}</p>
+            <p class="text-sm text-[var(--text-muted)]">Приглашено</p>
           </div>
-          <div class="p-4 rounded-xl bg-white/5">
+          <div class="p-4 rounded-xl" style="background: var(--glass-bg);">
             <p class="text-2xl font-bold text-accent">{{ authStore.referralProgram?.totalBonus }} ₽</p>
-            <p class="text-sm text-gray-400">Заработано</p>
+            <p class="text-sm text-[var(--text-muted)]">Заработано</p>
           </div>
         </div>
 
         <!-- Share Buttons -->
         <div>
-          <p class="text-sm text-gray-400 mb-3">Поделиться</p>
+          <p class="text-sm text-[var(--text-muted)] mb-3">Поделиться</p>
           <div class="flex gap-2">
             <button
               v-for="option in shareOptions"
@@ -120,10 +121,11 @@ const shareOptions = [
               <Icon :name="option.icon" class="w-5 h-5 text-white mx-auto" />
             </button>
             <button
-              class="flex-1 p-3 rounded-xl bg-white/10 hover:bg-white/20 transition-colors"
+              class="flex-1 p-3 rounded-xl hover:opacity-80 transition-colors"
+              style="background: var(--glass-bg);"
               @click="copyLink"
             >
-              <Icon name="heroicons:link" class="w-5 h-5 text-white mx-auto" />
+              <Icon name="heroicons:link" class="w-5 h-5 text-[var(--text-primary)] mx-auto" />
             </button>
           </div>
         </div>
@@ -131,13 +133,14 @@ const shareOptions = [
 
       <!-- Right: Referrals List -->
       <div>
-        <p class="text-sm text-gray-400 mb-3">Ваши друзья</p>
+        <p class="text-sm text-[var(--text-muted)] mb-3">Ваши друзья</p>
 
         <div v-if="authStore.referralProgram?.referrals.length" class="space-y-2">
           <div
             v-for="referral in authStore.referralProgram.referrals"
             :key="referral.id"
-            class="flex items-center justify-between p-3 rounded-xl bg-white/5"
+            class="flex items-center justify-between p-3 rounded-xl"
+            style="background: var(--glass-bg);"
           >
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
@@ -146,8 +149,8 @@ const shareOptions = [
                 </span>
               </div>
               <div>
-                <p class="text-white font-medium">{{ referral.name }}</p>
-                <p class="text-xs text-gray-500">{{ formatDate(referral.registeredAt) }}</p>
+                <p class="text-[var(--text-primary)] font-medium">{{ referral.name }}</p>
+                <p class="text-xs text-[var(--text-muted)]">{{ formatDate(referral.registeredAt) }}</p>
               </div>
             </div>
             <span class="text-accent font-medium">+{{ referral.bonus }} ₽</span>
@@ -155,15 +158,15 @@ const shareOptions = [
         </div>
 
         <div v-else class="text-center py-8">
-          <Icon name="heroicons:users" class="w-12 h-12 text-gray-600 mx-auto mb-3" />
-          <p class="text-gray-400">Пока нет приглашённых друзей</p>
-          <p class="text-sm text-gray-500 mt-1">Поделитесь промокодом и получите 300 ₽</p>
+          <Icon name="heroicons:users" class="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
+          <p class="text-[var(--text-muted)]">Пока нет приглашённых друзей</p>
+          <p class="text-sm text-[var(--text-muted)] mt-1">Поделитесь промокодом и получите 300 ₽</p>
         </div>
 
         <!-- How it works -->
-        <div class="mt-4 p-4 rounded-xl bg-white/5">
-          <p class="text-sm font-medium text-white mb-2">Как это работает?</p>
-          <ol class="text-xs text-gray-400 space-y-1">
+        <div class="mt-4 p-4 rounded-xl" style="background: var(--glass-bg);">
+          <p class="text-sm font-medium text-[var(--text-primary)] mb-2">Как это работает?</p>
+          <ol class="text-xs text-[var(--text-muted)] space-y-1">
             <li>1. Поделитесь промокодом с другом</li>
             <li>2. Друг подключается с вашим кодом</li>
             <li>3. Вы оба получаете по 300 ₽ на счёт</li>

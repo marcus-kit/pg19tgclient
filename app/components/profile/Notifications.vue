@@ -80,12 +80,12 @@ const toggleType = (key: 'payments' | 'maintenance' | 'promotions' | 'news') => 
 <template>
   <UCard>
     <div class="flex items-center justify-between mb-5">
-      <h2 class="text-lg font-semibold text-white">Уведомления</h2>
+      <h2 class="text-lg font-semibold text-[var(--text-primary)]">Уведомления</h2>
     </div>
 
     <!-- Channels -->
     <div class="mb-6">
-      <p class="text-sm text-gray-400 mb-3">Каналы доставки</p>
+      <p class="text-sm text-[var(--text-muted)] mb-3">Каналы доставки</p>
       <div class="grid grid-cols-2 gap-3">
         <button
           v-for="channel in channels"
@@ -93,30 +93,31 @@ const toggleType = (key: 'payments' | 'maintenance' | 'promotions' | 'news') => 
           :class="[
             'p-3 rounded-xl border transition-all text-left',
             channel.enabled
-              ? 'bg-primary/10 border-primary/30 text-white'
-              : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'
+              ? 'bg-primary/10 border-primary/30 text-[var(--text-primary)]'
+              : 'text-[var(--text-muted)] hover:border-[var(--glass-hover-border)]'
           ]"
+          :style="!channel.enabled ? 'background: var(--glass-bg); border: 1px solid var(--glass-border);' : ''"
           @click="toggleChannel(channel.key)"
         >
           <div class="flex items-center gap-3">
             <div :class="[
-              'p-2 rounded-lg',
-              channel.enabled ? 'bg-primary/20' : 'bg-white/5'
-            ]">
+              'p-2 rounded-xl',
+              channel.enabled ? 'bg-gradient-to-br from-primary/20 to-secondary/10' : ''
+            ]" :style="!channel.enabled ? 'background: var(--glass-bg);' : ''">
               <Icon
                 :name="channel.icon"
-                :class="['w-5 h-5', channel.enabled ? 'text-primary' : 'text-gray-500']"
+                :class="['w-5 h-5', channel.enabled ? 'text-primary' : 'text-[var(--text-muted)]']"
               />
             </div>
             <div class="flex-1 min-w-0">
               <p class="font-medium text-sm truncate">{{ channel.label }}</p>
-              <p class="text-xs text-gray-500 truncate">{{ channel.description }}</p>
+              <p class="text-xs text-[var(--text-muted)] truncate">{{ channel.description }}</p>
             </div>
             <div :class="[
               'w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors',
               channel.enabled
                 ? 'bg-primary border-primary'
-                : 'border-gray-500'
+                : 'border-[var(--text-muted)]'
             ]">
               <Icon
                 v-if="channel.enabled"
@@ -131,21 +132,22 @@ const toggleType = (key: 'payments' | 'maintenance' | 'promotions' | 'news') => 
 
     <!-- Types -->
     <div>
-      <p class="text-sm text-gray-400 mb-3">Типы уведомлений</p>
+      <p class="text-sm text-[var(--text-muted)] mb-3">Типы уведомлений</p>
       <div class="space-y-2">
         <button
           v-for="type in notificationTypes"
           :key="type.key"
-          class="w-full flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
+          class="w-full flex items-center justify-between p-3 rounded-xl hover:opacity-80 transition-colors"
+          style="background: var(--glass-bg);"
           @click="toggleType(type.key)"
         >
           <div>
-            <p class="text-white text-sm font-medium text-left">{{ type.label }}</p>
-            <p class="text-xs text-gray-500 text-left">{{ type.description }}</p>
+            <p class="text-[var(--text-primary)] text-sm font-medium text-left">{{ type.label }}</p>
+            <p class="text-xs text-[var(--text-muted)] text-left">{{ type.description }}</p>
           </div>
           <div :class="[
             'w-10 h-6 rounded-full p-1 transition-colors',
-            type.enabled ? 'bg-primary' : 'bg-white/20'
+            type.enabled ? 'bg-primary' : 'bg-[var(--glass-border)]'
           ]">
             <div :class="[
               'w-4 h-4 rounded-full bg-white transition-transform',

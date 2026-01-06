@@ -78,32 +78,32 @@ const getStatusText = (status: string) => {
   <div class="space-y-6">
     <!-- Page Header -->
     <div>
-      <h1 class="text-2xl font-bold text-white">Услуги</h1>
-      <p class="text-gray-400 mt-1">Управление подключенными услугами</p>
+      <h1 class="text-2xl font-bold text-[var(--text-primary)]">Услуги</h1>
+      <p class="text-[var(--text-muted)] mt-1">Управление подключенными услугами</p>
     </div>
 
     <!-- Active Services -->
     <section>
-      <h2 class="text-lg font-semibold text-white mb-4">Подключенные услуги</h2>
+      <h2 class="text-lg font-semibold text-[var(--text-primary)] mb-4">Подключенные услуги</h2>
       <div class="grid gap-4">
         <UCard v-for="service in activeServices" :key="service.id" class="p-0 overflow-hidden">
           <div class="flex items-start gap-4 p-5">
-            <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
+            <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10 flex items-center justify-center">
               <Icon :name="service.icon" class="w-6 h-6 text-primary" />
             </div>
             <div class="flex-1 min-w-0">
               <div class="flex items-start justify-between gap-4">
                 <div>
-                  <h3 class="font-semibold text-white">{{ service.name }}</h3>
-                  <p class="text-sm text-gray-400 mt-0.5">{{ service.description }}</p>
+                  <h3 class="font-semibold text-[var(--text-primary)]">{{ service.name }}</h3>
+                  <p class="text-sm text-[var(--text-muted)] mt-0.5">{{ service.description }}</p>
                 </div>
                 <UBadge :class="getStatusColor(service.status)">
                   {{ getStatusText(service.status) }}
                 </UBadge>
               </div>
               <div class="flex items-center justify-between mt-4">
-                <span class="text-lg font-bold text-white">{{ service.price }} <span class="text-sm font-normal text-gray-400">руб/мес</span></span>
-                <button class="text-sm text-gray-400 hover:text-white transition-colors">
+                <span class="text-lg font-bold text-[var(--text-primary)]">{{ service.price }} <span class="text-sm font-normal text-[var(--text-muted)]">руб/мес</span></span>
+                <button class="text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
                   Подробнее
                 </button>
               </div>
@@ -115,21 +115,21 @@ const getStatusText = (status: string) => {
 
     <!-- Available Services -->
     <section>
-      <h2 class="text-lg font-semibold text-white mb-4">Доступные услуги</h2>
+      <h2 class="text-lg font-semibold text-[var(--text-primary)] mb-4">Доступные услуги</h2>
       <div class="grid md:grid-cols-2 gap-4">
         <UCard v-for="service in availableServices" :key="service.id" class="p-0 overflow-hidden hover:border-primary/30 transition-colors cursor-pointer">
           <div class="p-5">
             <div class="flex items-start gap-4">
-              <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center">
-                <Icon :name="service.icon" class="w-5 h-5 text-gray-400" />
+              <div class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center" style="background: var(--glass-bg);">
+                <Icon :name="service.icon" class="w-5 h-5 text-[var(--text-muted)]" />
               </div>
               <div class="flex-1">
-                <h3 class="font-medium text-white">{{ service.name }}</h3>
-                <p class="text-sm text-gray-400 mt-0.5">{{ service.description }}</p>
+                <h3 class="font-medium text-[var(--text-primary)]">{{ service.name }}</h3>
+                <p class="text-sm text-[var(--text-muted)] mt-0.5">{{ service.description }}</p>
               </div>
             </div>
-            <div class="flex items-center justify-between mt-4 pt-4 border-t border-white/5">
-              <span class="font-semibold text-white">{{ service.price }} <span class="text-sm font-normal text-gray-400">руб/мес</span></span>
+            <div class="flex items-center justify-between mt-4 pt-4" style="border-top: 1px solid var(--glass-border);">
+              <span class="font-semibold text-[var(--text-primary)]">{{ service.price }} <span class="text-sm font-normal text-[var(--text-muted)]">руб/мес</span></span>
               <UButton size="sm" variant="secondary">
                 Подключить
               </UButton>
