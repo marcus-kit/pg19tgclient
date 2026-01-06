@@ -2,11 +2,11 @@
 const services = [
   {
     title: 'Интернет',
-    description: 'Скорость до 1000 Мбит/с без искусственных ограничений',
+    description: 'Мы не режем скорость. Канал до 1000 Мбит/с — вся полоса ваша',
     icon: 'heroicons:wifi',
     color: 'primary',
     href: '/internet',
-    features: ['До 1000 Мбит/с', '10+ устройств', 'Без ограничений'],
+    features: ['Скорость не ограничена', 'До 1000 Мбит/с', '10+ устройств'],
     gradient: 'from-primary/20 to-primary/5'
   },
   {

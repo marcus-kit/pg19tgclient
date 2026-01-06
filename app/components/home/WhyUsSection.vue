@@ -2,8 +2,8 @@
 const features = [
   {
     icon: 'heroicons:bolt',
-    title: 'Никаких ограничений',
-    description: 'Каждый участник получает максимальную скорость, доступную в точке подключения — до 1000 Мбит/с'
+    title: 'Скорость не ограничена',
+    description: 'Мы не режем скорость. Вы получаете всю полосу канала — до 1000 Мбит/с без искусственных лимитов'
   },
   {
     icon: 'heroicons:banknotes',
@@ -23,7 +23,7 @@ const features = [
 ]
 
 const included = [
-  { text: 'Интернет до 1000 Мбит/с', icon: 'heroicons:wifi' },
+  { text: 'Интернет без ограничения скорости', icon: 'heroicons:wifi' },
   { text: 'Цифровое ТВ 191 канал', icon: 'heroicons:tv' },
   { text: 'Техподдержка 24/7', icon: 'heroicons:phone' },
   { text: 'Право голоса', icon: 'heroicons:hand-raised' }

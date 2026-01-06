@@ -4,10 +4,10 @@ useHead({
 })
 
 const features = [
-  { icon: 'heroicons:bolt', title: 'До 1000 Мбит/с', description: 'Максимальная скорость в точке подключения' },
+  { icon: 'heroicons:no-symbol', title: 'Мы не режем скорость', description: 'Вы получаете всю полосу канала. Никаких искусственных ограничений' },
+  { icon: 'heroicons:bolt', title: 'До 1000 Мбит/с', description: 'Максимальная скорость зависит только от вашего оборудования' },
   { icon: 'heroicons:device-tablet', title: '10+ устройств', description: 'Стабильная работа всех гаджетов одновременно' },
-  { icon: 'heroicons:arrow-down-tray', title: '1 ГБ за 20 сек', description: 'Скачивание файлов на высокой скорости' },
-  { icon: 'heroicons:no-symbol', title: 'Без ограничений', description: 'Никаких искусственных лимитов скорости' }
+  { icon: 'heroicons:arrow-down-tray', title: '1 ГБ за 20 сек', description: 'Скачивание файлов на максимальной скорости' }
 ]
 </script>
 
@@ -27,8 +27,8 @@ const features = [
             Интернет <span class="text-gradient-primary">без ограничений</span>
           </h1>
           <p class="text-xl text-[var(--text-muted)] mb-10 max-w-2xl mx-auto opacity-0 animate-fade-in-up stagger-2">
-            Скорость до 1000 Мбит/с — реальная скорость зависит от вашего оборудования.
-            Стабильная работа до 10 устройств одновременно.
+            Мы не режем скорость — вы получаете всю полосу канала до 1000 Мбит/с.
+            Никаких тарифных ограничений, скорость зависит только от вашего оборудования.
           </p>
           <NuxtLink
             to="/connect"

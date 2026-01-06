@@ -83,12 +83,15 @@ const stats = [
             <div class="grid gap-4 max-w-sm mx-auto lg:ml-auto">
               <!-- Speed card - special emphasis -->
               <div class="glass-card rounded-2xl p-6 opacity-0 animate-fade-in-up stagger-2 border-primary/30">
-                <div class="flex items-center gap-3 mb-2">
-                  <Icon name="heroicons:bolt" class="w-6 h-6 text-primary" />
-                  <span class="text-xl md:text-2xl font-bold text-primary">Без ограничений</span>
+                <div class="flex items-center gap-2 text-[var(--text-muted)] text-sm mb-1">
+                  <Icon name="heroicons:bolt" class="w-4 h-4 text-primary" />
+                  <span>Скорость интернета</span>
                 </div>
+                <p class="text-xl md:text-2xl font-bold text-primary mb-1">
+                  Без ограничений
+                </p>
                 <p class="text-[var(--text-muted)] text-sm">
-                  Канал до <span class="text-[var(--text-secondary)] font-semibold">1000 Мбит/с</span>
+                  Канал до <span class="text-[var(--text-secondary)] font-semibold">1000 Мбит/с</span> — вся скорость ваша
                 </p>
               </div>
 
