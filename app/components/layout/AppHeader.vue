@@ -122,7 +122,7 @@ const servicesNav = [
 
         <!-- Personal Account Button -->
         <a
-          href="https://client.pg19.doka.team"
+          href="https://pg19-client.doka.team"
           class="hidden md:flex items-center gap-2 px-5 py-2.5 bg-info hover:bg-info/90 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-info/25 hover:shadow-xl hover:shadow-info/30"
         >
           <Icon name="heroicons:user-circle" class="w-5 h-5" />
@@ -199,7 +199,7 @@ const servicesNav = [
 
           <!-- Personal Account mobile -->
           <a
-            href="https://client.pg19.doka.team"
+            href="https://pg19-client.doka.team"
             @click="isMenuOpen = false"
             class="flex items-center justify-center gap-2 w-full py-4 bg-info hover:bg-info/90 text-white font-semibold rounded-xl transition-all"
           >

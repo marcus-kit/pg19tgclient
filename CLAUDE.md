@@ -107,11 +107,11 @@ Balance stored in kopeks (копейки), divide by 100 for rubles display.
 
 | Portal | Worktree | Prod URL | Dev URL | Контент |
 |--------|----------|----------|---------|---------|
-| `main` | `/Users/doka/PG19v2` | pg19.doka.team | dev.pg19.doka.team | Основной сайт, сервисы, новости |
-| `land` | `/Users/doka/PG19v2land` | land.pg19.doka.team | dev-land.pg19.doka.team | Landing page |
-| `partner` | `/Users/doka/PG19v2partner` | partner.pg19.doka.team | dev-partner.pg19.doka.team | Партнёрский портал |
-| `client` | `/Users/doka/PG19v2client` | client.pg19.doka.team | dev-client.pg19.doka.team | Личный кабинет |
-| `admin` | `/Users/doka/PG19v2admin` | admin.pg19.doka.team | dev-admin.pg19.doka.team | Админ-панель |
+| `main` | `/Users/doka/PG19v2` | pg19.doka.team | dev-pg19.doka.team | Основной сайт, сервисы, новости |
+| `land` | `/Users/doka/PG19v2land` | pg19-land.doka.team | dev-pg19-land.doka.team | Landing page |
+| `partner` | `/Users/doka/PG19v2partner` | pg19-partner.doka.team | dev-pg19-partner.doka.team | Партнёрский портал |
+| `client` | `/Users/doka/PG19v2client` | pg19-client.doka.team | dev-pg19-client.doka.team | Личный кабинет |
+| `admin` | `/Users/doka/PG19v2admin` | pg19-admin.doka.team | dev-pg19-admin.doka.team | Админ-панель |
 
 ### Команды деплоя
 
@@ -129,7 +129,7 @@ Balance stored in kopeks (копейки), divide by 100 for rubles display.
 
 1. Разрабатываешь в worktree
 2. `./deploy.sh <portal> dev` — деплой в dev для тестирования
-3. Проверяешь на `dev-<portal>.pg19.doka.team`
+3. Проверяешь на `dev-pg19-<portal>.doka.team`
 4. `./deploy.sh <portal> prod` — деплой в production
 
 ### Процесс деплоя
@@ -165,14 +165,14 @@ Balance stored in kopeks (копейки), divide by 100 for rubles display.
 
 **Production:**
 - `pg19-main` → pg19.doka.team
-- `pg19-land` → land.pg19.doka.team
-- `pg19-partner` → partner.pg19.doka.team
-- `pg19-client` → client.pg19.doka.team
-- `pg19-admin` → admin.pg19.doka.team
+- `pg19-land` → pg19-land.doka.team
+- `pg19-partner` → pg19-partner.doka.team
+- `pg19-client` → pg19-client.doka.team
+- `pg19-admin` → pg19-admin.doka.team
 
 **Development:**
-- `pg19-dev-main` → dev.pg19.doka.team
-- `pg19-dev-land` → dev-land.pg19.doka.team
-- `pg19-dev-partner` → dev-partner.pg19.doka.team
-- `pg19-dev-client` → dev-client.pg19.doka.team
-- `pg19-dev-admin` → dev-admin.pg19.doka.team
+- `pg19-dev-main` → dev-pg19.doka.team
+- `pg19-dev-land` → dev-pg19-land.doka.team
+- `pg19-dev-partner` → dev-pg19-partner.doka.team
+- `pg19-dev-client` → dev-pg19-client.doka.team
+- `pg19-dev-admin` → dev-pg19-admin.doka.team

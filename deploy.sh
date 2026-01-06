@@ -2,12 +2,12 @@
 # PG19v2 Multi-Portal Deploy Script
 # Usage: ./deploy.sh <portal> [dev|prod] [--no-build]
 #
-# Portals:
-#   main    → pg19.doka.team / dev.pg19.doka.team
-#   land    → land.pg19.doka.team / dev-land.pg19.doka.team
-#   partner → partner.pg19.doka.team / dev-partner.pg19.doka.team
-#   client  → client.pg19.doka.team / dev-client.pg19.doka.team
-#   admin   → admin.pg19.doka.team / dev-admin.pg19.doka.team
+# Portals (flat subdomain scheme for Cloudflare SSL):
+#   main    → pg19.doka.team / dev-pg19.doka.team
+#   land    → pg19-land.doka.team / dev-pg19-land.doka.team
+#   partner → pg19-partner.doka.team / dev-pg19-partner.doka.team
+#   client  → pg19-client.doka.team / dev-pg19-client.doka.team
+#   admin   → pg19-admin.doka.team / dev-pg19-admin.doka.team
 
 set -e
 
@@ -47,17 +47,18 @@ get_remote_path() {
 get_url() {
     local portal=$1
     local env=$2
+    # Flat subdomain scheme: pg19-{portal}.doka.team (works with Cloudflare free SSL)
     if [ "$env" == "dev" ]; then
         if [ "$portal" == "main" ]; then
-            echo "dev.pg19.doka.team"
+            echo "dev-pg19.doka.team"
         else
-            echo "dev-$portal.pg19.doka.team"
+            echo "dev-pg19-$portal.doka.team"
         fi
     else
         if [ "$portal" == "main" ]; then
             echo "pg19.doka.team"
         else
-            echo "$portal.pg19.doka.team"
+            echo "pg19-$portal.doka.team"
         fi
     fi
 }
@@ -79,15 +80,15 @@ usage() {
     echo ""
     echo "Portals:"
     echo "  main      Main site (pg19.doka.team)"
-    echo "  land      Landing page (land.pg19.doka.team)"
-    echo "  partner   Partner portal (partner.pg19.doka.team)"
-    echo "  client    Client cabinet (client.pg19.doka.team)"
-    echo "  admin     Admin panel (admin.pg19.doka.team)"
+    echo "  land      Landing page (pg19-land.doka.team)"
+    echo "  partner   Partner portal (pg19-partner.doka.team)"
+    echo "  client    Client cabinet (pg19-client.doka.team)"
+    echo "  admin     Admin panel (pg19-admin.doka.team)"
     echo "  all       Deploy all portals"
     echo ""
     echo "Environments:"
     echo "  prod      Production (default)"
-    echo "  dev       Development preview (dev-*.pg19.doka.team)"
+    echo "  dev       Development preview (dev-pg19-*.doka.team)"
     echo ""
     echo "Options:"
     echo "  --no-build    Skip Docker build, only restart"
@@ -170,7 +171,7 @@ deploy_portal() {
 
     # Step 1: Create remote directory
     echo -e "${YELLOW}►${NC} Preparing server directory..."
-    ssh $SERVER "mkdir -p $remote_path"
+    ssh $SERVER "sudo mkdir -p $remote_path && sudo chown vv:vv $remote_path"
 
     # Step 2: Sync code
     echo -e "${YELLOW}►${NC} Syncing code to server..."
@@ -224,7 +225,7 @@ generate_compose() {
     local container=$(get_container_name $portal $env)
 
     # Generate docker-compose.yml on the server
-    ssh $SERVER "cat > $remote_path/docker-compose.yml << 'COMPOSE_EOF'
+    ssh $SERVER "cat > $remote_path/docker-compose.yml" << COMPOSE_EOF
 services:
   $container:
     build:
@@ -242,22 +243,22 @@ services:
       - NUXT_TELEGRAM_BOT_TOKEN=8239443842:AAGNXne9Z8oASGk56AZRB0LxdxbJCXn6XDI
       - NUXT_SUPABASE_SERVICE_KEY=eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJyb2xlIjogInNlcnZpY2Vfcm9sZSIsICJpc3MiOiAic3VwYWJhc2UiLCAiaWF0IjogMTczNDc4OTYwMCwgImV4cCI6IDE4OTI1NTYwMDB9.pn3oy2eKMXejztAJqluImJbji4utpQOKp-7hlAN0IxM
     healthcheck:
-      test: [\"CMD\", \"wget\", \"-q\", \"--spider\", \"http://127.0.0.1:3000/\"]
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/"]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 60s
     labels:
-      - \"traefik.enable=true\"
-      - \"traefik.http.routers.$container.rule=Host(\\\`$url\\\`)\"
-      - \"traefik.http.services.$container.loadbalancer.server.port=3000\"
+      - "traefik.enable=true"
+      - traefik.http.routers.$container.rule=Host(\`$url\`)
+      - "traefik.http.services.$container.loadbalancer.server.port=3000"
     networks:
       - pg19-network
 
 networks:
   pg19-network:
     external: true
-COMPOSE_EOF"
+COMPOSE_EOF
 }
 
 create_compose_file() {
