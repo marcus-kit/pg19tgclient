@@ -9,7 +9,8 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@nuxt/icon',
     '@nuxtjs/google-fonts',
-    '@nuxtjs/color-mode'
+    '@nuxtjs/color-mode',
+    '@pinia/nuxt'
   ],
 
   colorMode: {
@@ -25,6 +26,12 @@ export default defineNuxtConfig({
     display: 'swap',
     preload: true
   },
+
+  components: [
+    { path: '~/components/ui', pathPrefix: false },
+    { path: '~/components/lk', pathPrefix: false },
+    '~/components'
+  ],
 
   app: {
     head: {

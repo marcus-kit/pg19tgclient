@@ -1,0 +1,133 @@
+<script setup lang="ts">
+import { useAuthStore } from '~/stores/auth'
+
+const authStore = useAuthStore()
+
+const initials = computed(() => {
+  if (!authStore.user) return ''
+  const first = authStore.user.firstName?.charAt(0) || ''
+  const last = authStore.user.lastName?.charAt(0) || ''
+  return `${first}${last}`.toUpperCase()
+})
+
+const avatarGradient = computed(() => {
+  // Generate consistent gradient based on user id
+  const gradients = [
+    'from-primary to-secondary',
+    'from-blue-500 to-purple-600',
+    'from-emerald-500 to-teal-600',
+    'from-orange-500 to-red-600',
+    'from-pink-500 to-rose-600'
+  ]
+  const index = (authStore.user?.id || 0) % gradients.length
+  return gradients[index]
+})
+
+const fileInput = ref<HTMLInputElement | null>(null)
+const isUploading = ref(false)
+
+const handleAvatarClick = () => {
+  fileInput.value?.click()
+}
+
+const handleFileChange = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+
+  if (!file) return
+
+  // Validate file
+  if (!file.type.startsWith('image/')) {
+    alert('Пожалуйста, выберите изображение')
+    return
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    alert('Размер файла не должен превышать 5 МБ')
+    return
+  }
+
+  isUploading.value = true
+
+  // Convert to base64 for demo (in production would upload to server)
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    const result = e.target?.result as string
+    authStore.updateAvatar(result)
+    isUploading.value = false
+  }
+  reader.readAsDataURL(file)
+}
+
+const removeAvatar = () => {
+  authStore.updateAvatar(null)
+}
+</script>
+
+<template>
+  <UCard>
+    <div class="flex items-center justify-between mb-5">
+      <h2 class="text-lg font-semibold text-white">Фото профиля</h2>
+      <button
+        v-if="authStore.user?.avatar"
+        class="text-sm text-red-400 hover:text-red-300 transition-colors"
+        @click="removeAvatar"
+      >
+        Удалить
+      </button>
+    </div>
+
+    <div class="flex items-center gap-6">
+      <!-- Avatar -->
+      <div class="relative group">
+        <button
+          class="relative w-24 h-24 rounded-2xl overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+          @click="handleAvatarClick"
+        >
+          <!-- Avatar Image or Initials -->
+          <img
+            v-if="authStore.user?.avatar"
+            :src="authStore.user.avatar"
+            :alt="authStore.fullName"
+            class="w-full h-full object-cover"
+          />
+          <div
+            v-else
+            :class="['w-full h-full bg-gradient-to-br flex items-center justify-center', avatarGradient]"
+          >
+            <span class="text-2xl font-bold text-white">{{ initials }}</span>
+          </div>
+
+          <!-- Hover Overlay -->
+          <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+            <Icon
+              :name="isUploading ? 'heroicons:arrow-path' : 'heroicons:camera'"
+              :class="['w-8 h-8 text-white', { 'animate-spin': isUploading }]"
+            />
+          </div>
+        </button>
+
+        <!-- Hidden File Input -->
+        <input
+          ref="fileInput"
+          type="file"
+          accept="image/*"
+          class="hidden"
+          @change="handleFileChange"
+        />
+      </div>
+
+      <!-- Info -->
+      <div class="flex-1">
+        <p class="text-white font-medium mb-1">{{ authStore.fullName }}</p>
+        <p class="text-sm text-gray-400 mb-3">
+          Нажмите на фото, чтобы загрузить новое
+        </p>
+        <div class="flex items-center gap-2 text-xs text-gray-500">
+          <Icon name="heroicons:information-circle" class="w-4 h-4" />
+          <span>JPG, PNG до 5 МБ</span>
+        </div>
+      </div>
+    </div>
+  </UCard>
+</template>
