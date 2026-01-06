@@ -8,7 +8,8 @@ export default defineNuxtConfig({
   modules: [
     '@nuxtjs/tailwindcss',
     '@nuxt/icon',
-    '@nuxtjs/google-fonts'
+    '@nuxtjs/google-fonts',
+    '@pinia/nuxt'
   ],
 
   googleFonts: {
@@ -18,6 +19,12 @@ export default defineNuxtConfig({
     display: 'swap',
     preload: true
   },
+
+  components: [
+    { path: '~/components/ui', pathPrefix: false },
+    { path: '~/components/lk', pathPrefix: false },
+    '~/components'
+  ],
 
   app: {
     head: {
