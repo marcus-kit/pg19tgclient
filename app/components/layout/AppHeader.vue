@@ -53,27 +53,27 @@ const servicesNav = [
             </NuxtLink>
           </nav>
 
-          <!-- Right side icons -->
-          <div class="hidden md:flex items-center gap-2">
+          <!-- Right side links -->
+          <div class="hidden md:flex items-center gap-1">
             <NuxtLink
               to="/news"
-              class="p-2 text-[var(--text-muted)] hover:text-primary transition-colors rounded-lg hover:bg-[var(--glass-bg)]"
-              title="Новости"
+              class="flex items-center gap-1.5 px-3 py-1.5 text-[var(--text-muted)] hover:text-primary transition-colors rounded-lg hover:bg-[var(--glass-bg)]"
             >
-              <Icon name="heroicons:newspaper" class="w-5 h-5" />
+              <Icon name="heroicons:newspaper" class="w-4 h-4" />
+              <span>Новости</span>
             </NuxtLink>
             <button
-              class="p-2 text-[var(--text-muted)] hover:text-primary transition-colors rounded-lg hover:bg-[var(--glass-bg)]"
-              title="Чат поддержки"
+              class="flex items-center gap-1.5 px-3 py-1.5 text-[var(--text-muted)] hover:text-primary transition-colors rounded-lg hover:bg-[var(--glass-bg)]"
             >
-              <Icon name="heroicons:chat-bubble-left-right" class="w-5 h-5" />
+              <Icon name="heroicons:chat-bubble-left-right" class="w-4 h-4" />
+              <span>Поддержка</span>
             </button>
             <a
               href="tel:+78001234567"
-              class="p-2 text-[var(--text-muted)] hover:text-primary transition-colors rounded-lg hover:bg-[var(--glass-bg)]"
-              title="Позвонить"
+              class="flex items-center gap-1.5 px-3 py-1.5 text-[var(--text-muted)] hover:text-primary transition-colors rounded-lg hover:bg-[var(--glass-bg)]"
             >
-              <Icon name="heroicons:phone" class="w-5 h-5" />
+              <Icon name="heroicons:phone" class="w-4 h-4" />
+              <span>Обратный звонок</span>
             </a>
             <!-- Theme Toggle -->
             <button
