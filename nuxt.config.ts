@@ -8,8 +8,15 @@ export default defineNuxtConfig({
   modules: [
     '@nuxtjs/tailwindcss',
     '@nuxt/icon',
-    '@nuxtjs/google-fonts'
+    '@nuxtjs/google-fonts',
+    '@nuxtjs/color-mode'
   ],
+
+  colorMode: {
+    classSuffix: '',
+    preference: 'dark',
+    fallback: 'dark'
+  },
 
   googleFonts: {
     families: {

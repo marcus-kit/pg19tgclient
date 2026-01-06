@@ -44,16 +44,16 @@ const included = [
             Наши преимущества
           </span>
 
-          <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 opacity-0 animate-fade-in-up stagger-1">
+          <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-[var(--text-primary)] mb-6 opacity-0 animate-fade-in-up stagger-1">
             Почему мы —
             <span class="text-gradient-primary">сообщество</span>,
             <br class="hidden md:block" />
             а не провайдер?
           </h2>
 
-          <p class="text-lg text-gray-400 mb-12 leading-relaxed opacity-0 animate-fade-in-up stagger-2">
+          <p class="text-lg text-[var(--text-muted)] mb-12 leading-relaxed opacity-0 animate-fade-in-up stagger-2">
             Коммерческие провайдеры ориентированы на прибыль.
-            Мы — на <span class="text-white">доверие, прозрачность и равноправие</span>.
+            Мы — на <span class="text-[var(--text-primary)]">доверие, прозрачность и равноправие</span>.
             Каждый член сообщества — не клиент, а полноправный участник.
           </p>
 
@@ -69,10 +69,10 @@ const included = [
                   <Icon :name="feature.icon" class="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 class="font-semibold text-white mb-1 group-hover:text-primary transition-colors">
+                  <h3 class="font-semibold text-[var(--text-primary)] mb-1 group-hover:text-primary transition-colors">
                     {{ feature.title }}
                   </h3>
-                  <p class="text-gray-500 text-sm leading-relaxed">
+                  <p class="text-[var(--text-muted)] text-sm leading-relaxed">
                     {{ feature.description }}
                   </p>
                 </div>
@@ -91,18 +91,18 @@ const included = [
             <div class="text-center mb-10">
               <div class="inline-flex items-center gap-2 glass-card rounded-full px-4 py-2 mb-6">
                 <Icon name="heroicons:sparkles" class="w-4 h-4 text-primary" />
-                <span class="text-sm text-gray-300">Единый взнос</span>
+                <span class="text-sm text-[var(--text-secondary)]">Единый взнос</span>
               </div>
 
-              <p class="text-gray-400 mb-3">Паевой взнос от</p>
+              <p class="text-[var(--text-muted)] mb-3">Паевой взнос от</p>
               <div class="flex items-baseline justify-center gap-2">
-                <span class="text-6xl md:text-7xl font-bold text-white">699</span>
+                <span class="text-6xl md:text-7xl font-bold text-[var(--text-primary)]">699</span>
                 <div class="text-left">
-                  <span class="text-2xl text-gray-400">₽</span>
-                  <p class="text-sm text-gray-500">в месяц</p>
+                  <span class="text-2xl text-[var(--text-muted)]">₽</span>
+                  <p class="text-sm text-[var(--text-muted)]">в месяц</p>
                 </div>
               </div>
-              <p class="text-sm text-gray-500 mt-3">
+              <p class="text-sm text-[var(--text-muted)] mt-3">
                 Зависит от локации подключения
               </p>
             </div>
@@ -112,12 +112,12 @@ const included = [
               <div
                 v-for="item in included"
                 :key="item.text"
-                class="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
+                class="flex items-center gap-4 p-4 rounded-xl bg-[var(--glass-bg)] hover:bg-[var(--glass-hover-bg)] transition-colors"
               >
                 <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center">
                   <Icon :name="item.icon" class="w-5 h-5 text-accent" />
                 </div>
-                <span class="text-white font-medium">{{ item.text }}</span>
+                <span class="text-[var(--text-primary)] font-medium">{{ item.text }}</span>
               </div>
             </div>
 
@@ -134,7 +134,7 @@ const included = [
             </NuxtLink>
 
             <!-- Legal note -->
-            <p class="text-xs text-gray-500 text-center mt-6 flex items-center justify-center gap-2">
+            <p class="text-xs text-[var(--text-muted)] text-center mt-6 flex items-center justify-center gap-2">
               <Icon name="heroicons:shield-check" class="w-4 h-4" />
               Деятельность в рамках закона РФ о потребительской кооперации
             </p>

@@ -31,27 +31,27 @@ const stats = [
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent"></span>
               </span>
-              <span class="text-sm font-medium text-gray-300">Более 100 000 участников сообщества</span>
+              <span class="text-sm font-medium text-[var(--text-secondary)]">Более 100 000 участников сообщества</span>
             </div>
 
             <!-- Heading -->
             <h1
               class="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 leading-[1.1] opacity-0 animate-fade-in-up stagger-1"
             >
-              <span class="text-white">ПЖ19 —</span>
+              <span class="text-[var(--text-primary)]">ПЖ19 —</span>
               <br class="hidden sm:block" />
               <span class="text-gradient-primary">сообщество</span>
-              <span class="text-white">,</span>
+              <span class="text-[var(--text-primary)]">,</span>
               <br />
-              <span class="text-gray-400 font-normal">а не провайдер</span>
+              <span class="text-[var(--text-muted)] font-normal">а не провайдер</span>
             </h1>
 
             <!-- Subheading -->
             <p
-              class="text-lg md:text-xl text-gray-400 mb-10 max-w-xl mx-auto lg:mx-0 leading-relaxed opacity-0 animate-fade-in-up stagger-2"
+              class="text-lg md:text-xl text-[var(--text-muted)] mb-10 max-w-xl mx-auto lg:mx-0 leading-relaxed opacity-0 animate-fade-in-up stagger-2"
             >
               Закрытое сообщество для совместного доступа к услугам связи.
-              <span class="text-gray-300">Мы не продаём интернет</span> — мы вместе строим инфраструктуру для себя.
+              <span class="text-[var(--text-secondary)]">Мы не продаём интернет</span> — мы вместе строим инфраструктуру для себя.
             </p>
 
             <!-- CTA Buttons -->
@@ -98,9 +98,9 @@ const stats = [
                   >
                     {{ stat.value }}
                   </span>
-                  <span class="text-lg text-gray-400">{{ stat.unit }}</span>
+                  <span class="text-lg text-[var(--text-muted)]">{{ stat.unit }}</span>
                 </div>
-                <p class="text-gray-500 text-sm mt-1">{{ stat.label }}</p>
+                <p class="text-[var(--text-muted)] text-sm mt-1">{{ stat.label }}</p>
               </div>
 
               <!-- Additional info card -->
@@ -112,8 +112,8 @@ const stats = [
                     <Icon name="heroicons:shield-check" class="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <p class="text-white font-medium">Некоммерческий</p>
-                    <p class="text-gray-500 text-sm">потребительский кооператив</p>
+                    <p class="text-[var(--text-primary)] font-medium">Некоммерческий</p>
+                    <p class="text-[var(--text-muted)] text-sm">потребительский кооператив</p>
                   </div>
                 </div>
               </div>
@@ -124,6 +124,6 @@ const stats = [
     </div>
 
     <!-- Bottom gradient fade (instead of wave) -->
-    <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-gray-900 to-transparent"></div>
+    <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[var(--bg-base)] to-transparent"></div>
   </section>
 </template>

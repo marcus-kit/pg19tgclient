@@ -1,6 +1,11 @@
 <script setup lang="ts">
+const colorMode = useColorMode()
 const isMenuOpen = ref(false)
 const isScrolled = ref(false)
+
+const toggleTheme = () => {
+  colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
+}
 
 onMounted(() => {
   const handleScroll = () => {
@@ -41,7 +46,7 @@ const servicesNav = [
               v-for="item in mainNav"
               :key="item.href"
               :to="item.href"
-              class="px-3 py-1.5 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+              class="px-3 py-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors rounded-lg hover:bg-[var(--glass-bg)]"
               active-class="text-primary bg-primary/10"
             >
               {{ item.name }}
@@ -52,24 +57,35 @@ const servicesNav = [
           <div class="hidden md:flex items-center gap-2">
             <NuxtLink
               to="/news"
-              class="p-2 text-gray-400 hover:text-primary transition-colors rounded-lg hover:bg-white/5"
+              class="p-2 text-[var(--text-muted)] hover:text-primary transition-colors rounded-lg hover:bg-[var(--glass-bg)]"
               title="Новости"
             >
               <Icon name="heroicons:newspaper" class="w-5 h-5" />
             </NuxtLink>
             <button
-              class="p-2 text-gray-400 hover:text-primary transition-colors rounded-lg hover:bg-white/5"
+              class="p-2 text-[var(--text-muted)] hover:text-primary transition-colors rounded-lg hover:bg-[var(--glass-bg)]"
               title="Чат поддержки"
             >
               <Icon name="heroicons:chat-bubble-left-right" class="w-5 h-5" />
             </button>
             <a
               href="tel:+78001234567"
-              class="p-2 text-gray-400 hover:text-primary transition-colors rounded-lg hover:bg-white/5"
+              class="p-2 text-[var(--text-muted)] hover:text-primary transition-colors rounded-lg hover:bg-[var(--glass-bg)]"
               title="Позвонить"
             >
               <Icon name="heroicons:phone" class="w-5 h-5" />
             </a>
+            <!-- Theme Toggle -->
+            <button
+              @click="toggleTheme"
+              class="theme-toggle"
+              :title="colorMode.value === 'dark' ? 'Светлая тема' : 'Тёмная тема'"
+            >
+              <Icon
+                :name="colorMode.value === 'dark' ? 'heroicons:sun' : 'heroicons:moon'"
+                class="w-5 h-5"
+              />
+            </button>
           </div>
         </div>
       </div>
@@ -93,7 +109,7 @@ const servicesNav = [
             v-for="item in servicesNav"
             :key="item.href"
             :to="item.href"
-            class="relative flex items-center gap-2 px-4 py-2 rounded-xl text-gray-300 hover:text-white transition-all duration-300 group"
+            class="relative flex items-center gap-2 px-4 py-2 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all duration-300 group"
             active-class="text-primary bg-primary/10"
           >
             <Icon
@@ -116,7 +132,7 @@ const servicesNav = [
         <!-- Mobile menu button -->
         <button
           @click="isMenuOpen = !isMenuOpen"
-          class="lg:hidden p-2 text-gray-300 hover:text-primary transition-colors rounded-lg hover:bg-white/5"
+          class="lg:hidden p-2 text-[var(--text-secondary)] hover:text-primary transition-colors rounded-lg hover:bg-[var(--glass-bg)]"
         >
           <Icon :name="isMenuOpen ? 'heroicons:x-mark' : 'heroicons:bars-3'" class="w-6 h-6" />
         </button>
@@ -134,7 +150,8 @@ const servicesNav = [
     >
       <div
         v-if="isMenuOpen"
-        class="lg:hidden absolute top-full left-0 right-0 bg-gray-900/95 backdrop-blur-xl border-t border-white/10"
+        class="lg:hidden absolute top-full left-0 right-0 backdrop-blur-xl border-t"
+        :style="{ background: 'var(--header-blur-bg)', borderColor: 'var(--header-border)' }"
       >
         <div class="container mx-auto px-4 py-6 space-y-6">
           <!-- Main nav mobile -->
@@ -144,11 +161,25 @@ const servicesNav = [
               :key="item.href"
               :to="item.href"
               @click="isMenuOpen = false"
-              class="px-4 py-2 text-sm text-gray-300 hover:text-white rounded-full border border-white/10 hover:border-primary/50 hover:bg-primary/10 transition-all"
+              class="px-4 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] rounded-full border border-[var(--glass-border)] hover:border-primary/50 hover:bg-primary/10 transition-all"
             >
               {{ item.name }}
             </NuxtLink>
           </nav>
+
+          <!-- Theme toggle mobile -->
+          <div class="flex items-center justify-between px-4 py-3 glass-card rounded-xl">
+            <span class="text-[var(--text-secondary)]">Тема оформления</span>
+            <button
+              @click="toggleTheme"
+              class="theme-toggle"
+            >
+              <Icon
+                :name="colorMode.value === 'dark' ? 'heroicons:sun' : 'heroicons:moon'"
+                class="w-5 h-5"
+              />
+            </button>
+          </div>
 
           <!-- Services nav mobile -->
           <nav class="grid grid-cols-2 gap-3">
@@ -157,7 +188,7 @@ const servicesNav = [
               :key="item.href"
               :to="item.href"
               @click="isMenuOpen = false"
-              class="flex items-center gap-3 p-4 rounded-xl glass-card text-gray-200 hover:text-white"
+              class="flex items-center gap-3 p-4 rounded-xl glass-card text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             >
               <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/10 flex items-center justify-center">
                 <Icon :name="item.icon" class="w-5 h-5 text-primary" />

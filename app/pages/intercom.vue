@@ -23,10 +23,10 @@ const features = [
           <div class="inline-flex items-center justify-center w-20 h-20 glass-card rounded-3xl mb-8 opacity-0 animate-fade-in-up">
             <Icon name="heroicons:home" class="w-10 h-10 text-primary" />
           </div>
-          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 opacity-0 animate-fade-in-up stagger-1">
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-[var(--text-primary)] mb-6 opacity-0 animate-fade-in-up stagger-1">
             Умный <span class="text-gradient-primary">домофон</span>
           </h1>
-          <p class="text-xl text-gray-400 mb-10 max-w-2xl mx-auto opacity-0 animate-fade-in-up stagger-2">
+          <p class="text-xl text-[var(--text-muted)] mb-10 max-w-2xl mx-auto opacity-0 animate-fade-in-up stagger-2">
             Видеодомофон с удалённым доступом — управляйте домом со смартфона
           </p>
           <NuxtLink
@@ -41,7 +41,7 @@ const features = [
     </section>
 
     <!-- Features -->
-    <section class="py-20 md:py-32 bg-gray-900">
+    <section class="py-20 md:py-32" :style="{ background: 'var(--bg-base)' }">
       <div class="container mx-auto px-4">
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div
@@ -53,8 +53,8 @@ const features = [
             <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/5 flex items-center justify-center mb-4">
               <Icon :name="feature.icon" class="w-7 h-7 text-primary" />
             </div>
-            <h3 class="text-lg font-semibold text-white mb-2">{{ feature.title }}</h3>
-            <p class="text-gray-400">{{ feature.description }}</p>
+            <h3 class="text-lg font-semibold text-[var(--text-primary)] mb-2">{{ feature.title }}</h3>
+            <p class="text-[var(--text-muted)]">{{ feature.description }}</p>
           </div>
         </div>
       </div>

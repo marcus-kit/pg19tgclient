@@ -72,7 +72,7 @@ const colorClasses: Record<string, { icon: string; glow: string; tag: string }> 
 </script>
 
 <template>
-  <section class="py-20 md:py-32 bg-gray-900 relative overflow-hidden">
+  <section class="py-20 md:py-32 relative overflow-hidden" :style="{ background: 'var(--bg-base)' }">
     <!-- Background decoration -->
     <div class="absolute inset-0 mesh-gradient-subtle opacity-50"></div>
 
@@ -82,11 +82,11 @@ const colorClasses: Record<string, { icon: string; glow: string; tag: string }> 
         <span class="inline-block text-primary font-medium text-sm uppercase tracking-wider mb-4 opacity-0 animate-fade-in-up">
           Услуги сообщества
         </span>
-        <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 opacity-0 animate-fade-in-up stagger-1">
+        <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-[var(--text-primary)] mb-6 opacity-0 animate-fade-in-up stagger-1">
           Всё для комфортной
           <span class="text-gradient-primary"> цифровой жизни</span>
         </h2>
-        <p class="text-lg text-gray-400 max-w-2xl mx-auto opacity-0 animate-fade-in-up stagger-2">
+        <p class="text-lg text-[var(--text-muted)] max-w-2xl mx-auto opacity-0 animate-fade-in-up stagger-2">
           Интернет, телевидение, мобильная связь и другие сервисы —
           всё в одном сообществе на выгодных условиях
         </p>
@@ -113,12 +113,12 @@ const colorClasses: Record<string, { icon: string; glow: string; tag: string }> 
           </div>
 
           <!-- Title -->
-          <h3 class="text-xl font-bold text-white mb-3 group-hover:text-primary transition-colors">
+          <h3 class="text-xl font-bold text-[var(--text-primary)] mb-3 group-hover:text-primary transition-colors">
             {{ service.title }}
           </h3>
 
           <!-- Description -->
-          <p class="text-gray-400 mb-6 leading-relaxed">
+          <p class="text-[var(--text-muted)] mb-6 leading-relaxed">
             {{ service.description }}
           </p>
 
@@ -137,7 +137,7 @@ const colorClasses: Record<string, { icon: string; glow: string; tag: string }> 
           </div>
 
           <!-- Arrow link -->
-          <div class="flex items-center gap-2 text-gray-500 group-hover:text-primary transition-colors">
+          <div class="flex items-center gap-2 text-[var(--text-muted)] group-hover:text-primary transition-colors">
             <span class="text-sm font-medium">Подробнее</span>
             <Icon
               name="heroicons:arrow-right"
@@ -149,7 +149,7 @@ const colorClasses: Record<string, { icon: string; glow: string; tag: string }> 
 
       <!-- Bottom CTA -->
       <div class="text-center mt-16 opacity-0 animate-fade-in-up stagger-6">
-        <p class="text-gray-500 mb-6">
+        <p class="text-[var(--text-muted)] mb-6">
           Не нашли нужную услугу? Мы постоянно расширяем возможности
         </p>
         <NuxtLink

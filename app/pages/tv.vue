@@ -31,13 +31,13 @@ const channels = [
           <div class="inline-flex items-center justify-center w-20 h-20 glass-card rounded-3xl mb-8 opacity-0 animate-fade-in-up">
             <Icon name="heroicons:tv" class="w-10 h-10 text-secondary" />
           </div>
-          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 opacity-0 animate-fade-in-up stagger-1">
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-[var(--text-primary)] mb-6 opacity-0 animate-fade-in-up stagger-1">
             Цифровое <span class="text-gradient-secondary">телевидение</span>
           </h1>
-          <p class="text-xl text-gray-400 mb-4 opacity-0 animate-fade-in-up stagger-2">
-            <span class="text-5xl font-bold text-secondary">191</span> <span class="text-gray-300">канал в HD и 4K качестве</span>
+          <p class="text-xl text-[var(--text-muted)] mb-4 opacity-0 animate-fade-in-up stagger-2">
+            <span class="text-5xl font-bold text-secondary">191</span> <span class="text-[var(--text-secondary)]">канал в HD и 4K качестве</span>
           </p>
-          <p class="text-gray-500 mb-10 opacity-0 animate-fade-in-up stagger-2">
+          <p class="text-[var(--text-muted)] mb-10 opacity-0 animate-fade-in-up stagger-2">
             Включено в паевой взнос без дополнительной платы
           </p>
           <NuxtLink
@@ -52,9 +52,9 @@ const channels = [
     </section>
 
     <!-- Channels -->
-    <section class="py-20 md:py-32 bg-gray-900">
+    <section class="py-20 md:py-32" :style="{ background: 'var(--bg-base)' }">
       <div class="container mx-auto px-4">
-        <h2 class="text-3xl md:text-4xl font-bold text-white text-center mb-12">Категории каналов</h2>
+        <h2 class="text-3xl md:text-4xl font-bold text-[var(--text-primary)] text-center mb-12">Категории каналов</h2>
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           <div
             v-for="(item, index) in channels"
@@ -64,9 +64,9 @@ const channels = [
           >
             <div class="flex items-center gap-3 mb-2">
               <Icon :name="item.icon" class="w-5 h-5 text-secondary" />
-              <span class="text-3xl font-bold text-white">{{ item.count }}</span>
+              <span class="text-3xl font-bold text-[var(--text-primary)]">{{ item.count }}</span>
             </div>
-            <p class="text-gray-400 text-sm">{{ item.category }}</p>
+            <p class="text-[var(--text-muted)] text-sm">{{ item.category }}</p>
           </div>
         </div>
       </div>
@@ -75,7 +75,7 @@ const channels = [
     <!-- Equipment -->
     <section class="py-20 md:py-32 mesh-gradient-dark">
       <div class="container mx-auto px-4">
-        <h2 class="text-3xl md:text-4xl font-bold text-white text-center mb-12">Оборудование</h2>
+        <h2 class="text-3xl md:text-4xl font-bold text-[var(--text-primary)] text-center mb-12">Оборудование</h2>
         <div class="max-w-lg mx-auto">
           <div class="glass-card rounded-3xl p-8">
             <div class="flex items-start gap-6">
@@ -83,9 +83,9 @@ const channels = [
                 <Icon name="heroicons:tv" class="w-10 h-10 text-secondary" />
               </div>
               <div class="flex-grow">
-                <h3 class="font-bold text-white text-xl mb-2">ТВ-приставка Imaqliq G-Box</h3>
-                <p class="text-gray-400 mb-4">Smart TV приставка с поддержкой 4K</p>
-                <p class="text-2xl font-bold text-secondary">+99 <span class="text-lg text-gray-500">₽/мес</span></p>
+                <h3 class="font-bold text-[var(--text-primary)] text-xl mb-2">ТВ-приставка Imaqliq G-Box</h3>
+                <p class="text-[var(--text-muted)] mb-4">Smart TV приставка с поддержкой 4K</p>
+                <p class="text-2xl font-bold text-secondary">+99 <span class="text-lg text-[var(--text-muted)]">₽/мес</span></p>
               </div>
             </div>
           </div>
