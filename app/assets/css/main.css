@@ -1,5 +1,10 @@
 /* Main CSS - PG19 Website */
 
+/* Base - Dark background for overscroll */
+html, body {
+  background-color: #111827;
+}
+
 /* Glass Card Utilities */
 .glass-card {
   background: rgba(255, 255, 255, 0.03);
@@ -133,15 +138,18 @@ html {
 
 /* Header Blur States */
 .header-transparent {
-  background: transparent;
-  border-bottom: 1px solid transparent;
+  background: rgba(17, 24, 39, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .header-blur {
-  background: rgba(17, 24, 39, 0.8);
+  background: rgba(17, 24, 39, 0.98);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
 }
 
 /* Button Styles */
