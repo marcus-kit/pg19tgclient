@@ -1,6 +1,5 @@
 <script setup lang="ts">
 const stats = [
-  { value: '1000', unit: 'Мбит/с', label: 'скорость', color: 'primary' },
   { value: '191', unit: 'канал', label: 'ТВ', color: 'secondary' },
   { value: '699', unit: '₽/мес', label: 'от', color: 'accent' }
 ]
@@ -82,11 +81,22 @@ const stats = [
           <!-- Stats cards -->
           <div class="lg:col-span-2">
             <div class="grid gap-4 max-w-sm mx-auto lg:ml-auto">
+              <!-- Speed card - special emphasis -->
+              <div class="glass-card rounded-2xl p-6 opacity-0 animate-fade-in-up stagger-2 border-primary/30">
+                <div class="flex items-center gap-3 mb-2">
+                  <Icon name="heroicons:bolt" class="w-6 h-6 text-primary" />
+                  <span class="text-xl md:text-2xl font-bold text-primary">Без ограничений</span>
+                </div>
+                <p class="text-[var(--text-muted)] text-sm">
+                  Канал до <span class="text-[var(--text-secondary)] font-semibold">1000 Мбит/с</span>
+                </p>
+              </div>
+
               <div
                 v-for="(stat, index) in stats"
                 :key="stat.label"
                 class="glass-card rounded-2xl p-6 opacity-0 animate-fade-in-up"
-                :class="`stagger-${index + 2}`"
+                :class="`stagger-${index + 3}`"
               >
                 <div class="flex items-baseline gap-2">
                   <span
