@@ -12,6 +12,7 @@ interface User {
   vkId: string
   avatar: string | null
   birthDate: string | null
+  role?: 'user' | 'admin' | 'moderator'
 }
 
 interface NotificationSettings {
@@ -257,6 +258,18 @@ export const useAuthStore = defineStore('auth', {
       // Mock calculation: balance / daily_cost (assume 500 rub/month = ~17 rub/day)
       const dailyCost = 1700 // kopeks
       return Math.floor((state.account.balance || 0) / dailyCost)
+    },
+
+    isAdmin: (state): boolean => {
+      return state.user?.role === 'admin'
+    },
+
+    isModerator: (state): boolean => {
+      return state.user?.role === 'moderator'
+    },
+
+    hasAdminAccess: (state): boolean => {
+      return state.user?.role === 'admin' || state.user?.role === 'moderator'
     }
   },
 
@@ -275,7 +288,8 @@ export const useAuthStore = defineStore('auth', {
         telegramId: user.telegramId || null,
         vkId: user.vkId || '',
         avatar: user.avatar || null,
-        birthDate: user.birthDate || null
+        birthDate: user.birthDate || null,
+        role: user.role || 'user'
       }
       this.account = {
         contractNumber: account.contractNumber || 0,

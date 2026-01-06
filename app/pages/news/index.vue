@@ -3,29 +3,42 @@ useHead({
   title: 'Новости — ПЖ19'
 })
 
-const news = [
-  {
-    id: 1,
-    title: 'Расширение зоны покрытия',
-    excerpt: 'Мы подключили новые районы к сети сообщества. Теперь ещё больше участников могут пользоваться нашими услугами.',
-    date: '2024-01-15',
-    category: 'Развитие'
-  },
-  {
-    id: 2,
-    title: 'Обновление тарифов',
-    excerpt: 'С нового месяца изменились условия паевых взносов. Подробности в личном кабинете.',
-    date: '2024-01-10',
-    category: 'Объявление'
-  },
-  {
-    id: 3,
-    title: 'Новые ТВ-каналы',
-    excerpt: 'Добавили 10 новых каналов в пакет цифрового телевидения без изменения стоимости взноса.',
-    date: '2024-01-05',
-    category: 'Услуги'
+interface NewsItem {
+  id: number
+  title: string
+  summary: string
+  content: string
+  category: string
+  publishedAt: string
+  attachments?: any[]
+}
+
+const loading = ref(true)
+const news = ref<NewsItem[]>([])
+const selectedNews = ref<NewsItem | null>(null)
+const modalOpen = ref(false)
+
+const fetchNews = async () => {
+  loading.value = true
+  try {
+    const data = await $fetch<{ news: NewsItem[] }>('/api/news')
+    news.value = data.news
+  } catch (error) {
+    console.error('Failed to fetch news:', error)
+  } finally {
+    loading.value = false
   }
-]
+}
+
+const openNews = async (id: number) => {
+  try {
+    const data = await $fetch<{ news: NewsItem }>(`/api/news/${id}`)
+    selectedNews.value = data.news
+    modalOpen.value = true
+  } catch (error) {
+    console.error('Failed to fetch news details:', error)
+  }
+}
 
 const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleDateString('ru-RU', {
@@ -34,6 +47,19 @@ const formatDate = (dateStr: string) => {
     year: 'numeric'
   })
 }
+
+const getCategoryLabel = (category: string) => {
+  const labels = {
+    announcement: 'Объявление',
+    protocol: 'Протокол',
+    notification: 'Уведомление'
+  }
+  return labels[category as keyof typeof labels] || category
+}
+
+onMounted(() => {
+  fetchNews()
+})
 </script>
 
 <template>
@@ -62,40 +88,51 @@ const formatDate = (dateStr: string) => {
     <section class="py-20 md:py-32 bg-gray-900">
       <div class="container mx-auto px-4">
         <div class="max-w-3xl mx-auto space-y-6">
+          <!-- Loading state -->
+          <div v-if="loading" class="text-center py-12">
+            <Icon name="heroicons:arrow-path" class="w-8 h-8 animate-spin text-primary mx-auto" />
+          </div>
+
+          <!-- News items -->
           <article
             v-for="(item, index) in news"
+            v-else
             :key="item.id"
-            class="glass-card p-6 rounded-2xl opacity-0 animate-fade-in-up"
+            class="glass-card p-6 rounded-2xl opacity-0 animate-fade-in-up cursor-pointer hover:shadow-lg transition-shadow"
             :class="`stagger-${index + 1}`"
+            @click="openNews(item.id)"
           >
             <div class="flex items-center gap-3 mb-4">
               <span class="px-3 py-1 bg-secondary/20 text-secondary text-sm font-medium rounded-full">
-                {{ item.category }}
+                {{ getCategoryLabel(item.category) }}
               </span>
               <span class="text-sm text-[var(--text-muted)]">
-                {{ formatDate(item.date) }}
+                {{ formatDate(item.publishedAt) }}
               </span>
             </div>
             <h2 class="text-xl font-bold text-[var(--text-primary)] mb-3">
               {{ item.title }}
             </h2>
             <p class="text-[var(--text-muted)]">
-              {{ item.excerpt }}
+              {{ item.summary }}
             </p>
           </article>
-        </div>
 
-        <!-- Placeholder for empty state -->
-        <div v-if="news.length === 0" class="max-w-2xl mx-auto text-center py-12">
-          <div class="w-24 h-24 glass-card rounded-3xl flex items-center justify-center mx-auto mb-8">
-            <Icon name="heroicons:newspaper" class="w-12 h-12 text-[var(--text-muted)]" />
+          <!-- Empty state -->
+          <div v-if="!loading && news.length === 0" class="max-w-2xl mx-auto text-center py-12">
+            <div class="w-24 h-24 glass-card rounded-3xl flex items-center justify-center mx-auto mb-8">
+              <Icon name="heroicons:newspaper" class="w-12 h-12 text-[var(--text-muted)]" />
+            </div>
+            <h2 class="text-2xl font-bold text-[var(--text-primary)] mb-4">Новостей пока нет</h2>
+            <p class="text-[var(--text-muted)]">
+              Следите за обновлениями — скоро здесь появятся новости сообщества
+            </p>
           </div>
-          <h2 class="text-2xl font-bold text-[var(--text-primary)] mb-4">Новостей пока нет</h2>
-          <p class="text-[var(--text-muted)]">
-            Следите за обновлениями — скоро здесь появятся новости сообщества
-          </p>
         </div>
       </div>
     </section>
+
+    <!-- Modal -->
+    <NewsModal v-model:open="modalOpen" :news="selectedNews" />
   </div>
 </template>

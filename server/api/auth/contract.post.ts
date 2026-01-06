@@ -62,6 +62,7 @@ export default defineEventHandler(async (event) => {
       birth_date,
       avatar,
       vk_id,
+      role,
       status
     `)
     .eq('id', account.user_id)
@@ -144,7 +145,8 @@ export default defineEventHandler(async (event) => {
       telegramId: user.telegram_id || null,
       vkId: user.vk_id || '',
       avatar: user.avatar || null,
-      birthDate: user.birth_date || null
+      birthDate: user.birth_date || null,
+      role: user.role || 'user'
     },
     account: {
       contractNumber: account.contract_number,
