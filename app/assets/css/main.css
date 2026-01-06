@@ -1,0 +1,241 @@
+/* Main CSS - PG19 Website */
+
+/* Glass Card Utilities */
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(247, 148, 29, 0.3);
+  box-shadow:
+    0 20px 40px rgba(247, 148, 29, 0.15),
+    0 0 60px rgba(247, 148, 29, 0.1);
+  transform: translateY(-2px);
+}
+
+.glass-card-light {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* Mesh Gradient Backgrounds */
+.mesh-gradient-hero {
+  background:
+    radial-gradient(at 20% 80%, rgba(247, 148, 29, 0.15) 0%, transparent 50%),
+    radial-gradient(at 80% 20%, rgba(233, 30, 140, 0.12) 0%, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(0, 84, 166, 0.08) 0%, transparent 70%),
+    linear-gradient(to bottom, #111827, #1f2937);
+}
+
+.mesh-gradient-dark {
+  background:
+    radial-gradient(at 0% 100%, rgba(247, 148, 29, 0.1) 0%, transparent 40%),
+    radial-gradient(at 100% 0%, rgba(233, 30, 140, 0.08) 0%, transparent 40%),
+    #0f172a;
+}
+
+.mesh-gradient-subtle {
+  background:
+    radial-gradient(at 30% 70%, rgba(247, 148, 29, 0.05) 0%, transparent 50%),
+    radial-gradient(at 70% 30%, rgba(0, 166, 81, 0.05) 0%, transparent 50%),
+    #111827;
+}
+
+/* Text Gradient Utilities */
+.text-gradient-primary {
+  background: linear-gradient(135deg, #F7941D 0%, #E91E8C 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-secondary {
+  background: linear-gradient(135deg, #E91E8C 0%, #0054A6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Border Gradient */
+.border-gradient {
+  position: relative;
+  background: linear-gradient(#1f2937, #1f2937) padding-box,
+              linear-gradient(135deg, #F7941D, #E91E8C) border-box;
+  border: 2px solid transparent;
+}
+
+/* Glow Effects */
+.glow-primary {
+  box-shadow: 0 0 30px rgba(247, 148, 29, 0.4);
+}
+
+.glow-secondary {
+  box-shadow: 0 0 30px rgba(233, 30, 140, 0.4);
+}
+
+/* Hover Glow Animation */
+.hover-glow {
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 40px rgba(247, 148, 29, 0.5);
+  transform: translateY(-2px);
+}
+
+/* Network Pattern Animation */
+@keyframes networkPulse {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.network-pattern {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(247, 148, 29, 0.15) 1px, transparent 0);
+  background-size: 40px 40px;
+  animation: networkPulse 4s ease-in-out infinite;
+}
+
+/* Floating Decorative Elements */
+.floating-shape {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+/* Stagger Animation Delays */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+.stagger-6 { animation-delay: 0.6s; }
+
+/* Smooth Scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Header Blur States */
+.header-transparent {
+  background: transparent;
+  border-bottom: 1px solid transparent;
+}
+
+.header-blur {
+  background: rgba(17, 24, 39, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Button Styles */
+.btn-primary {
+  background: linear-gradient(135deg, #F7941D 0%, #D67A0A 100%);
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(247, 148, 29, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(247, 148, 29, 0.4);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  border-color: #F7941D;
+  color: #F7941D;
+  background: rgba(247, 148, 29, 0.1);
+}
+
+/* Card Service Icon Container */
+.icon-container {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(247, 148, 29, 0.2) 0%, rgba(233, 30, 140, 0.1) 100%);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover .icon-container {
+  background: linear-gradient(135deg, rgba(247, 148, 29, 0.3) 0%, rgba(233, 30, 140, 0.2) 100%);
+  transform: scale(1.05);
+}
+
+/* Pricing Card Special */
+.pricing-card {
+  background: linear-gradient(135deg, rgba(247, 148, 29, 0.1) 0%, rgba(233, 30, 140, 0.05) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 2px solid rgba(247, 148, 29, 0.3);
+  border-radius: 24px;
+  box-shadow:
+    0 25px 50px rgba(247, 148, 29, 0.2),
+    0 0 100px rgba(247, 148, 29, 0.1);
+}
+
+/* Link Hover Effect */
+.link-hover {
+  position: relative;
+}
+
+.link-hover::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #F7941D, #E91E8C);
+  transition: width 0.3s ease;
+}
+
+.link-hover:hover::after {
+  width: 100%;
+}
+
+/* Nav Link Active */
+.nav-link-active {
+  color: #F7941D;
+}
+
+.nav-link-active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #F7941D, #E91E8C);
+}
