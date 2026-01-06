@@ -1,0 +1,35 @@
+# PG19v2 - PARTNER (Preview)
+# Deployed to: pg19-partner.doka.team
+
+services:
+  pg19v2-partner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SUPABASE_URL: https://supabase.doka.team
+        SUPABASE_KEY: eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJyb2xlIjogImFub24iLCAiaXNzIjogInN1cGFiYXNlIiwgImlhdCI6IDE3MzQ3ODk2MDAsICJleHAiOiAxODkyNTU2MDAwfQ.YJP-6T2G5m3ReyA1mCzzGRCzdzxWxOXwusRitdb_vp4
+        TELEGRAM_BOT_USERNAME: PG19CONNECTBOT
+        YANDEX_MAPS_API_KEY: 303647fa-c3a2-4d28-a4e7-1073c9478de3
+    container_name: pg19v2-partner
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - NUXT_TELEGRAM_BOT_TOKEN=8239443842:AAGNXne9Z8oASGk56AZRB0LxdxbJCXn6XDI
+      - NUXT_SUPABASE_SERVICE_KEY=eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJyb2xlIjogInNlcnZpY2Vfcm9sZSIsICJpc3MiOiAic3VwYWJhc2UiLCAiaWF0IjogMTczNDc4OTYwMCwgImV4cCI6IDE4OTI1NTYwMDB9.pn3oy2eKMXejztAJqluImJbji4utpQOKp-7hlAN0IxM
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pg19v2-partner.rule=Host(`pg19-partner.doka.team`)"
+      - "traefik.http.services.pg19v2-partner.loadbalancer.server.port=3000"
+    networks:
+      - pg19-network
+
+networks:
+  pg19-network:
+    external: true

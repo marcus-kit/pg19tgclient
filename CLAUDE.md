@@ -102,3 +102,71 @@ Balance stored in kopeks (копейки), divide by 100 for rubles display.
 - Icon containers: `bg-gradient-to-br from-primary/20 to-secondary/10`
 - Animation classes: `animate-fade-in-up`, `stagger-1` through `stagger-6`
 - Mesh gradient backgrounds: `mesh-gradient-hero`, `mesh-gradient-dark`
+
+## Git Worktrees & Deployment
+
+### Структура worktrees
+
+| Branch | Worktree Path | URL | Назначение |
+|--------|---------------|-----|------------|
+| `main` | `/Users/doka/PG19v2` | pg19.doka.team | Production |
+| `partner` | `/Users/doka/PG19v2partner` | pg19-partner.doka.team | Partner portal preview |
+
+### Команды деплоя
+
+```bash
+# Из директории /Users/doka/PG19v2
+./deploy.sh main           # Деплой main → pg19.doka.team
+./deploy.sh partner        # Деплой partner → pg19-partner.doka.team
+./deploy.sh all            # Деплой всех веток
+./deploy.sh --status       # Статус всех контейнеров
+./deploy.sh main --no-build  # Рестарт без пересборки
+```
+
+### Процесс деплоя
+
+1. **rsync** — код из worktree синхронизируется на сервер (`doka-server:/opt/pg19v2-{branch}/`)
+2. **docker-compose** — копируется из `deploy/docker-compose.{branch}.yml`
+3. **docker build** — сборка образа с build-time ARGs (SUPABASE_URL, SUPABASE_KEY, etc.)
+4. **docker up** — запуск контейнера в сети `pg19-network`
+5. **Traefik** — роутит запросы по Host header
+
+### Конфигурация
+
+**Docker Compose файлы:** `/Users/doka/PG19v2/deploy/`
+- `docker-compose.main.yml`
+- `docker-compose.partner.yml`
+
+**Build-time ARGs (вшиваются в бандл):**
+- `SUPABASE_URL` — URL Supabase API
+- `SUPABASE_KEY` — Anon key (публичный)
+- `TELEGRAM_BOT_USERNAME` — Имя бота для авторизации
+- `YANDEX_MAPS_API_KEY` — API ключ Яндекс Карт (только partner)
+
+**Runtime ENV (серверные секреты):**
+- `NUXT_TELEGRAM_BOT_TOKEN` — Токен Telegram бота
+- `NUXT_SUPABASE_SERVICE_KEY` — Service role key
+
+### Правила работы с worktrees
+
+1. **Каждый worktree = отдельная директория** — переключайся через `cd`, не через `git checkout`
+2. **Коммить перед деплоем** — `deploy.sh` берёт файлы из файловой системы, не из git
+3. **Не мержи без необходимости** — ветки могут расходиться, это нормально
+4. **Проверяй статус** — `./deploy.sh --status` покажет состояние контейнеров
+
+### Создание нового worktree
+
+```bash
+cd /Users/doka/PG19v2
+git worktree add ../PG19v2newbranch -b newbranch
+
+# Создать docker-compose.newbranch.yml в deploy/
+# Добавить case в deploy.sh для нового branch
+```
+
+### Удаление worktree
+
+```bash
+git worktree remove /Users/doka/PG19v2oldbranch
+git branch -d oldbranch  # если ветка больше не нужна
+```
