@@ -1,9 +1,14 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+const yandexMapsApiKey = process.env.YANDEX_MAPS_API_KEY || '7a3c61c9-9e01-48b8-ad12-9a5688cc3a1b'
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
-  css: ['~/assets/css/main.css'],
+  css: [
+    'vue-yandex-maps/css',
+    '~/assets/css/main.css'
+  ],
 
   modules: [
     '@nuxtjs/tailwindcss',
@@ -11,8 +16,14 @@ export default defineNuxtConfig({
     '@nuxtjs/google-fonts',
     '@nuxtjs/color-mode',
     '@pinia/nuxt',
-    '@nuxtjs/supabase'
+    '@nuxtjs/supabase',
+    'vue-yandex-maps/nuxt'
   ],
+
+  yandexMaps: {
+    apikey: yandexMapsApiKey,
+    initializeOn: 'onComponentMount'
+  },
 
   supabase: {
     // Отключаем встроенный redirect - используем свой middleware
@@ -27,7 +38,8 @@ export default defineNuxtConfig({
     public: {
       supabaseUrl: process.env.SUPABASE_URL || 'https://supabase.doka.team',
       supabaseKey: process.env.SUPABASE_KEY || '',
-      telegramBotUsername: process.env.TELEGRAM_BOT_USERNAME || 'PG19CONNECTBOT'
+      telegramBotUsername: process.env.TELEGRAM_BOT_USERNAME || 'PG19CONNECTBOT',
+      yandexMapsApiKey
     }
   },
 

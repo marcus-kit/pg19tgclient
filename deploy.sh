@@ -235,7 +235,7 @@ services:
         SUPABASE_URL: https://supabase.doka.team
         SUPABASE_KEY: eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJyb2xlIjogImFub24iLCAiaXNzIjogInN1cGFiYXNlIiwgImlhdCI6IDE3MzQ3ODk2MDAsICJleHAiOiAxODkyNTU2MDAwfQ.YJP-6T2G5m3ReyA1mCzzGRCzdzxWxOXwusRitdb_vp4
         TELEGRAM_BOT_USERNAME: PG19CONNECTBOT
-        YANDEX_MAPS_API_KEY: 303647fa-c3a2-4d28-a4e7-1073c9478de3
+        YANDEX_MAPS_API_KEY: 7a3c61c9-9e01-48b8-ad12-9a5688cc3a1b
     container_name: $container
     restart: unless-stopped
     environment:
