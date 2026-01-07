@@ -24,7 +24,7 @@ const SYSTEM_PROMPT = `Ты — виртуальный помощник сооб
 interface ChatMessage {
   id: number
   sender_type: string
-  message: string
+  content: string
   created_at: string
 }
 
@@ -39,8 +39,8 @@ interface BotContext {
   accountInfo?: string
 }
 
-// Получить историю сообщений сессии
-async function getChatHistory(sessionId: number): Promise<ChatMessage[]> {
+// Получить историю сообщений чата
+async function getChatHistory(chatId: number): Promise<ChatMessage[]> {
   const config = useRuntimeConfig()
   const supabase = createClient(
     config.public.supabaseUrl,
@@ -49,8 +49,8 @@ async function getChatHistory(sessionId: number): Promise<ChatMessage[]> {
 
   const { data } = await supabase
     .from('chat_messages')
-    .select('id, sender_type, message, created_at')
-    .eq('session_id', sessionId)
+    .select('id, sender_type, content, created_at')
+    .eq('chat_id', chatId)
     .order('created_at', { ascending: true })
     .limit(20) // Последние 20 сообщений для контекста
 
@@ -74,13 +74,13 @@ function shouldEscalate(message: string, response: string): boolean {
 }
 
 export async function processWithBot(
-  sessionId: number,
+  chatId: number,
   userMessage: string,
   context: BotContext
 ): Promise<BotResponse | null> {
   try {
     // Получаем историю
-    const history = await getChatHistory(sessionId)
+    const history = await getChatHistory(chatId)
 
     // Формируем сообщения для Ollama
     const messages = [
@@ -99,7 +99,7 @@ export async function processWithBot(
     for (const msg of history) {
       messages.push({
         role: msg.sender_type === 'user' ? 'user' : 'assistant',
-        content: msg.message
+        content: msg.content
       })
     }
 

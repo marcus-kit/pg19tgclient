@@ -53,7 +53,8 @@ export default defineEventHandler(async (event) => {
   }
 
   // Сохраняем сообщение
-  const senderType = body.senderType || 'user'
+  // Для публичного API всегда 'user' — защита от подмены sender_type
+  const senderType = 'user'
   const { data: newMessage, error: msgError } = await supabase
     .from('chat_messages')
     .insert({
@@ -75,15 +76,14 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // Обновляем счётчик непрочитанных для админа
-  if (senderType === 'user') {
-    await supabase
-      .from('chats')
-      .update({
-        unread_admin_count: chat.unread_admin_count + 1
-      })
-      .eq('id', body.chatId)
-  }
+  // Обновляем чат: счётчик непрочитанных + время последнего сообщения
+  await supabase
+    .from('chats')
+    .update({
+      unread_admin_count: (chat.unread_admin_count || 0) + 1,
+      last_message_at: new Date().toISOString()
+    })
+    .eq('id', body.chatId)
 
   // TODO: уведомление в Telegram для операторов
 

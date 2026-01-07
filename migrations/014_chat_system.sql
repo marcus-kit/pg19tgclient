@@ -1,21 +1,22 @@
 -- Migration: 014_chat_system.sql
 -- Онлайн-чат с поддержкой Supabase Realtime
 
--- Сессии чата
-CREATE TABLE IF NOT EXISTS public.chat_sessions (
+-- Таблица чатов
+CREATE TABLE IF NOT EXISTS public.chats (
   id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 
   -- Связь с пользователем (NULL для гостей)
   user_id bigint REFERENCES public.users(id),
   account_id bigint REFERENCES public.accounts(id),
+  user_name text,  -- Имя пользователя (кэш для отображения)
 
   -- Гостевые данные
   guest_name text,
   guest_contact text,  -- телефон или email
 
-  -- Статус сессии
+  -- Статус чата
   status text NOT NULL DEFAULT 'active' CHECK (status IN (
-    'active',      -- Активный чат (с AI ботом)
+    'active',      -- Активный чат
     'waiting',     -- Ожидает оператора
     'processing',  -- Оператор взял в работу
     'closed',      -- Закрыт
@@ -25,7 +26,8 @@ CREATE TABLE IF NOT EXISTS public.chat_sessions (
   -- Метаданные
   assigned_to bigint REFERENCES public.users(id),  -- Назначенный оператор
   last_message_at timestamptz,
-  unread_count integer DEFAULT 0,
+  unread_admin_count integer DEFAULT 0,  -- Непрочитанные для админа
+  unread_user_count integer DEFAULT 0,   -- Непрочитанные для пользователя
 
   -- AI контекст
   ai_summary text,  -- Краткое содержание от AI
@@ -41,18 +43,20 @@ CREATE TABLE IF NOT EXISTS public.chat_sessions (
 CREATE TABLE IF NOT EXISTS public.chat_messages (
   id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 
-  session_id bigint NOT NULL REFERENCES public.chat_sessions(id) ON DELETE CASCADE,
+  chat_id bigint NOT NULL REFERENCES public.chats(id) ON DELETE CASCADE,
 
   -- Отправитель
   sender_type text NOT NULL CHECK (sender_type IN (
     'user',     -- Пользователь/гость
-    'bot',      -- AI бот
-    'operator'  -- Оператор поддержки
+    'admin',    -- Оператор поддержки
+    'system'    -- Системное сообщение
   )),
-  sender_id bigint REFERENCES public.users(id),  -- NULL для гостей и бота
+  sender_id bigint REFERENCES public.users(id),  -- NULL для гостей
+  sender_name text,  -- Имя отправителя для отображения
 
   -- Контент
-  message text NOT NULL,
+  content text NOT NULL,
+  content_type text NOT NULL DEFAULT 'text',  -- text, image, file
 
   -- Метаданные
   is_read boolean DEFAULT false,
@@ -62,44 +66,44 @@ CREATE TABLE IF NOT EXISTS public.chat_messages (
 );
 
 -- Индексы для производительности
-CREATE INDEX IF NOT EXISTS idx_chat_sessions_status
-  ON public.chat_sessions(status, last_message_at DESC);
+CREATE INDEX IF NOT EXISTS idx_chats_status
+  ON public.chats(status, last_message_at DESC);
 
-CREATE INDEX IF NOT EXISTS idx_chat_sessions_user
-  ON public.chat_sessions(user_id)
+CREATE INDEX IF NOT EXISTS idx_chats_user
+  ON public.chats(user_id)
   WHERE user_id IS NOT NULL;
 
-CREATE INDEX IF NOT EXISTS idx_chat_sessions_operator
-  ON public.chat_sessions(assigned_to)
+CREATE INDEX IF NOT EXISTS idx_chats_operator
+  ON public.chats(assigned_to)
   WHERE assigned_to IS NOT NULL;
 
-CREATE INDEX IF NOT EXISTS idx_chat_messages_session
-  ON public.chat_messages(session_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_chat_messages_chat
+  ON public.chat_messages(chat_id, created_at);
 
 CREATE INDEX IF NOT EXISTS idx_chat_messages_unread
-  ON public.chat_messages(session_id, is_read)
+  ON public.chat_messages(chat_id, is_read)
   WHERE is_read = false;
 
 -- RLS
-ALTER TABLE public.chat_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.chats ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.chat_messages ENABLE ROW LEVEL SECURITY;
 
--- Политики для chat_sessions
-DROP POLICY IF EXISTS "Anyone can create chat session" ON public.chat_sessions;
-CREATE POLICY "Anyone can create chat session"
-  ON public.chat_sessions FOR INSERT
+-- Политики для chats
+DROP POLICY IF EXISTS "Anyone can create chat" ON public.chats;
+CREATE POLICY "Anyone can create chat"
+  ON public.chats FOR INSERT
   TO anon, authenticated
   WITH CHECK (true);
 
-DROP POLICY IF EXISTS "Users can view own sessions" ON public.chat_sessions;
-CREATE POLICY "Users can view own sessions"
-  ON public.chat_sessions FOR SELECT
+DROP POLICY IF EXISTS "Users can view own chats" ON public.chats;
+CREATE POLICY "Users can view own chats"
+  ON public.chats FOR SELECT
   TO authenticated
   USING (user_id = (SELECT id FROM public.users WHERE auth_uid = auth.uid()));
 
-DROP POLICY IF EXISTS "Service role full access to chat_sessions" ON public.chat_sessions;
-CREATE POLICY "Service role full access to chat_sessions"
-  ON public.chat_sessions FOR ALL
+DROP POLICY IF EXISTS "Service role full access to chats" ON public.chats;
+CREATE POLICY "Service role full access to chats"
+  ON public.chats FOR ALL
   TO service_role
   USING (true);
 
@@ -110,13 +114,13 @@ CREATE POLICY "Anyone can send messages"
   TO anon, authenticated
   WITH CHECK (true);
 
-DROP POLICY IF EXISTS "Users can view messages in own sessions" ON public.chat_messages;
-CREATE POLICY "Users can view messages in own sessions"
+DROP POLICY IF EXISTS "Users can view messages in own chats" ON public.chat_messages;
+CREATE POLICY "Users can view messages in own chats"
   ON public.chat_messages FOR SELECT
   TO authenticated
   USING (
-    session_id IN (
-      SELECT id FROM public.chat_sessions
+    chat_id IN (
+      SELECT id FROM public.chats
       WHERE user_id = (SELECT id FROM public.users WHERE auth_uid = auth.uid())
     )
   );
@@ -129,11 +133,11 @@ CREATE POLICY "Service role full access to chat_messages"
 
 -- Включить Realtime для таблиц
 -- ВАЖНО: Это нужно для работы подписок на изменения
-ALTER PUBLICATION supabase_realtime ADD TABLE public.chat_sessions;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.chats;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.chat_messages;
 
 -- Триггер для обновления updated_at
-CREATE OR REPLACE FUNCTION update_chat_session_timestamp()
+CREATE OR REPLACE FUNCTION update_chat_timestamp()
 RETURNS TRIGGER AS $$
 BEGIN
   NEW.updated_at = now();
@@ -141,15 +145,15 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS update_chat_sessions_timestamp ON public.chat_sessions;
-CREATE TRIGGER update_chat_sessions_timestamp
-  BEFORE UPDATE ON public.chat_sessions
+DROP TRIGGER IF EXISTS update_chats_timestamp ON public.chats;
+CREATE TRIGGER update_chats_timestamp
+  BEFORE UPDATE ON public.chats
   FOR EACH ROW
-  EXECUTE FUNCTION update_chat_session_timestamp();
+  EXECUTE FUNCTION update_chat_timestamp();
 
 -- Комментарии
-COMMENT ON TABLE public.chat_sessions IS 'Сессии онлайн-чата с поддержкой';
+COMMENT ON TABLE public.chats IS 'Чаты с поддержкой';
 COMMENT ON TABLE public.chat_messages IS 'Сообщения в чате';
-COMMENT ON COLUMN public.chat_sessions.status IS 'Статус: active (с AI), waiting, processing, closed, resolved';
-COMMENT ON COLUMN public.chat_sessions.ai_summary IS 'Краткое содержание беседы от AI для операторов';
-COMMENT ON COLUMN public.chat_messages.sender_type IS 'Тип отправителя: user, bot, operator';
+COMMENT ON COLUMN public.chats.status IS 'Статус: active, waiting, processing, closed, resolved';
+COMMENT ON COLUMN public.chats.ai_summary IS 'Краткое содержание беседы от AI для операторов';
+COMMENT ON COLUMN public.chat_messages.sender_type IS 'Тип отправителя: user, admin, system';

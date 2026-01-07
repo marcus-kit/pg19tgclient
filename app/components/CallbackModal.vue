@@ -14,37 +14,16 @@ const isOpen = computed({
 
 const form = reactive({
   name: '',
-  phone: ''
+  phone: ''  // Хранит только цифры (79991234567)
 })
 
 const loading = ref(false)
 const success = ref(false)
 const error = ref('')
+const phoneValid = ref(false)
 
-// Маска телефона
-function formatPhone(value: string) {
-  const digits = value.replace(/\D/g, '')
-  if (digits.length === 0) return ''
-
-  let formatted = '+7'
-  if (digits.length > 1) formatted += ' (' + digits.slice(1, 4)
-  if (digits.length > 4) formatted += ') ' + digits.slice(4, 7)
-  if (digits.length > 7) formatted += '-' + digits.slice(7, 9)
-  if (digits.length > 9) formatted += '-' + digits.slice(9, 11)
-
-  return formatted
-}
-
-function onPhoneInput(e: Event) {
-  const input = e.target as HTMLInputElement
-  const digits = input.value.replace(/\D/g, '')
-
-  // Если начинается с 8, заменяем на 7
-  const normalized = digits.startsWith('8') ? '7' + digits.slice(1) : digits
-  // Если нет кода страны, добавляем 7
-  const withCode = normalized.startsWith('7') ? normalized : '7' + normalized
-
-  form.phone = formatPhone(withCode)
+function onPhoneValidation(isValid: boolean) {
+  phoneValid.value = isValid
 }
 
 async function submit() {
@@ -55,8 +34,7 @@ async function submit() {
     return
   }
 
-  const digits = form.phone.replace(/\D/g, '')
-  if (digits.length < 11) {
+  if (!phoneValid.value) {
     error.value = 'Укажите корректный номер телефона'
     return
   }
@@ -154,19 +132,11 @@ function close() {
               </div>
 
               <!-- Phone -->
-              <div>
-                <label class="block text-sm font-medium text-[var(--text-secondary)] mb-2">
-                  Телефон
-                </label>
-                <input
-                  :value="form.phone"
-                  @input="onPhoneInput"
-                  type="tel"
-                  placeholder="+7 (___) ___-__-__"
-                  class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
-                  :disabled="loading"
-                />
-              </div>
+              <ConnectionPhoneInput
+                v-model="form.phone"
+                label="Телефон"
+                @validation="onPhoneValidation"
+              />
 
               <!-- Error -->
               <p v-if="error" class="text-red-400 text-sm">{{ error }}</p>

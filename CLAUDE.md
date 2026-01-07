@@ -151,8 +151,15 @@ const { data } = useTvChannels()
 | `auth_sessions` | Extended session info (device, browser, location) |
 | `tv_channel_categories` | TV channel categories with counts |
 | `site_content` | CMS content (page/section → JSONB) |
-| `chats` | Chat sessions (user_id, guest_name, status, assigned_admin) |
-| `chat_messages` | Chat messages (chat_id, sender_type, content) |
+| `chats` | Chat sessions (user_id, guest_name, status, assigned_to, unread counts) |
+| `chat_messages` | Chat messages (chat_id, sender_type: user/admin/system, content) |
+
+### Shared Types (`types/chat.ts`)
+
+Общие типы для чата используются в composables и API:
+- `Chat`, `ChatMessage` — основные интерфейсы
+- `SenderType` = 'user' | 'admin' | 'system'
+- `ChatStatus` = 'active' | 'waiting' | 'processing' | 'closed' | 'resolved'
 
 ## Auth Store Structure
 
@@ -231,6 +238,22 @@ interface ChatState {
 - Icon containers: `bg-gradient-to-br from-primary/20 to-secondary/10`
 - Animation classes: `animate-fade-in-up`, `stagger-1` through `stagger-6`
 - Mesh gradient backgrounds: `mesh-gradient-hero`, `mesh-gradient-dark`
+
+### Phone Input
+
+Для ввода телефона используй компонент `ConnectionPhoneInput`:
+
+```vue
+<ConnectionPhoneInput
+  v-model="phone"
+  label="Телефон"
+  @validation="onPhoneValidation"
+/>
+```
+
+- Использует IMask для форматирования (+7 (___) ___-__-__)
+- `v-model` возвращает только цифры (79991234567)
+- Эмитит `@validation` с boolean при изменении валидности
 
 ## Multi-Portal Architecture
 

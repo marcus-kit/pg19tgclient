@@ -1,32 +1,9 @@
 import type { RealtimeChannel } from '@supabase/supabase-js'
-
-interface Chat {
-  id: number
-  user_id: number | null
-  user_name: string | null
-  guest_name: string | null
-  guest_contact: string | null
-  status: string
-  last_message_at: string | null
-  unread_admin_count: number
-  unread_user_count: number
-  created_at: string
-}
-
-interface ChatMessage {
-  id: number
-  chat_id: number
-  sender_type: 'user' | 'admin' | 'system'
-  sender_id: number
-  sender_name: string | null
-  content: string
-  content_type: string
-  is_read: boolean
-  created_at: string
-}
+import type { Chat, ChatMessage, SessionRequest, SessionResponse, MessagesResponse } from '~/types/chat'
 
 export function useChat() {
   const supabase = useSupabaseClient()
+  const chatStore = useChatStore()
 
   const session = ref<Chat | null>(null)
   const messages = ref<ChatMessage[]>([])
@@ -60,7 +37,8 @@ export function useChat() {
       // Загружаем историю сообщений
       await loadMessages()
 
-      // Подписываемся на новые сообщения
+      // Отписываемся от старой подписки и создаём новую
+      unsubscribe()
       subscribe()
 
       return { session: newChat, isNew }
@@ -135,16 +113,27 @@ export function useChat() {
         body: { chatId: session.value.id }
       })
 
-      session.value.status = 'closed'
-      unsubscribe()
+      // Обновляем статус через spread для реактивности
+      if (session.value) {
+        session.value = { ...session.value, status: 'closed' }
+      }
     } catch (e) {
       console.error('Error closing chat:', e)
+    } finally {
+      // Всегда отписываемся, даже при ошибке
+      unsubscribe()
     }
   }
 
   // Подписка на Realtime
   function subscribe() {
-    if (!session.value || channel) return
+    if (!session.value) return
+
+    // Отписываемся от предыдущего канала (защита от race condition)
+    if (channel) {
+      supabase.removeChannel(channel)
+      channel = null
+    }
 
     channel = supabase
       .channel(`chat:${session.value.id}`)
@@ -161,9 +150,10 @@ export function useChat() {
           // Проверяем что сообщения ещё нет (могло прийти от sendMessage)
           if (!messages.value.find(m => m.id === newMessage.id)) {
             messages.value.push(newMessage)
-            // Воспроизводим звук для сообщений не от пользователя
+            // Для сообщений не от пользователя: звук + счётчик
             if (newMessage.sender_type !== 'user') {
               playNotificationSound()
+              chatStore.incrementUnread()
             }
           }
         }

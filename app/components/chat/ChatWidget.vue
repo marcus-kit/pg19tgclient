@@ -4,13 +4,26 @@ const { unreadCount, isOpen, isMinimized } = storeToRefs(chatStore)
 
 // Анимация пульсации при новых сообщениях
 const isPulsing = ref(false)
+let pulseTimer: ReturnType<typeof setTimeout> | null = null
 
 watch(unreadCount, (newVal, oldVal) => {
   if (newVal > oldVal) {
+    // Очищаем предыдущий таймер если есть
+    if (pulseTimer) clearTimeout(pulseTimer)
+
     isPulsing.value = true
-    setTimeout(() => {
+    pulseTimer = setTimeout(() => {
       isPulsing.value = false
+      pulseTimer = null
     }, 1000)
+  }
+})
+
+// Очистка таймера при размонтировании
+onUnmounted(() => {
+  if (pulseTimer) {
+    clearTimeout(pulseTimer)
+    pulseTimer = null
   }
 })
 </script>
