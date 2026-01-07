@@ -1,0 +1,57 @@
+import { createClient } from '@supabase/supabase-js'
+
+interface SessionRow {
+  id: number
+  device_type: string | null
+  browser: string | null
+  os: string | null
+  ip_address: string | null
+  location: string | null
+  last_active_at: string | null
+  is_current: boolean
+  created_at: string
+}
+
+export default defineEventHandler(async (event) => {
+  const config = useRuntimeConfig()
+  const query = getQuery(event)
+  const userId = query.userId as string
+
+  if (!userId) {
+    throw createError({
+      statusCode: 400,
+      message: 'userId обязателен'
+    })
+  }
+
+  const supabase = createClient(
+    config.public.supabaseUrl,
+    config.supabaseServiceKey
+  )
+
+  const { data, error } = await supabase
+    .from('auth_sessions')
+    .select('*')
+    .eq('user_id', userId)
+    .is('terminated_at', null)
+    .order('last_active_at', { ascending: false })
+
+  if (error) {
+    console.error('Error fetching sessions:', error)
+    throw createError({
+      statusCode: 500,
+      message: 'Ошибка при загрузке сессий'
+    })
+  }
+
+  return (data as SessionRow[]).map(s => ({
+    id: s.id,
+    device: s.device_type || 'Неизвестно',
+    browser: s.browser || 'Неизвестный браузер',
+    os: s.os || 'Неизвестная ОС',
+    ip: s.ip_address || '***',
+    location: s.location || 'Неизвестно',
+    lastActive: s.last_active_at || s.created_at,
+    current: s.is_current
+  }))
+})

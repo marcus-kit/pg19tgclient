@@ -20,18 +20,15 @@ interface NotificationSettings {
   sms: boolean
   push: boolean
   telegram: boolean
-  types: {
-    payments: boolean
-    maintenance: boolean
-    promotions: boolean
-    news: boolean
-  }
+  news: boolean
+  promo: boolean
 }
 
 interface LoginSession {
-  id: string
+  id: number
   device: string
   browser: string
+  os: string
   ip: string
   location: string
   lastActive: string
@@ -39,27 +36,37 @@ interface LoginSession {
 }
 
 interface Achievement {
-  id: string
+  id: number
+  type: string
   title: string
   description: string
   icon: string
+  progress: number
+  maxProgress: number
+  unlocked: boolean
   unlockedAt: string | null
-  progress?: number
-  maxProgress?: number
 }
 
 interface Referral {
   id: number
   name: string
+  avatar: string | null
+  status: string
+  bonus: number | null
   registeredAt: string
-  bonus: number
+  activatedAt: string | null
 }
 
 interface ReferralProgram {
   code: string
-  totalInvited: number
-  totalBonus: number
-  referrals: Referral[]
+  link: string
+  inviterBonus: number
+  inviteeBonus: number
+  stats: {
+    totalInvited: number
+    totalBonus: number
+  }
+  invited: Referral[]
 }
 
 interface Account {
@@ -79,135 +86,23 @@ interface AuthState {
   sessions: LoginSession[]
   achievements: Achievement[]
   referralProgram: ReferralProgram | null
+  loading: {
+    achievements: boolean
+    sessions: boolean
+    referral: boolean
+    notifications: boolean
+  }
 }
 
 const STORAGE_KEY = 'pg19_lk_auth'
 
-// Mock data
-const mockUser: User = {
-  id: 1,
-  firstName: 'Иван',
-  lastName: 'Петров',
-  middleName: 'Сергеевич',
-  phone: '+7 (999) 123-45-67',
-  email: 'ivan@example.com',
-  telegram: '@ivan_petrov',
-  telegramId: null,
-  vkId: '',
-  avatar: null,
-  birthDate: '1990-05-15'
-}
-
-const mockNotifications: NotificationSettings = {
+const defaultNotifications: NotificationSettings = {
   email: true,
-  sms: true,
-  push: false,
   telegram: true,
-  types: {
-    payments: true,
-    maintenance: true,
-    promotions: false,
-    news: true
-  }
-}
-
-const mockSessions: LoginSession[] = [
-  {
-    id: '1',
-    device: 'MacBook Pro',
-    browser: 'Chrome 120',
-    ip: '95.173.xxx.xxx',
-    location: 'Москва, Россия',
-    lastActive: new Date().toISOString(),
-    current: true
-  },
-  {
-    id: '2',
-    device: 'iPhone 15',
-    browser: 'Safari Mobile',
-    ip: '95.173.xxx.xxx',
-    location: 'Москва, Россия',
-    lastActive: new Date(Date.now() - 86400000).toISOString(),
-    current: false
-  }
-]
-
-const mockAchievements: Achievement[] = [
-  {
-    id: 'first_payment',
-    title: 'Первая оплата',
-    description: 'Совершите первый платёж',
-    icon: 'heroicons:credit-card',
-    unlockedAt: '2023-01-20'
-  },
-  {
-    id: 'year_with_us',
-    title: 'Год вместе',
-    description: 'Будьте нашим клиентом 1 год',
-    icon: 'heroicons:cake',
-    unlockedAt: '2024-01-15'
-  },
-  {
-    id: 'profile_complete',
-    title: 'Профиль заполнен',
-    description: 'Заполните профиль на 100%',
-    icon: 'heroicons:user-circle',
-    unlockedAt: null,
-    progress: 80,
-    maxProgress: 100
-  },
-  {
-    id: 'referral_first',
-    title: 'Первый друг',
-    description: 'Пригласите первого друга',
-    icon: 'heroicons:user-plus',
-    unlockedAt: '2023-06-10'
-  },
-  {
-    id: 'referral_five',
-    title: 'Пятеро друзей',
-    description: 'Пригласите 5 друзей',
-    icon: 'heroicons:users',
-    unlockedAt: null,
-    progress: 2,
-    maxProgress: 5
-  },
-  {
-    id: 'autopay',
-    title: 'Автоплатёж',
-    description: 'Подключите автоплатёж',
-    icon: 'heroicons:arrow-path',
-    unlockedAt: null
-  }
-]
-
-const mockReferralProgram: ReferralProgram = {
-  code: 'IVAN2024',
-  totalInvited: 2,
-  totalBonus: 600,
-  referrals: [
-    {
-      id: 1,
-      name: 'Алексей М.',
-      registeredAt: '2023-06-10',
-      bonus: 300
-    },
-    {
-      id: 2,
-      name: 'Мария К.',
-      registeredAt: '2023-09-22',
-      bonus: 300
-    }
-  ]
-}
-
-const mockAccount: Account = {
-  contractNumber: 12345,
-  balance: 150000, // kopeks = 1500 rub
-  status: 'active',
-  tariff: 'Интернет 500 Мбит/с',
-  address: 'г. Москва, ул. Примерная, д. 1, кв. 42',
-  startDate: '2023-01-15'
+  sms: false,
+  push: true,
+  news: true,
+  promo: false
 }
 
 export const useAuthStore = defineStore('auth', {
@@ -215,21 +110,16 @@ export const useAuthStore = defineStore('auth', {
     isAuthenticated: false,
     user: null,
     account: null,
-    notifications: {
-      email: false,
-      sms: false,
-      push: false,
-      telegram: false,
-      types: {
-        payments: true,
-        maintenance: true,
-        promotions: false,
-        news: false
-      }
-    },
+    notifications: { ...defaultNotifications },
     sessions: [],
     achievements: [],
-    referralProgram: null
+    referralProgram: null,
+    loading: {
+      achievements: false,
+      sessions: false,
+      referral: false,
+      notifications: false
+    }
   }),
 
   getters: {
@@ -275,7 +165,7 @@ export const useAuthStore = defineStore('auth', {
 
   actions: {
     // Установка данных авторизации от API
-    setAuthData(user: Partial<User>, account: Partial<Account>) {
+    async setAuthData(user: Partial<User>, account: Partial<Account>) {
       this.isAuthenticated = true
       this.user = {
         id: user.id || 0,
@@ -299,43 +189,94 @@ export const useAuthStore = defineStore('auth', {
         address: account.address || '',
         startDate: account.startDate || ''
       }
-      // Пока используем mock для остальных данных
-      this.notifications = mockNotifications
-      this.sessions = mockSessions
-      this.achievements = mockAchievements
-      this.referralProgram = mockReferralProgram
       this.persist()
+
+      // Загружаем дополнительные данные параллельно
+      await Promise.allSettled([
+        this.loadNotifications(),
+        this.loadAchievements(),
+        this.loadSessions(),
+        this.loadReferralProgram()
+      ])
     },
 
-    // Устаревший метод для совместимости
-    login(contractNumber: string, fullName: string) {
-      // Mock login - always succeeds
-      this.isAuthenticated = true
-      this.user = mockUser
-      this.account = mockAccount
-      this.notifications = mockNotifications
-      this.sessions = mockSessions
-      this.achievements = mockAchievements
-      this.referralProgram = mockReferralProgram
-      this.persist()
+    // Загрузка настроек уведомлений
+    async loadNotifications() {
+      if (!this.user?.id) return
+      this.loading.notifications = true
+      try {
+        const data = await $fetch<NotificationSettings>('/api/user/notifications', {
+          query: { userId: this.user.id }
+        })
+        this.notifications = data
+        this.persist()
+      } catch (error) {
+        console.error('Failed to load notifications:', error)
+        this.notifications = { ...defaultNotifications }
+      } finally {
+        this.loading.notifications = false
+      }
+    },
+
+    // Загрузка достижений
+    async loadAchievements() {
+      if (!this.user?.id) return
+      this.loading.achievements = true
+      try {
+        const data = await $fetch<Achievement[]>('/api/user/achievements', {
+          query: { userId: this.user.id }
+        })
+        this.achievements = data
+        this.persist()
+      } catch (error) {
+        console.error('Failed to load achievements:', error)
+        this.achievements = []
+      } finally {
+        this.loading.achievements = false
+      }
+    },
+
+    // Загрузка сессий
+    async loadSessions() {
+      if (!this.user?.id) return
+      this.loading.sessions = true
+      try {
+        const data = await $fetch<LoginSession[]>('/api/user/sessions', {
+          query: { userId: this.user.id }
+        })
+        this.sessions = data
+        this.persist()
+      } catch (error) {
+        console.error('Failed to load sessions:', error)
+        this.sessions = []
+      } finally {
+        this.loading.sessions = false
+      }
+    },
+
+    // Загрузка реферальной программы
+    async loadReferralProgram() {
+      if (!this.user?.id) return
+      this.loading.referral = true
+      try {
+        const data = await $fetch<ReferralProgram>('/api/user/referral', {
+          query: { userId: this.user.id }
+        })
+        this.referralProgram = data
+        this.persist()
+      } catch (error) {
+        console.error('Failed to load referral program:', error)
+        this.referralProgram = null
+      } finally {
+        this.loading.referral = false
+      }
     },
 
     logout() {
       this.isAuthenticated = false
       this.user = null
       this.account = null
-      this.notifications = {
-        email: false,
-        sms: false,
-        push: false,
-        telegram: false,
-        types: {
-          payments: true,
-          maintenance: true,
-          promotions: false,
-          news: false
-        }
-      }
+      this.notifications = { ...defaultNotifications }
       this.sessions = []
       this.achievements = []
       this.referralProgram = null
@@ -344,9 +285,23 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    updateNotifications(settings: Partial<NotificationSettings>) {
-      this.notifications = { ...this.notifications, ...settings }
-      this.persist()
+    async updateNotifications(settings: Partial<NotificationSettings>) {
+      if (!this.user?.id) return false
+      try {
+        const { settings: updated } = await $fetch<{ success: boolean; settings: NotificationSettings }>(
+          '/api/user/notifications',
+          {
+            method: 'PUT',
+            body: { userId: this.user.id, settings }
+          }
+        )
+        this.notifications = updated
+        this.persist()
+        return true
+      } catch (error) {
+        console.error('Failed to update notifications:', error)
+        return false
+      }
     },
 
     updateAvatar(avatar: string | null) {
@@ -393,9 +348,20 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    terminateSession(sessionId: string) {
-      this.sessions = this.sessions.filter(s => s.id !== sessionId)
-      this.persist()
+    async terminateSession(sessionId: number) {
+      if (!this.user?.id) return false
+      try {
+        await $fetch(`/api/user/sessions/${sessionId}`, {
+          method: 'DELETE',
+          body: { userId: this.user.id }
+        })
+        this.sessions = this.sessions.filter(s => s.id !== sessionId)
+        this.persist()
+        return true
+      } catch (error) {
+        console.error('Failed to terminate session:', error)
+        return false
+      }
     },
 
     persist() {
@@ -421,10 +387,18 @@ export const useAuthStore = defineStore('auth', {
             this.isAuthenticated = data.isAuthenticated
             this.user = data.user
             this.account = data.account
-            this.notifications = data.notifications || mockNotifications
-            this.sessions = data.sessions || mockSessions
-            this.achievements = data.achievements || mockAchievements
-            this.referralProgram = data.referralProgram || mockReferralProgram
+            this.notifications = data.notifications || { ...defaultNotifications }
+            this.sessions = data.sessions || []
+            this.achievements = data.achievements || []
+            this.referralProgram = data.referralProgram || null
+
+            // Если авторизован — обновляем данные из API
+            if (this.isAuthenticated && this.user?.id) {
+              this.loadNotifications()
+              this.loadAchievements()
+              this.loadSessions()
+              this.loadReferralProgram()
+            }
           } catch {
             this.logout()
           }

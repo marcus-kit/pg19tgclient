@@ -1,8 +1,26 @@
 <script setup lang="ts">
-const stats = [
+interface Stat {
+  value: string
+  unit: string
+  label: string
+  color: string
+}
+
+interface HeroStatsContent {
+  stats: Stat[]
+  badge: string
+}
+
+// Загружаем контент из API
+const { content } = useSiteContent<{ hero_stats: HeroStatsContent }>('home')
+
+// Получаем статистику из контента или используем fallback
+const stats = computed(() => content.value?.hero_stats?.stats || [
   { value: '191', unit: 'канал', label: 'ТВ', color: 'secondary' },
   { value: '699', unit: '₽/мес', label: 'от', color: 'accent' }
-]
+])
+
+const badgeText = computed(() => content.value?.hero_stats?.badge || 'Более 100 000 участников сообщества')
 </script>
 
 <template>
@@ -30,7 +48,7 @@ const stats = [
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent"></span>
               </span>
-              <span class="text-sm font-medium text-[var(--text-secondary)]">Более 100 000 участников сообщества</span>
+              <span class="text-sm font-medium text-[var(--text-secondary)]">{{ badgeText }}</span>
             </div>
 
             <!-- Heading -->

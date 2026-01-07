@@ -3,12 +3,36 @@ useHead({
   title: 'Интернет — ПЖ19'
 })
 
-const features = [
+interface Feature {
+  icon: string
+  title: string
+  description: string
+}
+
+interface InternetContent {
+  items: Feature[]
+  equipment?: {
+    title: string
+    router: {
+      name: string
+      description: string
+      price_monthly: number
+    }
+  }
+}
+
+// Загружаем контент из API
+const { content } = useSiteContent<{ features: InternetContent }>('internet')
+
+// Получаем features из контента или используем fallback
+const features = computed(() => content.value?.features?.items || [
   { icon: 'heroicons:no-symbol', title: 'Мы не режем скорость', description: 'Вы получаете всю полосу канала. Никаких искусственных ограничений' },
   { icon: 'heroicons:bolt', title: 'До 1000 Мбит/с', description: 'Максимальная скорость зависит только от вашего оборудования' },
   { icon: 'heroicons:device-tablet', title: '10+ устройств', description: 'Стабильная работа всех гаджетов одновременно' },
   { icon: 'heroicons:arrow-down-tray', title: '1 ГБ за 20 сек', description: 'Скачивание файлов на максимальной скорости' }
-]
+])
+
+const equipment = computed(() => content.value?.features?.equipment?.router)
 </script>
 
 <template>
@@ -72,9 +96,9 @@ const features = [
                 <Icon name="heroicons:wifi" class="w-10 h-10 text-primary" />
               </div>
               <div class="flex-grow">
-                <h3 class="font-bold text-[var(--text-primary)] text-xl mb-2">Wi-Fi роутер SNR-CPE-ME2</h3>
-                <p class="text-[var(--text-muted)] mb-4">Двухдиапазонный роутер с поддержкой Wi-Fi 5</p>
-                <p class="text-2xl font-bold text-primary">+99 <span class="text-lg text-[var(--text-muted)]">₽/мес</span></p>
+                <h3 class="font-bold text-[var(--text-primary)] text-xl mb-2">{{ equipment?.name || 'Wi-Fi роутер SNR-CPE-ME2' }}</h3>
+                <p class="text-[var(--text-muted)] mb-4">{{ equipment?.description || 'Двухдиапазонный роутер с поддержкой Wi-Fi 5' }}</p>
+                <p class="text-2xl font-bold text-primary">+{{ equipment?.price_monthly || 99 }} <span class="text-lg text-[var(--text-muted)]">₽/мес</span></p>
               </div>
             </div>
           </div>

@@ -3,20 +3,22 @@ useHead({
   title: 'Телевидение — ПЖ19'
 })
 
-const channels = [
-  { category: 'Эфирные', count: 23, icon: 'heroicons:tv' },
-  { category: 'Новостные', count: 14, icon: 'heroicons:newspaper' },
-  { category: 'Спортивные', count: 15, icon: 'heroicons:trophy' },
-  { category: 'Детские', count: 13, icon: 'heroicons:face-smile' },
-  { category: 'Познавательные', count: 38, icon: 'heroicons:academic-cap' },
-  { category: 'Развлекательные', count: 42, icon: 'heroicons:sparkles' },
-  { category: 'Музыкальные', count: 16, icon: 'heroicons:musical-note' },
-  { category: 'Кино', count: 31, icon: 'heroicons:film' },
-  { category: 'HD-каналы', count: 23, icon: 'heroicons:play' },
-  { category: '4K-каналы', count: 2, icon: 'heroicons:play-circle' },
-  { category: 'Региональные', count: 4, icon: 'heroicons:map-pin' },
-  { category: 'Для взрослых', count: 5, icon: 'heroicons:lock-closed' }
-]
+// Загружаем категории каналов из API
+const { data: channelsData } = useTvChannels()
+
+// Преобразуем в формат для отображения
+const channels = computed(() => {
+  return (channelsData.value || []).map(c => ({
+    category: c.name,
+    count: c.count,
+    icon: c.icon
+  }))
+})
+
+// Общее количество каналов
+const totalChannels = computed(() => {
+  return channels.value.reduce((sum, c) => sum + c.count, 0)
+})
 </script>
 
 <template>
@@ -35,7 +37,7 @@ const channels = [
             Цифровое <span class="text-gradient-secondary">телевидение</span>
           </h1>
           <p class="text-xl text-[var(--text-muted)] mb-4 opacity-0 animate-fade-in-up stagger-2">
-            <span class="text-5xl font-bold text-secondary">191</span> <span class="text-[var(--text-secondary)]">канал в HD и 4K качестве</span>
+            <span class="text-5xl font-bold text-secondary">{{ totalChannels || 191 }}</span> <span class="text-[var(--text-secondary)]">канал в HD и 4K качестве</span>
           </p>
           <p class="text-[var(--text-muted)] mb-10 opacity-0 animate-fade-in-up stagger-2">
             Включено в паевой взнос без дополнительной платы

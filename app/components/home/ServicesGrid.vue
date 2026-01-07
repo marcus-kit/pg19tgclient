@@ -1,51 +1,46 @@
 <script setup lang="ts">
-const services = [
-  {
-    title: 'Интернет',
-    description: 'Мы не режем скорость. Канал до 1000 Мбит/с — вся полоса ваша',
-    icon: 'heroicons:wifi',
-    color: 'primary',
-    href: '/internet',
-    features: ['Скорость не ограничена', 'До 1000 Мбит/с', '10+ устройств'],
-    gradient: 'from-primary/20 to-primary/5'
-  },
-  {
-    title: 'Телевидение',
-    description: '191 канал цифрового ТВ в HD и 4K качестве',
-    icon: 'heroicons:tv',
-    color: 'secondary',
-    href: '/tv',
-    features: ['191 канал', 'HD и 4K', 'Архив передач'],
-    gradient: 'from-secondary/20 to-secondary/5'
-  },
-  {
-    title: 'Мобильная связь',
-    description: 'Выгодные тарифы на мобильную связь для участников',
-    icon: 'heroicons:device-phone-mobile',
-    color: 'accent',
-    href: '/mobile',
-    features: ['Безлимит', 'Роуминг', 'eSIM'],
-    gradient: 'from-accent/20 to-accent/5'
-  },
-  {
-    title: 'Видеонаблюдение',
-    description: 'Облачное видеонаблюдение для дома и бизнеса',
-    icon: 'heroicons:video-camera',
-    color: 'info',
-    href: '/cctv',
-    features: ['Облачный архив', '24/7 запись', 'Уведомления'],
-    gradient: 'from-info/20 to-info/5'
-  },
-  {
-    title: 'Умный домофон',
-    description: 'Видеодомофон с удалённым доступом через смартфон',
-    icon: 'heroicons:home',
-    color: 'primary',
-    href: '/intercom',
-    features: ['Видеозвонок', 'Удалённый доступ', 'История'],
-    gradient: 'from-primary/20 to-secondary/5'
+interface ServiceItem {
+  id: string
+  title: string
+  description: string
+  icon: string
+  color: string
+  link: string
+  features: string[]
+  comingSoon?: boolean
+}
+
+interface ServicesContent {
+  title: string
+  subtitle: string
+  items: ServiceItem[]
+}
+
+// Загружаем контент из API
+const { content, pending } = useSiteContent<{ services: ServicesContent }>('home')
+
+// Получаем сервисы из контента или используем fallback
+const services = computed(() => {
+  const items = content.value?.services?.items || []
+  return items.map(item => ({
+    ...item,
+    href: item.link,
+    gradient: getGradient(item.color)
+  }))
+})
+
+const sectionTitle = computed(() => content.value?.services?.title || 'Всё для комфортной цифровой жизни')
+const sectionSubtitle = computed(() => content.value?.services?.subtitle || '')
+
+function getGradient(color: string): string {
+  const gradients: Record<string, string> = {
+    primary: 'from-primary/20 to-primary/5',
+    secondary: 'from-secondary/20 to-secondary/5',
+    accent: 'from-accent/20 to-accent/5',
+    info: 'from-info/20 to-info/5'
   }
-]
+  return gradients[color] || gradients.primary
+}
 
 const colorClasses: Record<string, { icon: string; glow: string; tag: string }> = {
   primary: {
@@ -83,12 +78,11 @@ const colorClasses: Record<string, { icon: string; glow: string; tag: string }> 
           Услуги сообщества
         </span>
         <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-[var(--text-primary)] mb-6 opacity-0 animate-fade-in-up stagger-1">
-          Всё для комфортной
-          <span class="text-gradient-primary"> цифровой жизни</span>
+          {{ sectionTitle.split(' ').slice(0, 3).join(' ') }}
+          <span class="text-gradient-primary"> {{ sectionTitle.split(' ').slice(3).join(' ') }}</span>
         </h2>
         <p class="text-lg text-[var(--text-muted)] max-w-2xl mx-auto opacity-0 animate-fade-in-up stagger-2">
-          Интернет, телевидение, мобильная связь и другие сервисы —
-          всё в одном сообществе на выгодных условиях
+          {{ sectionSubtitle }}
         </p>
       </div>
 

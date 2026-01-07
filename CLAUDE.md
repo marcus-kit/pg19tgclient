@@ -32,17 +32,25 @@ app/
 │   ├── connect.vue        # Connection form
 │   └── news/              # News section
 ├── components/
-│   ├── ui/                # Reusable UI: UButton, UCard, UBadge, UInput
-│   ├── home/              # Home page sections
+│   ├── ui/                # Reusable UI: UButton, UBadge, UInput
+│   ├── home/              # Home page sections (HeroSection, ServicesGrid)
 │   ├── layout/            # AppHeader, AppFooter
 │   └── news/              # News components
+├── composables/
+│   ├── useSiteContent.ts  # CMS content from Supabase
+│   ├── useCoverageCheck.ts
+│   └── useYandex*.ts      # Yandex Maps integration
 ├── layouts/
-│   ├── default.vue        # Main layout
-│   └── guest.vue          # Minimal layout
+│   └── default.vue        # Main layout
 ├── stores/
-│   └── auth.ts            # Pinia store (shared across portals)
-└── middleware/
-    └── auth.ts            # Route protection
+│   └── auth.ts            # Pinia store with API loading
+server/
+├── api/
+│   ├── auth/              # Telegram, contract auth
+│   ├── user/              # User profile, achievements, sessions, referral
+│   ├── content/           # CMS content, services, TV channels
+│   ├── news/              # News CRUD
+│   └── connection/        # Connection requests
 ```
 
 ### Key Patterns
@@ -78,6 +86,56 @@ const colorMode = useColorMode()
 colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
 ```
 
+## API Endpoints
+
+### User API (`/api/user/`)
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/user/update` | POST | Update user profile |
+| `/api/user/achievements` | GET | User achievements |
+| `/api/user/referral` | GET | Referral program data |
+| `/api/user/sessions` | GET | Active sessions list |
+| `/api/user/sessions/[id]` | DELETE | Terminate session |
+| `/api/user/notifications` | GET/PUT | Notification settings |
+
+### Content API (`/api/content/`)
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/content/page/[page]` | GET | CMS content by page (home, internet, tv) |
+| `/api/content/services` | GET | Services list |
+| `/api/content/tv-channels` | GET | TV channel categories |
+
+### Composables
+```typescript
+// CMS content loading
+const { content, pending } = useSiteContent<T>('home')
+
+// Services and TV channels
+const { data } = useServices()
+const { data } = useTvChannels()
+```
+
+## Database Schema
+
+### Main Tables
+| Table | Description |
+|-------|-------------|
+| `users` | User profiles with notifications_settings JSONB |
+| `accounts` | User accounts (contract, balance, tariff) |
+| `services` | Available services with features JSONB |
+| `news` | News articles |
+| `connection_requests` | Connection request forms |
+
+### New Tables (2026-01-07)
+| Table | Description |
+|-------|-------------|
+| `achievements` | User achievements (gamification) |
+| `referral_codes` | User referral codes |
+| `referrals` | Invited users tracking |
+| `auth_sessions` | Extended session info (device, browser, location) |
+| `tv_channel_categories` | TV channel categories with counts |
+| `site_content` | CMS content (page/section → JSONB) |
+
 ## Auth Store Structure
 
 ```typescript
@@ -89,8 +147,11 @@ interface AuthState {
   sessions: LoginSession[]
   achievements: Achievement[]
   referralProgram: ReferralProgram | null
+  loading: { achievements, sessions, referral, notifications }
 }
 ```
+
+**API Loading**: Store methods `loadAchievements()`, `loadSessions()`, `loadReferralProgram()`, `loadNotifications()` fetch data from API. Called automatically in `setAuthData()` and `hydrate()`.
 
 Balance stored in kopeks (копейки), divide by 100 for rubles display.
 
