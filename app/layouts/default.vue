@@ -5,5 +5,10 @@
       <slot />
     </main>
     <LayoutAppFooter />
+
+    <!-- Виджет онлайн-чата -->
+    <ClientOnly>
+      <ChatWidget />
+    </ClientOnly>
   </div>
 </template>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const colorMode = useColorMode()
+const chatStore = useChatStore()
 const isMenuOpen = ref(false)
 const isScrolled = ref(false)
 const isCallbackOpen = ref(false)
@@ -64,6 +65,7 @@ const servicesNav = [
               <span>Новости</span>
             </NuxtLink>
             <button
+              @click="chatStore.open()"
               class="flex items-center gap-1.5 px-3 py-1.5 text-[var(--text-muted)] hover:text-primary transition-colors rounded-lg hover:bg-[var(--glass-bg)]"
             >
               <Icon name="heroicons:chat-bubble-left-right" class="w-4 h-4" />
@@ -197,6 +199,15 @@ const servicesNav = [
               <span class="font-medium">{{ item.name }}</span>
             </NuxtLink>
           </nav>
+
+          <!-- Support button mobile -->
+          <button
+            @click="chatStore.open(); isMenuOpen = false"
+            class="flex items-center justify-center gap-2 w-full py-4 glass-card text-[var(--text-primary)] font-semibold rounded-xl transition-all hover:bg-primary/10"
+          >
+            <Icon name="heroicons:chat-bubble-left-right" class="w-5 h-5 text-primary" />
+            <span>Поддержка</span>
+          </button>
 
           <!-- Callback button mobile -->
           <button

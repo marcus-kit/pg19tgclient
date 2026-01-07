@@ -1,0 +1,70 @@
+import { createClient } from '@supabase/supabase-js'
+
+interface ChatMessage {
+  id: number
+  chat_id: number
+  sender_type: 'user' | 'admin' | 'system'
+  sender_id: number
+  sender_name: string | null
+  content: string
+  content_type: string
+  is_read: boolean
+  created_at: string
+}
+
+export default defineEventHandler(async (event) => {
+  const config = useRuntimeConfig()
+  const query = getQuery(event)
+
+  const chatId = parseInt(query.chatId as string)
+  if (!chatId) {
+    throw createError({
+      statusCode: 400,
+      message: 'chatId обязателен'
+    })
+  }
+
+  const limit = Math.min(parseInt(query.limit as string) || 50, 100)
+  const offset = parseInt(query.offset as string) || 0
+
+  const supabase = createClient(
+    config.public.supabaseUrl,
+    config.supabaseServiceKey
+  )
+
+  // Проверяем что чат существует
+  const { data: chat } = await supabase
+    .from('chats')
+    .select('id, status')
+    .eq('id', chatId)
+    .single()
+
+  if (!chat) {
+    throw createError({
+      statusCode: 404,
+      message: 'Чат не найден'
+    })
+  }
+
+  // Получаем сообщения
+  const { data: messages, error, count } = await supabase
+    .from('chat_messages')
+    .select('*', { count: 'exact' })
+    .eq('chat_id', chatId)
+    .order('created_at', { ascending: true })
+    .range(offset, offset + limit - 1)
+
+  if (error) {
+    console.error('Error fetching messages:', error)
+    throw createError({
+      statusCode: 500,
+      message: 'Ошибка при получении сообщений'
+    })
+  }
+
+  return {
+    messages: messages as ChatMessage[],
+    total: count || 0,
+    hasMore: (count || 0) > offset + limit
+  }
+})

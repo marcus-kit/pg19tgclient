@@ -60,6 +60,7 @@ export default defineNuxtConfig({
   components: [
     { path: '~/components/ui', pathPrefix: false },
     { path: '~/components/lk', pathPrefix: false },
+    { path: '~/components/chat', pathPrefix: false },
     '~/components'
   ],
 

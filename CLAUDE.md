@@ -35,20 +35,24 @@ app/
 │   ├── ui/                # Reusable UI: UButton, UBadge, UInput
 │   ├── home/              # Home page sections (HeroSection, ServicesGrid)
 │   ├── layout/            # AppHeader, AppFooter
+│   ├── chat/              # Chat widget (ChatWidget, ChatWindow, ChatMessage, ChatGuestForm)
 │   └── news/              # News components
 ├── composables/
 │   ├── useSiteContent.ts  # CMS content from Supabase
+│   ├── useChat.ts         # Chat session & messages with Realtime
 │   ├── useCoverageCheck.ts
 │   └── useYandex*.ts      # Yandex Maps integration
 ├── layouts/
-│   └── default.vue        # Main layout
+│   └── default.vue        # Main layout (includes ChatWidget)
 ├── stores/
-│   └── auth.ts            # Pinia store with API loading
+│   ├── auth.ts            # Pinia store with API loading
+│   └── chat.ts            # Chat state (isOpen, sessionId, unreadCount)
 server/
 ├── api/
 │   ├── auth/              # Telegram, contract auth
 │   ├── user/              # User profile, achievements, sessions, referral
 │   ├── content/           # CMS content, services, TV channels
+│   ├── chat/              # Chat sessions and messages
 │   ├── news/              # News CRUD
 │   └── connection/        # Connection requests
 ```
@@ -105,6 +109,18 @@ colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
 | `/api/content/services` | GET | Services list |
 | `/api/content/tv-channels` | GET | TV channel categories |
 
+### Chat API (`/api/chat/`)
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/chat/session` | POST | Create or get existing chat session |
+| `/api/chat/messages` | GET | Load chat messages (with pagination) |
+| `/api/chat/send` | POST | Send message to chat |
+| `/api/chat/close` | POST | Close chat session |
+
+**Database tables:** `chats`, `chat_messages`
+
+**Realtime:** Subscribed via Supabase channels for new messages.
+
 ### Composables
 ```typescript
 // CMS content loading
@@ -135,6 +151,8 @@ const { data } = useTvChannels()
 | `auth_sessions` | Extended session info (device, browser, location) |
 | `tv_channel_categories` | TV channel categories with counts |
 | `site_content` | CMS content (page/section → JSONB) |
+| `chats` | Chat sessions (user_id, guest_name, status, assigned_admin) |
+| `chat_messages` | Chat messages (chat_id, sender_type, content) |
 
 ## Auth Store Structure
 
@@ -154,6 +172,58 @@ interface AuthState {
 **API Loading**: Store methods `loadAchievements()`, `loadSessions()`, `loadReferralProgram()`, `loadNotifications()` fetch data from API. Called automatically in `setAuthData()` and `hydrate()`.
 
 Balance stored in kopeks (копейки), divide by 100 for rubles display.
+
+## Chat System
+
+Встроенный чат с операторами поддержки. Поддерживает авторизованных пользователей и гостей.
+
+### Architecture
+
+```
+Main Site (user)                    Admin Portal (operator)
+─────────────────                   ────────────────────────
+ChatWidget.vue                      pages/chat/index.vue (список чатов)
+  └── ChatWindow.vue                pages/chat/[id].vue (диалог)
+        └── ChatMessage.vue
+        └── ChatGuestForm.vue
+
+useChat.ts composable               Admin API endpoints
+chat.ts Pinia store                 /api/admin/chat/
+
+              ↓ Supabase Realtime ↓
+
+Database: chats, chat_messages
+```
+
+### Chat Store (`app/stores/chat.ts`)
+
+```typescript
+interface ChatState {
+  isOpen: boolean      // Окно чата открыто/закрыто
+  isMinimized: boolean // Свёрнуто в виджет
+  sessionId: number | null  // ID текущей сессии (persisted)
+  guestName: string | null  // Имя гостя (persisted)
+  unreadCount: number       // Непрочитанные сообщения
+}
+```
+
+**Persistence**: Используется `pinia-plugin-persistedstate` для сохранения `sessionId` и `guestName` в localStorage. Плагин подключен в `app/plugins/pinia-persist.client.ts`.
+
+### Session Restoration Flow
+
+1. `ChatWindow.vue` при `onMounted` читает `chatStore.sessionId`
+2. Если есть sessionId → вызывает `initSession({ chatId: sessionId })`
+3. API `session.post.ts` ищет чат по ID в статусе `active` или `waiting`
+4. Если найден → возвращает существующую сессию с историей
+5. Если не найден → показывает форму гостя или создаёт новый чат
+
+### Guest Support
+
+Гости вводят имя и контакт (опционально) через `ChatGuestForm.vue`:
+- `guest_name` — отображается в админке
+- `guest_contact` — телефон/email для связи
+
+В админ-панели гости отмечены бейджем "Гость" с фиолетовым цветом.
 
 ## Component Patterns
 
