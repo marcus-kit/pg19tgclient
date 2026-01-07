@@ -2,6 +2,7 @@
 const colorMode = useColorMode()
 const isMenuOpen = ref(false)
 const isScrolled = ref(false)
+const isCallbackOpen = ref(false)
 
 const toggleTheme = () => {
   colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
@@ -68,13 +69,13 @@ const servicesNav = [
               <Icon name="heroicons:chat-bubble-left-right" class="w-4 h-4" />
               <span>Поддержка</span>
             </button>
-            <a
-              href="tel:+78001234567"
+            <button
+              @click="isCallbackOpen = true"
               class="flex items-center gap-1.5 px-3 py-1.5 text-[var(--text-muted)] hover:text-primary transition-colors rounded-lg hover:bg-[var(--glass-bg)]"
             >
-              <Icon name="heroicons:phone" class="w-4 h-4" />
+              <Icon name="heroicons:phone-arrow-up-right" class="w-4 h-4" />
               <span>Обратный звонок</span>
-            </a>
+            </button>
             <!-- Theme Toggle -->
             <button
               @click="toggleTheme"
@@ -197,6 +198,15 @@ const servicesNav = [
             </NuxtLink>
           </nav>
 
+          <!-- Callback button mobile -->
+          <button
+            @click="isCallbackOpen = true; isMenuOpen = false"
+            class="flex items-center justify-center gap-2 w-full py-4 glass-card text-[var(--text-primary)] font-semibold rounded-xl transition-all hover:bg-primary/10"
+          >
+            <Icon name="heroicons:phone-arrow-up-right" class="w-5 h-5 text-primary" />
+            <span>Обратный звонок</span>
+          </button>
+
           <!-- Personal Account mobile -->
           <a
             href="https://pg19-client.doka.team"
@@ -209,5 +219,8 @@ const servicesNav = [
         </div>
       </div>
     </Transition>
+
+    <!-- Callback Modal -->
+    <CallbackModal v-model="isCallbackOpen" />
   </header>
 </template>
