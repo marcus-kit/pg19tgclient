@@ -224,18 +224,48 @@ runtimeConfig: {
 
 ## Database Schema
 
-**Все ID в базе данных используют тип UUID** (миграция 2026-01-08). В TypeScript все `id` поля имеют тип `string`.
+**Все ID в базе данных используют тип UUID** (миграции 032-041, завершено 2026-01-08). В TypeScript все `id` поля имеют тип `string`.
 
 ### Main Tables
 | Table | Description |
 |-------|-------------|
-| `users` | User profiles with notifications_settings JSONB |
-| `accounts` | User accounts (contract, balance, tariff) |
+| `users` | User profiles, nickname, online_status, last_seen_at |
+| `accounts` | User accounts (contract, balance, tariff, address) |
 | `services` | Available services with features JSONB, category_id FK |
+| `service_categories` | Категории услуг |
 | `news` | News articles |
+| `news_attachments` | Вложения к новостям (storage_path) |
 | `connection_requests` | Connection request forms |
 
-### Additional Tables
+### Partner Tables
+| Table | Description |
+|-------|-------------|
+| `partners` | Партнёры (auth_user_id для Supabase Auth) |
+| `partner_coverage_zones` | Зоны покрытия партнёров (PostGIS geometry) |
+| `partner_referrals` | Реферальные заявки партнёров |
+| `partner_commissions` | Комиссии партнёров |
+| `partner_payouts` | Выплаты партнёрам |
+
+### Community Tables
+| Table | Description |
+|-------|-------------|
+| `community_rooms` | Комнаты чата (city/district/building иерархия) |
+| `community_members` | Участники комнат (role: member/moderator/admin) |
+| `community_messages` | Сообщения в комнатах |
+| `community_mutes` | Временные муты пользователей |
+| `community_bans` | Баны пользователей |
+| `community_reports` | Жалобы на сообщения |
+
+### Support Tables
+| Table | Description |
+|-------|-------------|
+| `tickets` | Тикеты поддержки |
+| `ticket_comments` | Комментарии к тикетам |
+| `ticket_history` | История изменений тикетов |
+| `chats` | Chat sessions (user_telegram_id, guest_name, status) |
+| `chat_messages` | Chat messages (sender_type: user/admin/system) |
+
+### Other Tables
 | Table | Description |
 |-------|-------------|
 | `achievements` | User achievements (gamification) |
@@ -244,10 +274,15 @@ runtimeConfig: {
 | `auth_sessions` | Extended session info (device, browser, location) |
 | `tv_channel_categories` | TV channel categories with counts |
 | `site_content` | CMS content (page/section → JSONB) |
-| `chats` | Chat sessions (user_id, guest_name, status, assigned_to, unread counts) |
-| `chat_messages` | Chat messages (chat_id, sender_type: user/admin/system, content) |
-| `coverage_zones` | Зоны покрытия (PostGIS geometry) |
-| `service_categories` | Категории услуг |
+
+### Database Functions
+| Function | Description |
+|----------|-------------|
+| `check_point_in_coverage(lat, lon)` | Проверка точки в зоне покрытия партнёра |
+| `mark_chat_messages_read(chat_id, reader_type)` | Отметить сообщения прочитанными |
+| `check_community_mute(room_id, user_id)` | Проверка мута в комнате |
+| `ensure_community_rooms(city, district, building)` | Создание иерархии комнат |
+| `get_community_unread_count(user_id, room_ids)` | Подсчёт непрочитанных |
 
 ### Shared Types (`types/chat.ts`)
 
