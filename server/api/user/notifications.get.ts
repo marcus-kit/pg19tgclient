@@ -19,14 +19,18 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // Дефолтные настройки
+  // Дефолтные настройки (channels + types)
   const defaults = {
+    // Channels
     email: true,
     telegram: true,
     sms: false,
     push: true,
+    // Types
     news: true,
-    promo: false
+    promo: false,
+    payments: true,
+    maintenance: true
   }
 
   return {

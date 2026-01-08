@@ -14,6 +14,12 @@ const company = [
   { name: 'Новости', href: '/news' }
 ]
 
+const documents = [
+  { name: 'Устав ПЖ19', href: 'https://supabase.doka.team/storage/v1/object/public/documents/ustav-pg19.pdf' },
+  { name: 'Политика обработки персональных данных', href: 'https://supabase.doka.team/storage/v1/object/public/documents/politica-PDn-PIC-PG-19.pdf' },
+  { name: 'Закон о потребительской кооперации', href: 'https://supabase.doka.team/storage/v1/object/public/documents/zakon-potrebit-kooperat-rf.pdf' }
+]
+
 const currentYear = new Date().getFullYear()
 </script>
 
@@ -28,7 +34,7 @@ const currentYear = new Date().getFullYear()
     <div class="container mx-auto px-4 py-16 relative z-10">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
         <!-- Logo & Description -->
-        <div class="lg:col-span-4">
+        <div class="lg:col-span-3">
           <NuxtLink to="/" class="inline-block mb-6 group">
             <img
               src="/logo.png"
@@ -94,21 +100,40 @@ const currentYear = new Date().getFullYear()
           </ul>
         </div>
 
+        <!-- Documents -->
+        <div class="lg:col-span-2">
+          <h3 class="text-[var(--text-primary)] font-semibold mb-5 text-lg">Документы</h3>
+          <ul class="space-y-3">
+            <li v-for="doc in documents" :key="doc.href">
+              <a
+                :href="doc.href"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-[var(--text-muted)] hover:text-primary transition-colors relative link-hover inline-flex items-center gap-1.5"
+              >
+                <Icon name="heroicons:document-text" class="w-4 h-4 flex-shrink-0" />
+                {{ doc.name }}
+              </a>
+            </li>
+          </ul>
+        </div>
+
         <!-- Contacts -->
-        <div class="lg:col-span-4">
+        <div class="lg:col-span-3">
           <h3 class="text-[var(--text-primary)] font-semibold mb-5 text-lg">Контакты</h3>
           <ul class="space-y-4">
             <li>
               <a
-                href="tel:+78001234567"
+                href="https://t.me/PG19HELPBOT"
+                target="_blank"
                 class="flex items-center gap-3 group"
               >
-                <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                  <Icon name="heroicons:phone" class="w-5 h-5 text-primary" />
+                <div class="w-10 h-10 rounded-lg bg-[#229ED9]/10 flex items-center justify-center group-hover:bg-[#229ED9]/20 transition-colors">
+                  <Icon name="simple-icons:telegram" class="w-5 h-5 text-[#229ED9]" />
                 </div>
                 <div>
-                  <p class="text-[var(--text-primary)] font-medium group-hover:text-primary transition-colors">8 (800) 123-45-67</p>
-                  <p class="text-xs text-[var(--text-muted)]">Бесплатно по России</p>
+                  <p class="text-[var(--text-primary)] font-medium group-hover:text-[#229ED9] transition-colors">@PG19HELPBOT</p>
+                  <p class="text-xs text-[var(--text-muted)]">Поддержка в Telegram</p>
                 </div>
               </a>
             </li>
