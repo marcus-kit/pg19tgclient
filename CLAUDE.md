@@ -10,6 +10,40 @@ PG19 (ПЖ19) — a community ISP website built with Nuxt 4. This is the **main 
 
 **Language**: Russian UI, Russian comments acceptable.
 
+## Nuxt Layer Architecture
+
+**PG19v2 (main) является базовым Nuxt Layer**. Порталы client, admin, partner наследуют от него через `extends: ['../PG19v2']`.
+
+### Что наследуется автоматически
+
+| Категория | Путь | Пример |
+|-----------|------|--------|
+| UI компоненты | `app/components/` | `UButton`, `UCard`, `UInput`, `UBadge` |
+| Chat компоненты | `app/components/chat/` | `ChatWidget`, `ChatWindow`, `ChatMessage` |
+| Composables | `app/composables/` | `useChat`, `useSiteContent` |
+| Стили | `app/assets/css/main.css` | CSS переменные, Tailwind классы |
+| Типы | `types/` | `User`, `Chat`, `ChatMessage` |
+| Server utils | `server/utils/` | `supabase.ts`, `mappers.ts` |
+| Tailwind config | `tailwind.config.ts` | Brand colors, fonts |
+| Nuxt modules | `nuxt.config.ts` | `@nuxt/icon`, `@nuxtjs/color-mode` |
+
+### Что НЕ наследуется (portal-specific)
+
+| Категория | Описание |
+|-----------|----------|
+| `app/pages/` | Каждый портал имеет свои страницы |
+| `app/stores/` | Stores специфичны для каждого портала |
+| `server/api/` | API endpoints для каждого портала |
+| `app/middleware/` | Middleware (auth, guest) |
+| `app/layouts/` | Layouts могут переопределяться |
+
+### Важно для разработки
+
+1. **Изменение UI компонентов** — меняй в PG19v2, автоматически появится во всех порталах
+2. **Новые общие composables** — добавляй в PG19v2/app/composables/
+3. **Не дублируй файлы** — если что-то нужно везде, добавь в base layer
+4. **Деплой после изменений** — при изменении base layer нужно передеплоить все порталы
+
 ## Commands
 
 ```bash
@@ -312,7 +346,7 @@ interface ChatState {
 1. **Каждый worktree = отдельная директория** — переключайся через `cd`, не через `git checkout`
 2. **Коммить перед деплоем** — `deploy.sh` берёт файлы из файловой системы
 3. **Порталы независимы** — каждый портал имеет свой набор страниц и компонентов
-4. **Общие стили** — `tailwind.config.ts` и `main.css` одинаковы во всех worktrees
+4. **Nuxt Layer inheritance** — client, admin, partner наследуют от main через `extends`
 5. **Проверяй статус** — `./deploy.sh --status` покажет все контейнеры
 
 ### Структура контейнеров

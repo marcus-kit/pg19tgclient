@@ -133,6 +133,22 @@ status() {
     done
 }
 
+sync_base_layer_to_portal() {
+    local remote_path=$1
+    local base_worktree="/Users/doka/PG19v2"
+
+    echo -e "${YELLOW}►${NC} Syncing base layer to portal..."
+    ssh $SERVER "mkdir -p $remote_path/_base_layer"
+
+    rsync -avz --delete \
+        --exclude=node_modules \
+        --exclude=.nuxt \
+        --exclude=.output \
+        --exclude=.git \
+        --exclude=deploy \
+        "$base_worktree/" "$SERVER:$remote_path/_base_layer/"
+}
+
 deploy_portal() {
     local portal=$1
     local env=$2
@@ -181,7 +197,13 @@ deploy_portal() {
         --exclude=.output \
         --exclude=.git \
         --exclude=deploy \
+        --exclude=_base_layer \
         "$worktree/" "$SERVER:$remote_path/"
+
+    # Step 2.1: Sync base layer for portals that extend it (client, admin, partner)
+    if [[ "$portal" == "client" || "$portal" == "admin" || "$portal" == "partner" ]]; then
+        sync_base_layer_to_portal "$remote_path"
+    fi
 
     # Step 3: Generate docker-compose for this environment
     echo -e "${YELLOW}►${NC} Generating Docker configs..."
@@ -244,6 +266,7 @@ services:
       - SUPABASE_KEY=eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJyb2xlIjogImFub24iLCAiaXNzIjogInN1cGFiYXNlIiwgImlhdCI6IDE3MzQ3ODk2MDAsICJleHAiOiAxODkyNTU2MDAwfQ.YJP-6T2G5m3ReyA1mCzzGRCzdzxWxOXwusRitdb_vp4
       - NUXT_TELEGRAM_BOT_TOKEN=8239443842:AAGNXne9Z8oASGk56AZRB0LxdxbJCXn6XDI
       - NUXT_SUPABASE_SERVICE_KEY=eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJyb2xlIjogInNlcnZpY2Vfcm9sZSIsICJpc3MiOiAic3VwYWJhc2UiLCAiaWF0IjogMTczNDc4OTYwMCwgImV4cCI6IDE4OTI1NTYwMDB9.pn3oy2eKMXejztAJqluImJbji4utpQOKp-7hlAN0IxM
+      - SUPABASE_SERVICE_KEY=eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJyb2xlIjogInNlcnZpY2Vfcm9sZSIsICJpc3MiOiAic3VwYWJhc2UiLCAiaWF0IjogMTczNDc4OTYwMCwgImV4cCI6IDE4OTI1NTYwMDB9.pn3oy2eKMXejztAJqluImJbji4utpQOKp-7hlAN0IxM
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/"]
       interval: 30s

@@ -57,13 +57,6 @@ export default defineNuxtConfig({
     preload: true
   },
 
-  components: [
-    { path: '~/components/ui', pathPrefix: false },
-    { path: '~/components/lk', pathPrefix: false },
-    { path: '~/components/chat', pathPrefix: false },
-    '~/components'
-  ],
-
   app: {
     head: {
       title: 'ПЖ19 — сообщество, а не провайдер',
