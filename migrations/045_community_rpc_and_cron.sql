@@ -2,6 +2,23 @@
 -- RPC функция для отправки сообщений + pg_cron для автоматической очистки
 
 -- ============================================
+-- 0. Восстановление unique constraint (потерян при UUID миграции)
+-- ============================================
+-- Необходим для ON CONFLICT в upsert membership
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.table_constraints
+    WHERE constraint_name = 'community_members_room_user_unique'
+      AND table_name = 'community_members'
+  ) THEN
+    ALTER TABLE community_members
+    ADD CONSTRAINT community_members_room_user_unique
+    UNIQUE (room_id, user_id);
+  END IF;
+END $$;
+
+-- ============================================
 -- 1. RPC функция send_community_message
 -- ============================================
 -- Объединяет 6-7 запросов в один вызов:
