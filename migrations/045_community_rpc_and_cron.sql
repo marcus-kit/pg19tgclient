@@ -114,7 +114,7 @@ BEGIN
     p_room_id,
     p_user_id,
     COALESCE(TRIM(p_content), ''),
-    p_content_type,
+    p_content_type::community_content_type,
     p_image_url,
     p_image_width,
     p_image_height,
