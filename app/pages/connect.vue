@@ -46,12 +46,20 @@ const submitForm = async () => {
   submitError.value = ''
 
   try {
+    // Конвертируем coordinates [lat, lon] в latitude/longitude для API
+    const [lat, lon] = form.address.coordinates || [0, 0]
+
     const response = await $fetch('/api/connection/create', {
       method: 'POST',
       body: {
         fullName: form.fullName.trim(),
         phone: form.phone,
-        address: form.address,
+        address: {
+          text: form.address.text,
+          latitude: lat,
+          longitude: lon,
+          components: form.address.components
+        },
         source: 'website'
       }
     })

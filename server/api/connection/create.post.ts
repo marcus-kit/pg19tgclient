@@ -30,12 +30,12 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // Валидация ФИО
+  // Валидация имени
   const fullName = body.fullName.trim()
-  if (fullName.length < 5) {
+  if (fullName.length < 2) {
     throw createError({
       statusCode: 400,
-      message: 'ФИО должно содержать минимум 5 символов'
+      message: 'Имя должно содержать минимум 2 символа'
     })
   }
 
