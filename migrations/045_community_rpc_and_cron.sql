@@ -84,19 +84,19 @@ BEGIN
     RETURN json_build_object('error', 'banned', 'message', 'Вы заблокированы в этом чате');
   END IF;
 
-  -- 5. Проверка мута
-  SELECT id, muted_until INTO v_mute
+  -- 5. Проверка мута (колонка expires_at)
+  SELECT id, expires_at INTO v_mute
   FROM community_mutes
   WHERE room_id = p_room_id
     AND user_id = p_user_id
-    AND muted_until > now()
+    AND expires_at > now()
   LIMIT 1;
 
   IF v_mute IS NOT NULL THEN
     RETURN json_build_object(
       'error', 'muted',
       'message', 'Вы не можете писать',
-      'muted_until', v_mute.muted_until
+      'muted_until', v_mute.expires_at
     );
   END IF;
 
@@ -181,7 +181,7 @@ GRANT USAGE ON SCHEMA cron TO postgres;
 SELECT cron.schedule(
   'cleanup-expired-mutes',
   '0 * * * *',  -- Каждый час в :00
-  $$DELETE FROM public.community_mutes WHERE muted_until < now()$$
+  $$DELETE FROM public.community_mutes WHERE expires_at < now()$$
 );
 
 -- 2.2. Очистка истёкших банов (каждый час)
