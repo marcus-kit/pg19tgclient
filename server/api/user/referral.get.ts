@@ -1,5 +1,5 @@
 interface ReferralCodeRow {
-  id: number
+  id: string
   code: string
   inviter_bonus: number
   invitee_bonus: number
@@ -9,8 +9,8 @@ interface ReferralCodeRow {
 }
 
 interface ReferralRow {
-  id: number
-  invitee_user_id: number
+  id: string
+  invitee_user_id: string
   status: string
   inviter_bonus: number | null
   registered_at: string

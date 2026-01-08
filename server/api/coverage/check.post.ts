@@ -7,7 +7,7 @@ interface RequestBody {
 
 interface CoverageResult {
   in_coverage: boolean
-  zone_id: bigint | null
+  zone_id: string | null
   zone_name: string | null
 }
 

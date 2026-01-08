@@ -1,5 +1,5 @@
 interface AchievementRow {
-  id: number
+  id: string
   type: string
   title: string
   description: string

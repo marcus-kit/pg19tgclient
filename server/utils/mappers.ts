@@ -7,7 +7,7 @@
 // ============================================
 
 export interface DBUser {
-  id: number
+  id: string
   first_name: string
   last_name: string
   middle_name?: string
@@ -23,7 +23,7 @@ export interface DBUser {
 }
 
 export interface APIUser {
-  id: number
+  id: string
   firstName: string
   lastName: string
   middleName: string
@@ -53,12 +53,12 @@ export const mapUserFromDB = (row: DBUser): APIUser => ({
 })
 
 export interface DBAccount {
-  id: number
-  user_id: number
+  id: string
+  user_id: string
   contract_number: number
   balance: number
   status: 'active' | 'blocked'
-  tariff_id?: number
+  tariff_id?: string
   tariff?: string
   address: string
   start_date: string
@@ -66,7 +66,7 @@ export interface DBAccount {
 }
 
 export interface APIAccount {
-  id: number
+  id: string
   contractNumber: number
   balance: number
   status: 'active' | 'blocked'
@@ -90,7 +90,7 @@ export const mapAccountFromDB = (row: DBAccount): APIAccount => ({
 // ============================================
 
 export interface DBNews {
-  id: number
+  id: string
   title: string
   slug: string
   excerpt?: string
@@ -101,13 +101,13 @@ export interface DBNews {
   is_published: boolean
   published_at?: string
   views_count: number
-  author_id?: number
+  author_id?: string
   created_at: string
   updated_at: string
 }
 
 export interface APINews {
-  id: number
+  id: string
   title: string
   slug: string
   excerpt: string
@@ -118,7 +118,7 @@ export interface APINews {
   isPublished: boolean
   publishedAt: string | null
   viewsCount: number
-  authorId: number | null
+  authorId: string | null
   createdAt: string
   updatedAt: string
 }
@@ -145,8 +145,8 @@ export const mapNewsFromDB = (row: DBNews): APINews => ({
 // ============================================
 
 export interface DBSession {
-  id: number
-  user_id: number
+  id: string
+  user_id: string
   device: string
   browser: string
   os: string
@@ -158,7 +158,7 @@ export interface DBSession {
 }
 
 export interface APISession {
-  id: number
+  id: string
   device: string
   browser: string
   os: string
@@ -184,8 +184,8 @@ export const mapSessionFromDB = (row: DBSession): APISession => ({
 // ============================================
 
 export interface DBAchievement {
-  id: number
-  user_id: number
+  id: string
+  user_id: string
   type: string
   title: string
   description: string
@@ -198,7 +198,7 @@ export interface DBAchievement {
 }
 
 export interface APIAchievement {
-  id: number
+  id: string
   type: string
   title: string
   description: string
@@ -226,13 +226,13 @@ export const mapAchievementFromDB = (row: DBAchievement): APIAchievement => ({
 // ============================================
 
 export interface DBConnectionRequest {
-  id: number
+  id: string
   name: string
   phone: string
   address: string
   latitude?: number
   longitude?: number
-  tariff_id?: number
+  tariff_id?: string
   comment?: string
   status: 'new' | 'processing' | 'completed' | 'cancelled'
   source?: string
@@ -240,13 +240,13 @@ export interface DBConnectionRequest {
 }
 
 export interface APIConnectionRequest {
-  id: number
+  id: string
   name: string
   phone: string
   address: string
   latitude: number | null
   longitude: number | null
-  tariffId: number | null
+  tariffId: string | null
   comment: string
   status: string
   source: string
@@ -272,7 +272,7 @@ export const mapConnectionRequestFromDB = (row: DBConnectionRequest): APIConnect
 // ============================================
 
 export interface DBService {
-  id: number
+  id: string
   name: string
   slug: string
   description?: string
@@ -285,7 +285,7 @@ export interface DBService {
 }
 
 export interface APIService {
-  id: number
+  id: string
   name: string
   slug: string
   description: string

@@ -5,8 +5,8 @@ const SESSION_COOKIE_NAME = 'pg19_session'
 const SESSION_MAX_AGE = 30 * 24 * 60 * 60 // 30 дней в секундах
 
 interface SessionUser {
-  id: number
-  accountId: number
+  id: string
+  accountId: string
 }
 
 /**
@@ -103,8 +103,8 @@ export async function requireUser(event: H3Event): Promise<SessionUser> {
  */
 export async function createUserSession(
   event: H3Event,
-  userId: number,
-  accountId: number,
+  userId: string,
+  accountId: string,
   method: 'telegram' | 'contract',
   identifier: string,
   metadata?: Record<string, unknown>

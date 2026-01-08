@@ -4,7 +4,7 @@ interface ChatState {
   isOpen: boolean
   isMinimized: boolean
   unreadCount: number
-  sessionId: number | null
+  sessionId: string | null
   guestName: string | null
 }
 
@@ -46,7 +46,7 @@ export const useChatStore = defineStore('chat', {
       }
     },
 
-    setSessionId(id: number) {
+    setSessionId(id: string) {
       this.sessionId = id
     },
 

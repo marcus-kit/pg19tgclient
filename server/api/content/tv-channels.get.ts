@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 
 interface ChannelCategoryRow {
-  id: number
+  id: string
   name: string
   slug: string
   icon: string

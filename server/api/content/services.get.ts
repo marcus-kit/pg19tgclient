@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 
 interface ServiceRow {
-  id: number
+  id: string
   name: string
   description: string | null
   price: number

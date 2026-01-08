@@ -13,14 +13,14 @@ export type ContentType = 'text' | 'image' | 'file'
 
 // Чат
 export interface Chat {
-  id: number
-  user_id: number | null
+  id: string
+  user_id: string | null
   user_name: string | null
   guest_name: string | null
   guest_contact: string | null
   session_token: string | null
   status: ChatStatus
-  assigned_to: number | null
+  assigned_to: string | null
   last_message_at: string | null
   unread_admin_count: number
   unread_user_count: number
@@ -32,10 +32,10 @@ export interface Chat {
 
 // Сообщение чата
 export interface ChatMessage {
-  id: number
-  chat_id: number
+  id: string
+  chat_id: string
   sender_type: SenderType
-  sender_id: number | null
+  sender_id: string | null
   sender_name: string | null
   content: string
   content_type: ContentType
@@ -46,8 +46,8 @@ export interface ChatMessage {
 
 // Запрос на создание/получение сессии
 export interface SessionRequest {
-  chatId?: number
-  userId?: number
+  chatId?: string
+  userId?: string
   guestName?: string
   guestContact?: string
 }
@@ -60,10 +60,10 @@ export interface SessionResponse {
 
 // Запрос на отправку сообщения
 export interface SendMessageRequest {
-  chatId: number
+  chatId: string
   message: string
   senderType?: SenderType
-  senderId?: number
+  senderId?: string
   senderName?: string
 }
 

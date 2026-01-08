@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 
 interface User {
-  id: number
+  id: string
   firstName: string
   lastName: string
   middleName: string
@@ -25,7 +25,7 @@ interface NotificationSettings {
 }
 
 interface LoginSession {
-  id: number
+  id: string
   device: string
   browser: string
   os: string
@@ -36,7 +36,7 @@ interface LoginSession {
 }
 
 interface Achievement {
-  id: number
+  id: string
   type: string
   title: string
   description: string
@@ -48,7 +48,7 @@ interface Achievement {
 }
 
 interface Referral {
-  id: number
+  id: string
   name: string
   avatar: string | null
   status: string
@@ -168,7 +168,7 @@ export const useAuthStore = defineStore('auth', {
     async setAuthData(user: Partial<User>, account: Partial<Account>) {
       this.isAuthenticated = true
       this.user = {
-        id: user.id || 0,
+        id: user.id || '',
         firstName: user.firstName || '',
         lastName: user.lastName || '',
         middleName: user.middleName || '',
@@ -348,7 +348,7 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    async terminateSession(sessionId: number) {
+    async terminateSession(sessionId: string) {
       if (!this.user?.id) return false
       try {
         await $fetch(`/api/user/sessions/${sessionId}`, {

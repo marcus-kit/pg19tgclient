@@ -3,10 +3,10 @@ import { getCookie } from 'h3'
 const CHAT_SESSION_COOKIE = 'pg19_chat_session'
 
 interface ChatMessage {
-  id: number
-  chat_id: number
+  id: string
+  chat_id: string
   sender_type: 'user' | 'admin' | 'system'
-  sender_id: number
+  sender_id: string | null
   sender_name: string | null
   content: string
   content_type: string
@@ -17,7 +17,7 @@ interface ChatMessage {
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
 
-  const chatId = parseInt(query.chatId as string)
+  const chatId = query.chatId as string
   if (!chatId) {
     throw createError({
       statusCode: 400,

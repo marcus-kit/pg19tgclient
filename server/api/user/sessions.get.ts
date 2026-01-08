@@ -1,5 +1,5 @@
 interface SessionRow {
-  id: number
+  id: string
   device_type: string | null
   browser: string | null
   os: string | null

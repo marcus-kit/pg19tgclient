@@ -224,16 +224,18 @@ runtimeConfig: {
 
 ## Database Schema
 
+**Все ID в базе данных используют тип UUID** (миграция 2026-01-08). В TypeScript все `id` поля имеют тип `string`.
+
 ### Main Tables
 | Table | Description |
 |-------|-------------|
 | `users` | User profiles with notifications_settings JSONB |
 | `accounts` | User accounts (contract, balance, tariff) |
-| `services` | Available services with features JSONB |
+| `services` | Available services with features JSONB, category_id FK |
 | `news` | News articles |
 | `connection_requests` | Connection request forms |
 
-### New Tables (2026-01-07)
+### Additional Tables
 | Table | Description |
 |-------|-------------|
 | `achievements` | User achievements (gamification) |
@@ -244,6 +246,8 @@ runtimeConfig: {
 | `site_content` | CMS content (page/section → JSONB) |
 | `chats` | Chat sessions (user_id, guest_name, status, assigned_to, unread counts) |
 | `chat_messages` | Chat messages (chat_id, sender_type: user/admin/system, content) |
+| `coverage_zones` | Зоны покрытия (PostGIS geometry) |
+| `service_categories` | Категории услуг |
 
 ### Shared Types (`types/chat.ts`)
 
@@ -299,7 +303,7 @@ Database: chats, chat_messages
 interface ChatState {
   isOpen: boolean      // Окно чата открыто/закрыто
   isMinimized: boolean // Свёрнуто в виджет
-  sessionId: number | null  // ID текущей сессии (persisted)
+  sessionId: string | null  // UUID текущей сессии (persisted)
   guestName: string | null  // Имя гостя (persisted)
   unreadCount: number       // Непрочитанные сообщения
 }
