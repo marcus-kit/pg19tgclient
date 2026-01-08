@@ -159,8 +159,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Подсчёт непрочитанных сообщений
-CREATE OR REPLACE FUNCTION public.get_community_unread_count(
+-- Подсчёт непрочитанных сообщений (одна комната)
+CREATE OR REPLACE FUNCTION public.get_community_unread_count_single(
     p_room_id bigint,
     p_user_id bigint
 ) RETURNS integer AS $$
@@ -191,6 +191,40 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- Batch-версия: подсчёт непрочитанных для нескольких комнат сразу
+CREATE OR REPLACE FUNCTION public.get_community_unread_count(
+    p_user_id bigint,
+    p_room_ids bigint[]
+) RETURNS TABLE(room_id bigint, unread_count integer) AS $$
+BEGIN
+    RETURN QUERY
+    WITH user_reads AS (
+        SELECT m.room_id, m.last_read_at
+        FROM public.community_members m
+        WHERE m.user_id = p_user_id
+          AND m.room_id = ANY(p_room_ids)
+    ),
+    message_counts AS (
+        SELECT
+            msg.room_id,
+            COUNT(*) FILTER (
+                WHERE ur.last_read_at IS NULL
+                   OR msg.created_at > ur.last_read_at
+            )::integer as cnt
+        FROM public.community_messages msg
+        LEFT JOIN user_reads ur ON ur.room_id = msg.room_id
+        WHERE msg.room_id = ANY(p_room_ids)
+          AND msg.is_deleted = false
+        GROUP BY msg.room_id
+    )
+    SELECT
+        r.id as room_id,
+        COALESCE(LEAST(mc.cnt, 99), 0) as unread_count
+    FROM unnest(p_room_ids) r(id)
+    LEFT JOIN message_counts mc ON mc.room_id = r.id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- Обновление времени прочтения
 CREATE OR REPLACE FUNCTION public.update_community_last_read(
     p_room_id bigint,
@@ -207,11 +241,11 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE OR REPLACE FUNCTION public.set_community_member_role(
     p_room_id bigint,
     p_target_user_id bigint,
-    p_new_role public.community_member_role,
+    p_new_role text,
     p_actor_user_id bigint
 ) RETURNS boolean AS $$
 DECLARE
-    v_actor_global_role public.user_role;
+    v_actor_global_role text;
 BEGIN
     -- Получаем глобальную роль актора
     SELECT role INTO v_actor_global_role
@@ -225,14 +259,14 @@ BEGIN
 
     -- Обновляем роль целевого пользователя
     UPDATE public.community_members
-    SET role = p_new_role
+    SET role = p_new_role::public.community_member_role
     WHERE room_id = p_room_id AND user_id = p_target_user_id;
 
     -- Если участника нет — добавляем его
     IF NOT FOUND THEN
         -- Получаем account_id пользователя
         INSERT INTO public.community_members (room_id, user_id, account_id, role)
-        SELECT p_room_id, p_target_user_id, a.id, p_new_role
+        SELECT p_room_id, p_target_user_id, a.id, p_new_role::public.community_member_role
         FROM public.accounts a
         JOIN public.users u ON u.id = a.user_id
         WHERE u.id = p_target_user_id
@@ -287,7 +321,8 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- =====================================================
 
 COMMENT ON FUNCTION public.check_community_mute IS 'Проверяет, замучен ли пользователь в комнате';
-COMMENT ON FUNCTION public.get_community_unread_count IS 'Подсчитывает непрочитанные сообщения для пользователя';
+COMMENT ON FUNCTION public.get_community_unread_count_single IS 'Подсчитывает непрочитанные сообщения для одной комнаты';
+COMMENT ON FUNCTION public.get_community_unread_count IS 'Batch: подсчитывает непрочитанные для нескольких комнат';
 COMMENT ON FUNCTION public.update_community_last_read IS 'Обновляет время последнего прочтения';
 COMMENT ON FUNCTION public.set_community_member_role IS 'Назначает роль участнику (только global admin)';
 COMMENT ON FUNCTION public.check_nickname_available IS 'Проверяет доступность никнейма';
