@@ -1,33 +1,16 @@
-import { createClient } from '@supabase/supabase-js'
+import { setCookie, getCookie } from 'h3'
+import crypto from 'crypto'
+import type { Chat, SessionRequest } from '~/types/chat'
 
-interface SessionRequest {
-  chatId?: number
-  userId?: number
-  guestName?: string
-  guestContact?: string
-}
-
-interface Chat {
-  id: number
-  user_id: number | null
-  user_name: string | null
-  guest_name: string | null
-  guest_contact: string | null
-  status: string
-  last_message_at: string | null
-  unread_admin_count: number
-  unread_user_count: number
-  created_at: string
-}
+const CHAT_SESSION_COOKIE = 'pg19_chat_session'
 
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig()
   const body = await readBody<SessionRequest>(event)
+  const supabase = useSupabaseServer()
 
-  const supabase = createClient(
-    config.public.supabaseUrl,
-    config.supabaseServiceKey
-  )
+  // Проверяем авторизованного пользователя
+  const sessionUser = await getUserFromSession(event)
+  const chatSessionToken = getCookie(event, CHAT_SESSION_COOKIE)
 
   // Если есть chatId - пробуем восстановить существующий чат
   if (body.chatId) {
@@ -39,6 +22,25 @@ export default defineEventHandler(async (event) => {
       .single()
 
     if (existingChat) {
+      // Проверяем ownership
+      if (existingChat.user_id) {
+        // Чат авторизованного пользователя
+        if (!sessionUser || sessionUser.id !== existingChat.user_id) {
+          throw createError({
+            statusCode: 403,
+            message: 'Нет доступа к этому чату'
+          })
+        }
+      } else {
+        // Гостевой чат - проверяем токен
+        if (!chatSessionToken || chatSessionToken !== existingChat.session_token) {
+          throw createError({
+            statusCode: 403,
+            message: 'Нет доступа к этому чату'
+          })
+        }
+      }
+
       return {
         session: existingChat as Chat,
         isNew: false
@@ -47,12 +49,12 @@ export default defineEventHandler(async (event) => {
     // Если чат не найден или закрыт - продолжаем создание нового
   }
 
-  // Если есть userId - ищем активную сессию
-  if (body.userId) {
+  // Если есть авторизованный пользователь - ищем его активный чат
+  if (sessionUser) {
     const { data: existingChat } = await supabase
       .from('chats')
       .select('*')
-      .eq('user_id', body.userId)
+      .eq('user_id', sessionUser.id)
       .in('status', ['active', 'waiting'])
       .order('created_at', { ascending: false })
       .limit(1)
@@ -71,8 +73,9 @@ export default defineEventHandler(async (event) => {
     status: 'waiting'  // Сразу в ожидании оператора
   }
 
-  if (body.userId) {
-    chatData.user_id = body.userId
+  if (sessionUser) {
+    // Авторизованный пользователь
+    chatData.user_id = sessionUser.id
   } else {
     // Гостевая сессия - нужны контактные данные
     if (!body.guestName?.trim()) {
@@ -81,8 +84,21 @@ export default defineEventHandler(async (event) => {
         message: 'Укажите имя'
       })
     }
+
+    // Генерируем токен сессии для гостя
+    const newSessionToken = crypto.randomBytes(32).toString('hex')
     chatData.guest_name = body.guestName.trim()
     chatData.guest_contact = body.guestContact?.trim() || null
+    chatData.session_token = newSessionToken
+
+    // Устанавливаем cookie
+    setCookie(event, CHAT_SESSION_COOKIE, newSessionToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60, // 7 дней
+      path: '/'
+    })
   }
 
   const { data: newChat, error } = await supabase

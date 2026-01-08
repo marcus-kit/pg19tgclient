@@ -1,5 +1,4 @@
 import crypto from 'crypto'
-import { createClient } from '@supabase/supabase-js'
 
 // Интерфейс данных от Telegram Login Widget
 interface TelegramAuthData {
@@ -42,6 +41,9 @@ function isAuthDateValid(authDate: number): boolean {
 }
 
 export default defineEventHandler(async (event) => {
+  // Rate limiting: 5 попыток за 15 минут
+  requireRateLimit(event, RATE_LIMIT_CONFIGS.login)
+
   const config = useRuntimeConfig()
   const body = await readBody<TelegramAuthData>(event)
 
@@ -78,11 +80,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // Подключаемся к Supabase с service role
-  const supabase = createClient(
-    config.public.supabaseUrl,
-    config.supabaseServiceKey
-  )
+  const supabase = useSupabaseServer()
 
   // Ищем пользователя по telegram_id
   const { data: user, error: userError } = await supabase
@@ -104,8 +102,8 @@ export default defineEventHandler(async (event) => {
 
   if (userError || !user) {
     throw createError({
-      statusCode: 404,
-      message: 'Аккаунт не привязан к Telegram. Войдите по номеру договора и привяжите Telegram в профиле.'
+      statusCode: 401,
+      message: 'Неверные учётные данные'
     })
   }
 
@@ -133,8 +131,8 @@ export default defineEventHandler(async (event) => {
 
   if (accountError || !account) {
     throw createError({
-      statusCode: 404,
-      message: 'Договор не найден'
+      statusCode: 401,
+      message: 'Неверные учётные данные'
     })
   }
 
@@ -157,24 +155,16 @@ export default defineEventHandler(async (event) => {
   const internetSub = subscriptions?.find(s => s.services?.type === 'internet')
   const tariffName = internetSub?.services?.name || 'Не подключен'
 
-  // Создаём сессию в auth_sessions
-  const sessionExpiry = new Date()
-  sessionExpiry.setDate(sessionExpiry.getDate() + 30) // 30 дней
-
-  await supabase.from('auth_sessions').insert({
-    method: 'telegram',
-    identifier: body.id.toString(),
-    verified: true,
-    user_id: user.id,
-    account_id: account.id,
-    verified_at: new Date().toISOString(),
-    expires_at: sessionExpiry.toISOString(),
-    metadata: {
-      telegram_username: body.username,
-      telegram_photo: body.photo_url,
-      auth_date: body.auth_date
-    }
+  // Создаём сессию с httpOnly cookie
+  await createUserSession(event, user.id, account.id, 'telegram', body.id.toString(), {
+    telegram_username: body.username,
+    telegram_photo: body.photo_url,
+    auth_date: body.auth_date
   })
+
+  // Сбрасываем rate limit после успешного входа
+  const clientIp = getClientIdentifier(event)
+  resetRateLimit(clientIp, 'login')
 
   // Обновляем telegram_username если изменился
   if (body.username && body.username !== user.telegram_username) {

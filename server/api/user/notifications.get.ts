@@ -1,21 +1,9 @@
-import { createClient } from '@supabase/supabase-js'
-
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig()
-  const query = getQuery(event)
-  const userId = query.userId as string
+  // Проверяем авторизацию - userId берём из сессии
+  const sessionUser = await requireUser(event)
+  const userId = sessionUser.id
 
-  if (!userId) {
-    throw createError({
-      statusCode: 400,
-      message: 'userId обязателен'
-    })
-  }
-
-  const supabase = createClient(
-    config.public.supabaseUrl,
-    config.supabaseServiceKey
-  )
+  const supabase = useSupabaseServer()
 
   const { data, error } = await supabase
     .from('users')

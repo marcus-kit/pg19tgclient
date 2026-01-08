@@ -1,5 +1,3 @@
-import { createClient } from '@supabase/supabase-js'
-
 interface NotificationSettings {
   email?: boolean
   telegram?: boolean
@@ -10,20 +8,15 @@ interface NotificationSettings {
 }
 
 interface UpdateBody {
-  userId: number
   settings: NotificationSettings
 }
 
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig()
-  const body = await readBody<UpdateBody>(event)
+  // Проверяем авторизацию - userId берём из сессии
+  const sessionUser = await requireUser(event)
+  const userId = sessionUser.id
 
-  if (!body.userId) {
-    throw createError({
-      statusCode: 400,
-      message: 'userId обязателен'
-    })
-  }
+  const body = await readBody<UpdateBody>(event)
 
   if (!body.settings || typeof body.settings !== 'object') {
     throw createError({
@@ -32,16 +25,13 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const supabase = createClient(
-    config.public.supabaseUrl,
-    config.supabaseServiceKey
-  )
+  const supabase = useSupabaseServer()
 
   // Получаем текущие настройки
   const { data: current } = await supabase
     .from('users')
     .select('notifications_settings')
-    .eq('id', body.userId)
+    .eq('id', userId)
     .single()
 
   // Мержим с новыми
@@ -53,7 +43,7 @@ export default defineEventHandler(async (event) => {
   const { error } = await supabase
     .from('users')
     .update({ notifications_settings: merged })
-    .eq('id', body.userId)
+    .eq('id', userId)
 
   if (error) {
     console.error('Error updating notifications:', error)

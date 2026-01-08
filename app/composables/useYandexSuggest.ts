@@ -21,6 +21,14 @@ export function useYandexSuggest() {
   let debounceTimer: ReturnType<typeof setTimeout> | null = null
   let initPromise: Promise<void> | null = null
 
+  // Очистка таймера при уничтожении scope (компонента или effect)
+  onScopeDispose(() => {
+    if (debounceTimer) {
+      clearTimeout(debounceTimer)
+      debounceTimer = null
+    }
+  })
+
   /**
    * Убедиться что Yandex Maps API загружен
    */

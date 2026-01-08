@@ -38,8 +38,8 @@ export function useChat() {
       await loadMessages()
 
       // Отписываемся от старой подписки и создаём новую
-      unsubscribe()
-      subscribe()
+      await unsubscribe()
+      await subscribe()
 
       return { session: newChat, isNew }
     } catch (e: unknown) {
@@ -121,17 +121,17 @@ export function useChat() {
       console.error('Error closing chat:', e)
     } finally {
       // Всегда отписываемся, даже при ошибке
-      unsubscribe()
+      await unsubscribe()
     }
   }
 
   // Подписка на Realtime
-  function subscribe() {
+  async function subscribe() {
     if (!session.value) return
 
     // Отписываемся от предыдущего канала (защита от race condition)
     if (channel) {
-      supabase.removeChannel(channel)
+      await supabase.removeChannel(channel)
       channel = null
     }
 
@@ -177,9 +177,9 @@ export function useChat() {
   }
 
   // Отписка
-  function unsubscribe() {
+  async function unsubscribe() {
     if (channel) {
-      supabase.removeChannel(channel)
+      await supabase.removeChannel(channel)
       channel = null
     }
   }
@@ -197,7 +197,8 @@ export function useChat() {
 
   // Очистка при размонтировании
   onUnmounted(() => {
-    unsubscribe()
+    // void используется т.к. onUnmounted не поддерживает async
+    void unsubscribe()
   })
 
   return {

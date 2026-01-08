@@ -1,5 +1,3 @@
-import { createClient } from '@supabase/supabase-js'
-
 interface ReferralCodeRow {
   id: number
   code: string
@@ -25,21 +23,11 @@ interface ReferralRow {
 }
 
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig()
-  const query = getQuery(event)
-  const userId = query.userId as string
+  // Проверяем авторизацию - userId берём из сессии
+  const sessionUser = await requireUser(event)
+  const userId = sessionUser.id
 
-  if (!userId) {
-    throw createError({
-      statusCode: 400,
-      message: 'userId обязателен'
-    })
-  }
-
-  const supabase = createClient(
-    config.public.supabaseUrl,
-    config.supabaseServiceKey
-  )
+  const supabase = useSupabaseServer()
 
   // Получаем реферальный код пользователя
   const { data: codeData, error: codeError } = await supabase
@@ -60,14 +48,14 @@ export default defineEventHandler(async (event) => {
   let referralCode: ReferralCodeRow
   if (!codeData) {
     const code = `PG19-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
-    const { data: newCode, error: createError } = await supabase
+    const { data: newCode, error: insertError } = await supabase
       .from('referral_codes')
       .insert({ user_id: userId, code })
       .select()
       .single()
 
-    if (createError || !newCode) {
-      console.error('Error creating referral code:', createError)
+    if (insertError || !newCode) {
+      console.error('Error creating referral code:', insertError)
       throw createError({
         statusCode: 500,
         message: 'Ошибка при создании реферального кода'

@@ -18,6 +18,7 @@ export interface Chat {
   user_name: string | null
   guest_name: string | null
   guest_contact: string | null
+  session_token: string | null
   status: ChatStatus
   assigned_to: number | null
   last_message_at: string | null

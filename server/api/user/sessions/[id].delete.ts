@@ -1,10 +1,9 @@
-import { createClient } from '@supabase/supabase-js'
-
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig()
+  // Проверяем авторизацию - userId берём из сессии
+  const sessionUser = await requireUser(event)
+  const userId = sessionUser.id
+
   const sessionId = getRouterParam(event, 'id')
-  const body = await readBody(event)
-  const userId = body?.userId
 
   if (!sessionId) {
     throw createError({
@@ -13,17 +12,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  if (!userId) {
-    throw createError({
-      statusCode: 400,
-      message: 'userId обязателен'
-    })
-  }
-
-  const supabase = createClient(
-    config.public.supabaseUrl,
-    config.supabaseServiceKey
-  )
+  const supabase = useSupabaseServer()
 
   // Проверяем, что сессия принадлежит пользователю
   const { data: session, error: fetchError } = await supabase
@@ -39,7 +28,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  if (session.user_id !== parseInt(userId)) {
+  if (session.user_id !== userId) {
     throw createError({
       statusCode: 403,
       message: 'Нет доступа к этой сессии'

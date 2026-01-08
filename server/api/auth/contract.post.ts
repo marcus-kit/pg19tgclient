@@ -1,5 +1,3 @@
-import { createClient } from '@supabase/supabase-js'
-
 interface ContractAuthData {
   contractNumber: string
   lastName: string
@@ -7,7 +5,9 @@ interface ContractAuthData {
 }
 
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig()
+  // Rate limiting: 5 попыток за 15 минут
+  requireRateLimit(event, RATE_LIMIT_CONFIGS.login)
+
   const body = await readBody<ContractAuthData>(event)
 
   // Проверяем наличие обязательных полей
@@ -18,11 +18,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // Подключаемся к Supabase с service role
-  const supabase = createClient(
-    config.public.supabaseUrl,
-    config.supabaseServiceKey
-  )
+  const supabase = useSupabaseServer()
 
   // Ищем аккаунт по номеру договора
   const { data: account, error: accountError } = await supabase
@@ -41,8 +37,8 @@ export default defineEventHandler(async (event) => {
 
   if (accountError || !account) {
     throw createError({
-      statusCode: 404,
-      message: 'Договор не найден'
+      statusCode: 401,
+      message: 'Неверные учётные данные'
     })
   }
 
@@ -70,8 +66,8 @@ export default defineEventHandler(async (event) => {
 
   if (userError || !user) {
     throw createError({
-      statusCode: 404,
-      message: 'Пользователь не найден'
+      statusCode: 401,
+      message: 'Неверные учётные данные'
     })
   }
 
@@ -82,7 +78,7 @@ export default defineEventHandler(async (event) => {
   if (!lastNameMatch || !firstNameMatch) {
     throw createError({
       statusCode: 401,
-      message: 'Неверные данные. Проверьте фамилию и имя.'
+      message: 'Неверные учётные данные'
     })
   }
 
@@ -113,23 +109,15 @@ export default defineEventHandler(async (event) => {
   const internetSub = subscriptions?.find(s => s.services?.type === 'internet')
   const tariffName = internetSub?.services?.name || 'Не подключен'
 
-  // Создаём сессию в auth_sessions
-  const sessionExpiry = new Date()
-  sessionExpiry.setDate(sessionExpiry.getDate() + 30) // 30 дней
-
-  await supabase.from('auth_sessions').insert({
-    method: 'contract',
-    identifier: body.contractNumber,
-    verified: true,
-    user_id: user.id,
-    account_id: account.id,
-    verified_at: new Date().toISOString(),
-    expires_at: sessionExpiry.toISOString(),
-    metadata: {
-      last_name: body.lastName,
-      first_name: body.firstName
-    }
+  // Создаём сессию с httpOnly cookie
+  await createUserSession(event, user.id, account.id, 'contract', body.contractNumber, {
+    last_name: body.lastName,
+    first_name: body.firstName
   })
+
+  // Сбрасываем rate limit после успешного входа
+  const clientIp = getClientIdentifier(event)
+  resetRateLimit(clientIp, 'login')
 
   // Возвращаем данные для клиента
   return {

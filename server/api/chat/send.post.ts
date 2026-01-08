@@ -1,15 +1,13 @@
-import { createClient } from '@supabase/supabase-js'
+import { getCookie } from 'h3'
+
+const CHAT_SESSION_COOKIE = 'pg19_chat_session'
 
 interface SendRequest {
   chatId: number
   message: string
-  senderType?: 'user' | 'admin'
-  senderId?: number
-  senderName?: string
 }
 
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig()
   const body = await readBody<SendRequest>(event)
 
   if (!body.chatId) {
@@ -26,10 +24,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const supabase = createClient(
-    config.public.supabaseUrl,
-    config.supabaseServiceKey
-  )
+  const supabase = useSupabaseServer()
 
   // Проверяем чат
   const { data: chat } = await supabase
@@ -52,16 +47,42 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  // Проверяем ownership чата
+  const sessionUser = await getUserFromSession(event)
+  const chatSessionToken = getCookie(event, CHAT_SESSION_COOKIE)
+
+  let senderName: string
+  let senderId: number | null = null
+
+  if (chat.user_id) {
+    // Чат принадлежит авторизованному пользователю
+    if (!sessionUser || sessionUser.id !== chat.user_id) {
+      throw createError({
+        statusCode: 403,
+        message: 'Нет доступа к этому чату'
+      })
+    }
+    senderId = sessionUser.id
+    senderName = chat.user_name || 'Пользователь'
+  } else {
+    // Гостевой чат - проверяем по токену сессии
+    if (!chatSessionToken || chatSessionToken !== chat.session_token) {
+      throw createError({
+        statusCode: 403,
+        message: 'Нет доступа к этому чату'
+      })
+    }
+    senderName = chat.guest_name || 'Гость'
+  }
+
   // Сохраняем сообщение
-  // Для публичного API всегда 'user' — защита от подмены sender_type
-  const senderType = 'user'
   const { data: newMessage, error: msgError } = await supabase
     .from('chat_messages')
     .insert({
       chat_id: body.chatId,
-      sender_type: senderType,
-      sender_id: body.senderId || chat.user_id || 0,
-      sender_name: body.senderName || chat.guest_name || chat.user_name,
+      sender_type: 'user',
+      sender_id: senderId || 0,
+      sender_name: senderName,
       content: body.message.trim(),
       content_type: 'text'
     })

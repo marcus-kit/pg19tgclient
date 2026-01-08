@@ -1,4 +1,6 @@
-import { createClient } from '@supabase/supabase-js'
+import { getCookie } from 'h3'
+
+const CHAT_SESSION_COOKIE = 'pg19_chat_session'
 
 interface ChatMessage {
   id: number
@@ -13,7 +15,6 @@ interface ChatMessage {
 }
 
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig()
   const query = getQuery(event)
 
   const chatId = parseInt(query.chatId as string)
@@ -27,15 +28,12 @@ export default defineEventHandler(async (event) => {
   const limit = Math.min(parseInt(query.limit as string) || 50, 100)
   const offset = parseInt(query.offset as string) || 0
 
-  const supabase = createClient(
-    config.public.supabaseUrl,
-    config.supabaseServiceKey
-  )
+  const supabase = useSupabaseServer()
 
-  // Проверяем что чат существует
+  // Получаем чат с полной информацией для проверки ownership
   const { data: chat } = await supabase
     .from('chats')
-    .select('id, status')
+    .select('id, user_id, session_token, status')
     .eq('id', chatId)
     .single()
 
@@ -44,6 +42,28 @@ export default defineEventHandler(async (event) => {
       statusCode: 404,
       message: 'Чат не найден'
     })
+  }
+
+  // Проверяем ownership
+  const sessionUser = await getUserFromSession(event)
+  const chatSessionToken = getCookie(event, CHAT_SESSION_COOKIE)
+
+  if (chat.user_id) {
+    // Чат авторизованного пользователя
+    if (!sessionUser || sessionUser.id !== chat.user_id) {
+      throw createError({
+        statusCode: 403,
+        message: 'Нет доступа к этому чату'
+      })
+    }
+  } else {
+    // Гостевой чат - проверяем токен
+    if (!chatSessionToken || chatSessionToken !== chat.session_token) {
+      throw createError({
+        statusCode: 403,
+        message: 'Нет доступа к этому чату'
+      })
+    }
   }
 
   // Получаем сообщения
