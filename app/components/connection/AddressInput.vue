@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
-import type { AddressSuggestion } from '~/composables/useYandexSuggest'
+import type { DadataSuggestion } from '~/composables/useDadataSuggest'
 
 interface AddressValue {
   text: string
@@ -13,13 +13,11 @@ interface Props {
   label?: string
   error?: string
   required?: boolean
-  region?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: () => ({ text: '', coordinates: null, components: null }),
-  required: true,
-  region: 'Ростовская область'
+  required: true
 })
 
 const emit = defineEmits<{
@@ -30,9 +28,8 @@ const emit = defineEmits<{
 // Ref для контейнера (click-outside)
 const containerRef = ref<HTMLElement | null>(null)
 
-// Composables
-const { suggestions, isLoading, getSuggestions, clearSuggestions } = useYandexSuggest()
-const { geocodeAddress } = useYandexGeocoder()
+// Composables - используем DaData вместо Yandex
+const { suggestions, isLoading, getSuggestions, clearSuggestions } = useDadataSuggest()
 const { checkCoverage } = useCoverageCheck()
 
 // Local state
@@ -68,46 +65,56 @@ const handleInput = async () => {
   coverageStatus.value = null
   selectedIndex.value = -1
 
-  if (query.trim().length < 3) {
+  if (query.trim().length < 2) {
     clearSuggestions()
     showSuggestions.value = false
     return
   }
 
-  // Получаем подсказки с debounce 300ms (внутри composable)
+  // Получаем подсказки с debounce 300ms
   await getSuggestions(query)
 
   showSuggestions.value = suggestions.value.length > 0
 }
 
 // Выбор подсказки из списка
-const selectSuggestion = async (suggestion: AddressSuggestion) => {
-  inputText.value = suggestion.description || suggestion.title
+const selectSuggestion = async (suggestion: DadataSuggestion) => {
+  inputText.value = suggestion.value
   showSuggestions.value = false
   clearSuggestions()
 
-  // Геокодируем выбранный адрес для получения точных координат
+  // DaData уже возвращает координаты, не нужно геокодировать
   try {
     coverageStatus.value = 'checking'
 
-    const geocodeResult = await geocodeAddress(inputText.value)
-
     const addressValue: AddressValue = {
-      text: geocodeResult.address,
-      coordinates: geocodeResult.coordinates,
-      components: geocodeResult.components
+      text: suggestion.value,
+      coordinates: suggestion.coordinates,
+      components: {
+        region: suggestion.region,
+        city: suggestion.city,
+        street: suggestion.street,
+        house: suggestion.house,
+        flat: suggestion.flat,
+        postal_code: suggestion.postal_code,
+        fias_id: suggestion.fias_id
+      }
     }
 
     emit('update:modelValue', addressValue)
 
-    // Проверяем зону покрытия
-    const [lat, lon] = geocodeResult.coordinates
-    const coverage = await checkCoverage(lat, lon)
+    // Проверяем зону покрытия если есть координаты
+    if (suggestion.coordinates) {
+      const [lat, lon] = suggestion.coordinates
+      const coverage = await checkCoverage(lat, lon)
 
-    coverageStatus.value = coverage.inCoverage ? 'in_zone' : 'out_zone'
-    emit('coverage-check', coverage)
+      coverageStatus.value = coverage.inCoverage ? 'in_zone' : 'out_zone'
+      emit('coverage-check', coverage)
+    } else {
+      coverageStatus.value = null
+    }
   } catch (e) {
-    console.error('Geocode error:', e)
+    console.error('Coverage check error:', e)
     coverageStatus.value = null
   }
 }

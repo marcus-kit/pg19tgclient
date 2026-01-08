@@ -27,7 +27,7 @@ const submitError = ref('')
 // Валидация формы
 const isFormValid = computed(() => {
   return (
-    form.fullName.trim().length >= 5 &&
+    form.fullName.trim().length >= 2 &&
     phoneValid.value &&
     form.address.coordinates !== null
   )
@@ -143,14 +143,14 @@ const resetForm = () => {
 
           <!-- Form -->
           <form v-else @submit.prevent="submitForm" class="space-y-6">
-            <!-- ФИО -->
+            <!-- Имя -->
             <div class="opacity-0 animate-fade-in-up">
               <UInput
                 v-model="form.fullName"
-                label="ФИО"
+                label="Как к вам обращаться?"
                 type="text"
                 required
-                placeholder="Иванов Иван Иванович"
+                placeholder="Иван"
               />
             </div>
 
@@ -216,9 +216,24 @@ const resetForm = () => {
               />
             </div>
 
-            <!-- Предупреждение если адрес вне зоны -->
+            <!-- Сообщение о статусе зоны покрытия -->
             <div
-              v-if="coverageResult && !coverageResult.inCoverage"
+              v-if="coverageResult && coverageResult.inCoverage"
+              class="opacity-0 animate-fade-in-up stagger-4 p-4 bg-accent/10 border border-accent/20 rounded-lg"
+            >
+              <div class="flex items-start gap-3">
+                <Icon name="heroicons:check-circle" class="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
+                <div class="flex-1">
+                  <p class="text-sm text-accent font-medium mb-1">Адрес в зоне покрытия!</p>
+                  <p class="text-sm text-[var(--text-muted)]">
+                    Отправьте заявку, и мы свяжемся с вами для уточнения деталей подключения.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div
+              v-else-if="coverageResult && !coverageResult.inCoverage"
               class="opacity-0 animate-fade-in-up stagger-4 p-4 bg-orange-500/10 border border-orange-500/20 rounded-lg"
             >
               <div class="flex items-start gap-3">

@@ -110,33 +110,73 @@ const processMapClick = async (coords: [number, number]) => {
   }
 }
 
-// Геолокация пользователя
-const useMyLocation = () => {
+// Fallback определение местоположения по IP
+const getLocationByIp = async (): Promise<[number, number] | null> => {
+  try {
+    const response = await $fetch<{
+      success: boolean
+      coordinates: [number, number]
+      city?: string
+      accuracy: string
+    }>('/api/geolocation/ip')
+
+    if (response.success && response.coordinates) {
+      return response.coordinates
+    }
+    return null
+  } catch (error) {
+    console.error('IP geolocation error:', error)
+    return null
+  }
+}
+
+// Геолокация пользователя с fallback на IP
+const useMyLocation = async () => {
+  isProcessing.value = true
+
+  // Пробуем браузерную геолокацию
   if ('geolocation' in navigator) {
-    isProcessing.value = true
+    try {
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          timeout: 10000,
+          enableHighAccuracy: true
+        })
+      })
 
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        // Координаты в формате [lon, lat] для API 3.0
-        const coords: [number, number] = [
-          position.coords.longitude,
-          position.coords.latitude
-        ]
+      // Координаты в формате [lon, lat] для API 3.0
+      const coords: [number, number] = [
+        position.coords.longitude,
+        position.coords.latitude
+      ]
 
-        mapCenter.value = coords
-        mapZoom.value = 15
+      mapCenter.value = coords
+      mapZoom.value = 15
 
-        // Обрабатываем как клик
-        await processMapClick(coords)
-      },
-      (error) => {
-        console.error('Geolocation error:', error)
-        isProcessing.value = false
-        alert('Не удалось определить ваше местоположение')
-      }
-    )
+      // Обрабатываем как клик
+      await processMapClick(coords)
+      return
+    } catch (error: any) {
+      console.warn('Browser geolocation failed, trying IP fallback:', error.message)
+    }
+  }
+
+  // Fallback: определяем по IP
+  const ipCoords = await getLocationByIp()
+
+  if (ipCoords) {
+    // IP возвращает [lat, lon], конвертируем в [lon, lat] для API 3.0
+    const [lat, lon] = ipCoords
+    const coords: [number, number] = [lon, lat]
+
+    mapCenter.value = coords
+    mapZoom.value = 13 // Меньший zoom т.к. IP менее точен
+
+    // Обрабатываем как клик
+    await processMapClick(coords)
   } else {
-    alert('Геолокация не поддерживается вашим браузером')
+    isProcessing.value = false
+    alert('Не удалось определить ваше местоположение. Выберите адрес на карте вручную.')
   }
 }
 

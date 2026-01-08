@@ -34,6 +34,8 @@ export default defineNuxtConfig({
     // Server-only (не попадают в клиентский бандл)
     telegramBotToken: process.env.TELEGRAM_BOT_TOKEN || '',
     supabaseServiceKey: process.env.SUPABASE_SERVICE_KEY || '',
+    dadataApiKey: process.env.DADATA_API_KEY || '3a890b6a24260676c60bd8176c9ee713bb383880',
+    dadataSecretKey: process.env.DADATA_SECRET_KEY || 'a68745fdec19fdbed5376b5023226ea59c1a68c1',
     // Public (доступны и на клиенте)
     public: {
       supabaseUrl: process.env.SUPABASE_URL || 'https://supabase.doka.team',
