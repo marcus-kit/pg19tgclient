@@ -110,6 +110,8 @@ export default defineEventHandler(async (event) => {
     const { data: request, error: insertError } = await supabase
       .from('connection_requests')
       .insert({
+        // Обе колонки для совместимости со старой схемой
+        contact_name: fullName,
         full_name: fullName,
         phone: `+${phone}`, // Сохраняем с +
         address_text: addressText,
