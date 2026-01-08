@@ -1,203 +1,142 @@
-import type { H3Event } from 'h3'
-import { getRequestIP } from 'h3'
-
 /**
- * Rate Limiting Utility
- * In-memory store для ограничения частоты запросов
- * Подходит для single-instance deployment
+ * In-memory Rate Limiter для защиты от спама
+ *
+ * Использует sliding window алгоритм:
+ * - Хранит timestamps последних действий для каждого ключа
+ * - Автоматически очищает старые записи
+ *
+ * Пример использования:
+ *   const limiter = createRateLimiter({ windowMs: 60000, maxRequests: 5 })
+ *   if (!limiter.check('user:123')) {
+ *     throw createError({ statusCode: 429, message: 'Too many requests' })
+ *   }
  */
+
+interface RateLimitOptions {
+  /** Окно времени в миллисекундах (default: 60000 = 1 минута) */
+  windowMs?: number
+  /** Максимум запросов в окне (default: 5) */
+  maxRequests?: number
+  /** Интервал очистки старых записей в мс (default: 60000) */
+  cleanupIntervalMs?: number
+}
 
 interface RateLimitEntry {
-  count: number
-  firstAttempt: number
-  blockedUntil?: number
+  timestamps: number[]
 }
 
-// In-memory store для rate limiting
-// Key: `${action}:${identifier}`
-const rateLimitStore = new Map<string, RateLimitEntry>()
-
-// Очистка старых записей каждые 5 минут
-const CLEANUP_INTERVAL = 5 * 60 * 1000
-const ENTRY_TTL = 15 * 60 * 1000 // 15 минут
-
-setInterval(() => {
-  const now = Date.now()
-  for (const [key, entry] of rateLimitStore.entries()) {
-    // Удаляем записи старше 15 минут без блокировки
-    if (now - entry.firstAttempt > ENTRY_TTL && !entry.blockedUntil) {
-      rateLimitStore.delete(key)
-    }
-    // Удаляем истёкшие блокировки
-    if (entry.blockedUntil && now > entry.blockedUntil) {
-      rateLimitStore.delete(key)
-    }
-  }
-}, CLEANUP_INTERVAL)
-
-interface RateLimitConfig {
-  /** Максимум попыток в окне */
-  maxAttempts: number
-  /** Окно в миллисекундах */
-  windowMs: number
-  /** Время блокировки после превышения лимита (мс) */
-  blockDurationMs: number
-  /** Название действия для логирования */
-  action: string
+interface RateLimiter {
+  /** Проверить и записать запрос. Возвращает true если разрешено */
+  check: (key: string) => boolean
+  /** Получить оставшееся количество запросов */
+  remaining: (key: string) => number
+  /** Получить время до сброса в мс */
+  resetIn: (key: string) => number
+  /** Очистить все записи */
+  clear: () => void
 }
 
-interface RateLimitResult {
-  allowed: boolean
-  remaining: number
-  resetAt: number
-  blockedUntil?: number
-}
+const limiters = new Map<string, Map<string, RateLimitEntry>>()
 
-/**
- * Получает идентификатор клиента (IP или другой)
- */
-export function getClientIdentifier(event: H3Event): string {
-  // Cloudflare передаёт реальный IP клиента в этом заголовке
-  const cfIp = getRequestHeader(event, 'cf-connecting-ip')
-  if (cfIp) {
-    return cfIp
+export function createRateLimiter(
+  name: string,
+  options: RateLimitOptions = {}
+): RateLimiter {
+  const {
+    windowMs = 60000,
+    maxRequests = 5,
+    cleanupIntervalMs = 60000
+  } = options
+
+  // Получаем или создаём store для этого лимитера
+  if (!limiters.has(name)) {
+    limiters.set(name, new Map<string, RateLimitEntry>())
+
+    // Периодическая очистка старых записей
+    setInterval(() => {
+      const store = limiters.get(name)
+      if (!store) return
+
+      const now = Date.now()
+      const cutoff = now - windowMs
+
+      for (const [key, entry] of store) {
+        // Удаляем старые timestamps
+        entry.timestamps = entry.timestamps.filter(ts => ts > cutoff)
+
+        // Удаляем пустые записи
+        if (entry.timestamps.length === 0) {
+          store.delete(key)
+        }
+      }
+    }, cleanupIntervalMs)
   }
 
-  // Пробуем получить IP из заголовков (за прокси)
-  const forwarded = getRequestHeader(event, 'x-forwarded-for')
-  if (forwarded) {
-    return forwarded.split(',')[0].trim()
-  }
-
-  const realIp = getRequestHeader(event, 'x-real-ip')
-  if (realIp) {
-    return realIp
-  }
-
-  // Fallback на getRequestIP
-  return getRequestIP(event, { xForwardedFor: true }) || 'unknown'
-}
-
-/**
- * Проверяет rate limit для действия
- */
-export function checkRateLimit(
-  identifier: string,
-  config: RateLimitConfig
-): RateLimitResult {
-  const key = `${config.action}:${identifier}`
-  const now = Date.now()
-
-  let entry = rateLimitStore.get(key)
-
-  // Проверяем блокировку
-  if (entry?.blockedUntil && now < entry.blockedUntil) {
-    return {
-      allowed: false,
-      remaining: 0,
-      resetAt: entry.blockedUntil,
-      blockedUntil: entry.blockedUntil
-    }
-  }
-
-  // Если нет записи или окно истекло - создаём новую
-  if (!entry || now - entry.firstAttempt > config.windowMs) {
-    entry = {
-      count: 1,
-      firstAttempt: now
-    }
-    rateLimitStore.set(key, entry)
-
-    return {
-      allowed: true,
-      remaining: config.maxAttempts - 1,
-      resetAt: now + config.windowMs
-    }
-  }
-
-  // Увеличиваем счётчик
-  entry.count++
-
-  // Проверяем превышение лимита
-  if (entry.count > config.maxAttempts) {
-    entry.blockedUntil = now + config.blockDurationMs
-    rateLimitStore.set(key, entry)
-
-    console.warn(`[RateLimit] Blocked ${identifier} for action ${config.action}`)
-
-    return {
-      allowed: false,
-      remaining: 0,
-      resetAt: entry.blockedUntil,
-      blockedUntil: entry.blockedUntil
-    }
-  }
-
-  rateLimitStore.set(key, entry)
+  const store = limiters.get(name)!
 
   return {
-    allowed: true,
-    remaining: config.maxAttempts - entry.count,
-    resetAt: entry.firstAttempt + config.windowMs
-  }
-}
+    check(key: string): boolean {
+      const now = Date.now()
+      const cutoff = now - windowMs
 
-/**
- * Сбрасывает счётчик после успешной аутентификации
- */
-export function resetRateLimit(identifier: string, action: string): void {
-  const key = `${action}:${identifier}`
-  rateLimitStore.delete(key)
-}
-
-// Предустановленные конфигурации
-export const RATE_LIMIT_CONFIGS = {
-  /** Login: 5 попыток за 15 минут, блокировка 30 минут */
-  login: {
-    maxAttempts: 5,
-    windowMs: 15 * 60 * 1000, // 15 минут
-    blockDurationMs: 30 * 60 * 1000, // 30 минут
-    action: 'login'
-  } satisfies RateLimitConfig,
-
-  /** SMS verification: 3 попытки за 5 минут */
-  sms: {
-    maxAttempts: 3,
-    windowMs: 5 * 60 * 1000,
-    blockDurationMs: 15 * 60 * 1000,
-    action: 'sms'
-  } satisfies RateLimitConfig,
-
-  /** Password reset: 3 попытки за 30 минут */
-  passwordReset: {
-    maxAttempts: 3,
-    windowMs: 30 * 60 * 1000,
-    blockDurationMs: 60 * 60 * 1000,
-    action: 'password_reset'
-  } satisfies RateLimitConfig
-} as const
-
-/**
- * Middleware для rate limiting
- * Выбрасывает 429 ошибку при превышении лимита
- */
-export function requireRateLimit(
-  event: H3Event,
-  config: RateLimitConfig = RATE_LIMIT_CONFIGS.login
-): void {
-  const identifier = getClientIdentifier(event)
-  const result = checkRateLimit(identifier, config)
-
-  if (!result.allowed) {
-    const retryAfterSeconds = Math.ceil((result.resetAt - Date.now()) / 1000)
-
-    throw createError({
-      statusCode: 429,
-      statusMessage: 'Too Many Requests',
-      message: `Слишком много попыток. Попробуйте через ${Math.ceil(retryAfterSeconds / 60)} минут.`,
-      data: {
-        retryAfter: retryAfterSeconds
+      let entry = store.get(key)
+      if (!entry) {
+        entry = { timestamps: [] }
+        store.set(key, entry)
       }
-    })
+
+      // Удаляем старые timestamps
+      entry.timestamps = entry.timestamps.filter(ts => ts > cutoff)
+
+      // Проверяем лимит
+      if (entry.timestamps.length >= maxRequests) {
+        return false
+      }
+
+      // Записываем новый timestamp
+      entry.timestamps.push(now)
+      return true
+    },
+
+    remaining(key: string): number {
+      const now = Date.now()
+      const cutoff = now - windowMs
+
+      const entry = store.get(key)
+      if (!entry) return maxRequests
+
+      const validTimestamps = entry.timestamps.filter(ts => ts > cutoff)
+      return Math.max(0, maxRequests - validTimestamps.length)
+    },
+
+    resetIn(key: string): number {
+      const now = Date.now()
+      const cutoff = now - windowMs
+
+      const entry = store.get(key)
+      if (!entry || entry.timestamps.length === 0) return 0
+
+      // Находим самый старый timestamp в окне
+      const validTimestamps = entry.timestamps.filter(ts => ts > cutoff)
+      if (validTimestamps.length === 0) return 0
+
+      const oldest = Math.min(...validTimestamps)
+      return Math.max(0, oldest + windowMs - now)
+    },
+
+    clear(): void {
+      store.clear()
+    }
   }
 }
+
+// Pre-configured limiters для community chat
+export const communityMessageLimiter = createRateLimiter('community:messages', {
+  windowMs: 60000, // 1 минута
+  maxRequests: 10  // 10 сообщений в минуту
+})
+
+export const communityImageLimiter = createRateLimiter('community:images', {
+  windowMs: 300000, // 5 минут
+  maxRequests: 5    // 5 изображений за 5 минут
+})

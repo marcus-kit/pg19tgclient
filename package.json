@@ -17,12 +17,13 @@
     "@tiptap/extension-link": "^3.15.1",
     "@tiptap/starter-kit": "^3.15.1",
     "@tiptap/vue-3": "^3.15.1",
+    "@tma.js/init-data-node": "^2.0.6",
+    "@tma.js/sdk-vue": "^1.0.15",
     "imask": "^7.6.1",
     "nuxt": "^4.2.2",
     "pinia-plugin-persistedstate": "^4.7.1",
     "vue": "^3.5.26",
-    "vue-router": "^4.6.4",
-    "vue-yandex-maps": "^2.2.5"
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@iconify-json/heroicons": "^1.2.3",

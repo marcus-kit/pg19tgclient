@@ -12,6 +12,7 @@ interface User {
   vkId: string
   avatar: string | null
   birthDate: string | null
+  nickname?: string | null
   role?: 'user' | 'admin' | 'moderator'
 }
 
@@ -20,15 +21,18 @@ interface NotificationSettings {
   sms: boolean
   push: boolean
   telegram: boolean
-  news: boolean
-  promo: boolean
+  types: {
+    payments: boolean
+    maintenance: boolean
+    promotions: boolean
+    news: boolean
+  }
 }
 
 interface LoginSession {
   id: string
   device: string
   browser: string
-  os: string
   ip: string
   location: string
   lastActive: string
@@ -37,36 +41,26 @@ interface LoginSession {
 
 interface Achievement {
   id: string
-  type: string
   title: string
   description: string
   icon: string
-  progress: number
-  maxProgress: number
-  unlocked: boolean
   unlockedAt: string | null
+  progress?: number
+  maxProgress?: number
 }
 
 interface Referral {
   id: string
   name: string
-  avatar: string | null
-  status: string
-  bonus: number | null
   registeredAt: string
-  activatedAt: string | null
+  bonus: number
 }
 
 interface ReferralProgram {
   code: string
-  link: string
-  inviterBonus: number
-  inviteeBonus: number
-  stats: {
-    totalInvited: number
-    totalBonus: number
-  }
-  invited: Referral[]
+  totalInvited: number
+  totalBonus: number
+  referrals: Referral[]
 }
 
 interface Account {
@@ -86,23 +80,21 @@ interface AuthState {
   sessions: LoginSession[]
   achievements: Achievement[]
   referralProgram: ReferralProgram | null
-  loading: {
-    achievements: boolean
-    sessions: boolean
-    referral: boolean
-    notifications: boolean
-  }
 }
 
 const STORAGE_KEY = 'pg19_lk_auth'
 
 const defaultNotifications: NotificationSettings = {
-  email: true,
-  telegram: true,
+  email: false,
   sms: false,
-  push: true,
-  news: true,
-  promo: false
+  push: false,
+  telegram: false,
+  types: {
+    payments: true,
+    maintenance: true,
+    promotions: false,
+    news: false
+  }
 }
 
 export const useAuthStore = defineStore('auth', {
@@ -110,16 +102,21 @@ export const useAuthStore = defineStore('auth', {
     isAuthenticated: false,
     user: null,
     account: null,
-    notifications: { ...defaultNotifications },
+    notifications: {
+      email: false,
+      sms: false,
+      push: false,
+      telegram: false,
+      types: {
+        payments: true,
+        maintenance: true,
+        promotions: false,
+        news: false
+      }
+    },
     sessions: [],
     achievements: [],
-    referralProgram: null,
-    loading: {
-      achievements: false,
-      sessions: false,
-      referral: false,
-      notifications: false
-    }
+    referralProgram: null
   }),
 
   getters: {
@@ -145,9 +142,10 @@ export const useAuthStore = defineStore('auth', {
 
     daysRemaining: (state): number => {
       if (!state.account) return 0
-      // Mock calculation: balance / daily_cost (assume 500 rub/month = ~17 rub/day)
-      const dailyCost = 1700 // kopeks
-      return Math.floor((state.account.balance || 0) / dailyCost)
+      // Примерный расчёт: баланс / средняя стоимость дня
+      // TODO: Получать реальную стоимость из подписки через API
+      const avgDailyCost = 1700 // копейки (~500 руб/мес)
+      return Math.max(0, Math.floor((state.account.balance || 0) / avgDailyCost))
     },
 
     isAdmin: (state): boolean => {
@@ -179,6 +177,7 @@ export const useAuthStore = defineStore('auth', {
         vkId: user.vkId || '',
         avatar: user.avatar || null,
         birthDate: user.birthDate || null,
+        nickname: user.nickname || null,
         role: user.role || 'user'
       }
       this.account = {
@@ -191,7 +190,7 @@ export const useAuthStore = defineStore('auth', {
       }
       this.persist()
 
-      // Загружаем дополнительные данные параллельно
+      // Загружаем дополнительные данные через API
       await Promise.allSettled([
         this.loadNotifications(),
         this.loadAchievements(),
@@ -203,25 +202,33 @@ export const useAuthStore = defineStore('auth', {
     // Загрузка настроек уведомлений
     async loadNotifications() {
       if (!this.user?.id) return
-      this.loading.notifications = true
       try {
-        const data = await $fetch<NotificationSettings>('/api/user/notifications', {
-          query: { userId: this.user.id }
-        })
-        this.notifications = data
+        // API returns flat structure: { email, sms, push, telegram, news, promo, payments, maintenance }
+        const data = await $fetch<Record<string, boolean>>('/api/user/notifications')
+
+        // Map flat API response to nested store structure
+        this.notifications = {
+          email: data.email ?? true,
+          sms: data.sms ?? false,
+          push: data.push ?? true,
+          telegram: data.telegram ?? true,
+          types: {
+            payments: data.payments ?? true,
+            maintenance: data.maintenance ?? true,
+            promotions: data.promo ?? false,
+            news: data.news ?? true
+          }
+        }
         this.persist()
       } catch (error) {
         console.error('Failed to load notifications:', error)
         this.notifications = { ...defaultNotifications }
-      } finally {
-        this.loading.notifications = false
       }
     },
 
     // Загрузка достижений
     async loadAchievements() {
       if (!this.user?.id) return
-      this.loading.achievements = true
       try {
         const data = await $fetch<Achievement[]>('/api/user/achievements', {
           query: { userId: this.user.id }
@@ -231,15 +238,12 @@ export const useAuthStore = defineStore('auth', {
       } catch (error) {
         console.error('Failed to load achievements:', error)
         this.achievements = []
-      } finally {
-        this.loading.achievements = false
       }
     },
 
     // Загрузка сессий
     async loadSessions() {
       if (!this.user?.id) return
-      this.loading.sessions = true
       try {
         const data = await $fetch<LoginSession[]>('/api/user/sessions', {
           query: { userId: this.user.id }
@@ -249,15 +253,12 @@ export const useAuthStore = defineStore('auth', {
       } catch (error) {
         console.error('Failed to load sessions:', error)
         this.sessions = []
-      } finally {
-        this.loading.sessions = false
       }
     },
 
     // Загрузка реферальной программы
     async loadReferralProgram() {
       if (!this.user?.id) return
-      this.loading.referral = true
       try {
         const data = await $fetch<ReferralProgram>('/api/user/referral', {
           query: { userId: this.user.id }
@@ -267,8 +268,6 @@ export const useAuthStore = defineStore('auth', {
       } catch (error) {
         console.error('Failed to load referral program:', error)
         this.referralProgram = null
-      } finally {
-        this.loading.referral = false
       }
     },
 
@@ -276,7 +275,18 @@ export const useAuthStore = defineStore('auth', {
       this.isAuthenticated = false
       this.user = null
       this.account = null
-      this.notifications = { ...defaultNotifications }
+      this.notifications = {
+        email: false,
+        sms: false,
+        push: false,
+        telegram: false,
+        types: {
+          payments: true,
+          maintenance: true,
+          promotions: false,
+          news: false
+        }
+      }
       this.sessions = []
       this.achievements = []
       this.referralProgram = null
@@ -286,21 +296,39 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async updateNotifications(settings: Partial<NotificationSettings>) {
-      if (!this.user?.id) return false
-      try {
-        const { settings: updated } = await $fetch<{ success: boolean; settings: NotificationSettings }>(
-          '/api/user/notifications',
-          {
+      // Update local state immediately for responsive UI
+      if (settings.types) {
+        this.notifications = {
+          ...this.notifications,
+          ...settings,
+          types: { ...this.notifications.types, ...settings.types }
+        }
+      } else {
+        this.notifications = { ...this.notifications, ...settings }
+      }
+      this.persist()
+
+      // Sync to server
+      if (this.user?.id) {
+        try {
+          // Flatten settings for API (API uses flat structure)
+          const apiSettings: Record<string, boolean> = {}
+          if (settings.email !== undefined) apiSettings.email = settings.email
+          if (settings.sms !== undefined) apiSettings.sms = settings.sms
+          if (settings.push !== undefined) apiSettings.push = settings.push
+          if (settings.telegram !== undefined) apiSettings.telegram = settings.telegram
+          if (settings.types?.payments !== undefined) apiSettings.payments = settings.types.payments
+          if (settings.types?.maintenance !== undefined) apiSettings.maintenance = settings.types.maintenance
+          if (settings.types?.promotions !== undefined) apiSettings.promo = settings.types.promotions
+          if (settings.types?.news !== undefined) apiSettings.news = settings.types.news
+
+          await $fetch('/api/user/notifications', {
             method: 'PUT',
-            body: { userId: this.user.id, settings }
-          }
-        )
-        this.notifications = updated
-        this.persist()
-        return true
-      } catch (error) {
-        console.error('Failed to update notifications:', error)
-        return false
+            body: { settings: apiSettings }
+          })
+        } catch (error) {
+          console.error('Failed to sync notification settings:', error)
+        }
       }
     },
 
@@ -348,20 +376,9 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    async terminateSession(sessionId: string) {
-      if (!this.user?.id) return false
-      try {
-        await $fetch(`/api/user/sessions/${sessionId}`, {
-          method: 'DELETE',
-          body: { userId: this.user.id }
-        })
-        this.sessions = this.sessions.filter(s => s.id !== sessionId)
-        this.persist()
-        return true
-      } catch (error) {
-        console.error('Failed to terminate session:', error)
-        return false
-      }
+    terminateSession(sessionId: string) {
+      this.sessions = this.sessions.filter(s => s.id !== sessionId)
+      this.persist()
     },
 
     persist() {

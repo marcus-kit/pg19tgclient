@@ -1,4 +1,7 @@
+import { createClient } from '@supabase/supabase-js'
+
 interface UpdateUserData {
+  userId: number
   data: {
     firstName?: string
     lastName?: string
@@ -12,14 +15,22 @@ interface UpdateUserData {
 }
 
 export default defineEventHandler(async (event) => {
-  // Проверяем авторизацию - userId берём из сессии
-  const sessionUser = await requireUser(event)
-  const userId = sessionUser.id
-
+  const config = useRuntimeConfig()
   const body = await readBody<UpdateUserData>(event)
 
-  // Используем shared Supabase client
-  const supabase = useSupabaseServer()
+  // Проверяем наличие userId
+  if (!body.userId) {
+    throw createError({
+      statusCode: 400,
+      message: 'userId обязателен'
+    })
+  }
+
+  // Подключаемся к Supabase с service role
+  const supabase = createClient(
+    config.public.supabaseUrl,
+    config.supabaseServiceKey
+  )
 
   // Маппинг camelCase → snake_case (только заполненные поля)
   const dbData: Record<string, unknown> = {}
@@ -39,7 +50,7 @@ export default defineEventHandler(async (event) => {
     const { data: currentUser } = await supabase
       .from('users')
       .select('first_name, last_name, middle_name')
-      .eq('id', userId)
+      .eq('id', body.userId)
       .single()
 
     if (currentUser) {
@@ -62,7 +73,7 @@ export default defineEventHandler(async (event) => {
   const { data: updated, error } = await supabase
     .from('users')
     .update(dbData)
-    .eq('id', userId)
+    .eq('id', body.userId)
     .select(`
       id,
       first_name,
