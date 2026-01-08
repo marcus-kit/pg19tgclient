@@ -131,22 +131,13 @@ const resetForm = () => {
               </p>
             </div>
 
-            <div class="flex gap-4 justify-center">
-              <NuxtLink
-                to="/"
-                class="inline-flex items-center gap-2 text-primary hover:text-primary-400 font-medium transition-colors"
-              >
-                <Icon name="heroicons:arrow-left" class="w-4 h-4" />
-                <span>Вернуться на главную</span>
-              </NuxtLink>
-              <button
-                @click="resetForm"
-                class="inline-flex items-center gap-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-medium transition-colors"
-              >
-                <Icon name="heroicons:arrow-path" class="w-4 h-4" />
-                <span>Отправить ещё заявку</span>
-              </button>
-            </div>
+            <a
+              href="https://pg19-client.doka.team"
+              class="inline-flex items-center gap-2 btn-primary px-8 py-4 text-lg"
+            >
+              <Icon name="heroicons:clipboard-document-list" class="w-5 h-5" />
+              <span>Отследить статус заявки</span>
+            </a>
           </div>
 
           <!-- Form -->
