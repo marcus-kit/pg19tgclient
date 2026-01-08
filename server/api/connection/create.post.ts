@@ -114,6 +114,7 @@ export default defineEventHandler(async (event) => {
         contact_name: fullName,
         contact_method: 'phone',
         contact_value: `+${phone}`,
+        address_raw: addressText,
         // Новые поля
         full_name: fullName,
         phone: `+${phone}`, // Сохраняем с +
