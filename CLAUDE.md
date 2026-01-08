@@ -74,8 +74,9 @@ app/
 ├── composables/
 │   ├── useSiteContent.ts  # CMS content from Supabase
 │   ├── useChat.ts         # Chat session & messages with Realtime
-│   ├── useCoverageCheck.ts
-│   └── useYandex*.ts      # Yandex Maps integration
+│   ├── useCoverageCheck.ts # Coverage zone check
+│   ├── useDadataSuggest.ts # DaData address suggestions
+│   └── useYandex*.ts      # Yandex Maps (geocoder, map picker)
 ├── layouts/
 │   └── default.vue        # Main layout (includes ChatWidget)
 ├── stores/
@@ -155,6 +156,26 @@ colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
 
 **Realtime:** Subscribed via Supabase channels for new messages.
 
+### Address API (`/api/address/`)
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/address/suggest` | POST | DaData address suggestions with coordinates |
+
+### Geolocation API (`/api/geolocation/`)
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/geolocation/ip` | GET | IP-based geolocation fallback |
+
+### Connection API (`/api/connection/`)
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/connection/create` | POST | Create connection request |
+
+### Coverage API (`/api/coverage/`)
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/coverage/check` | POST | Check if coordinates are in coverage zone |
+
 ### Composables
 ```typescript
 // CMS content loading
@@ -163,7 +184,43 @@ const { content, pending } = useSiteContent<T>('home')
 // Services and TV channels
 const { data } = useServices()
 const { data } = useTvChannels()
+
+// DaData address suggestions
+const { suggestions, isLoading, getSuggestions, clearSuggestions } = useDadataSuggest()
+await getSuggestions('Ростов-на-Дону, ул. Пушкинская')
+
+// Coverage zone check
+const { checkCoverage } = useCoverageCheck()
+const result = await checkCoverage(lat, lon) // { inCoverage, zoneId, zoneName }
 ```
+
+## Connection Form (`/connect`)
+
+Форма подключения с адресной нормализацией через DaData.
+
+### Компоненты
+- `app/pages/connect.vue` — страница формы
+- `app/components/connection/AddressInput.vue` — ввод адреса с подсказками DaData
+- `app/components/connection/MapPicker.vue` — выбор адреса на карте Яндекс
+- `app/components/connection/PhoneInput.vue` — ввод телефона с маской
+
+### DaData Integration
+API ключи хранятся в серверном `runtimeConfig` (не попадают в клиентский бандл):
+```typescript
+// nuxt.config.ts
+runtimeConfig: {
+  dadataApiKey: process.env.DADATA_API_KEY,
+  dadataSecretKey: process.env.DADATA_SECRET_KEY,
+}
+```
+
+Запросы к DaData проксируются через `/api/address/suggest` для безопасности.
+
+### IP Geolocation Fallback
+Если браузер не даёт доступ к геолокации, используется определение по IP через `/api/geolocation/ip` (ip-api.com).
+
+### После отправки заявки
+Пользователь перенаправляется в личный кабинет (pg19-client.doka.team) для отслеживания статуса.
 
 ## Database Schema
 
