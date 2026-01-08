@@ -3,7 +3,7 @@ import { getCookie } from 'h3'
 const CHAT_SESSION_COOKIE = 'pg19_chat_session'
 
 interface SendRequest {
-  chatId: number
+  chatId: string
   message: string
 }
 
@@ -52,7 +52,7 @@ export default defineEventHandler(async (event) => {
   const chatSessionToken = getCookie(event, CHAT_SESSION_COOKIE)
 
   let senderName: string
-  let senderId: number | null = null
+  let senderId: string | null = null
 
   if (chat.user_id) {
     // Чат принадлежит авторизованному пользователю
@@ -81,7 +81,7 @@ export default defineEventHandler(async (event) => {
     .insert({
       chat_id: body.chatId,
       sender_type: 'user',
-      sender_id: senderId || 0,
+      sender_id: senderId,
       sender_name: senderName,
       content: body.message.trim(),
       content_type: 'text'

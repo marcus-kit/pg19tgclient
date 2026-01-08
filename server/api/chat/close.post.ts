@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 
 interface CloseRequest {
-  chatId: number
+  chatId: string
 }
 
 export default defineEventHandler(async (event) => {

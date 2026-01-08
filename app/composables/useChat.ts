@@ -15,8 +15,8 @@ export function useChat() {
 
   // Создать или получить чат
   async function initSession(options: {
-    chatId?: number
-    userId?: number
+    chatId?: string
+    userId?: string
     guestName?: string
     guestContact?: string
   }) {
