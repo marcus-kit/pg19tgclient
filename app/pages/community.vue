@@ -277,7 +277,7 @@ const handleScroll = (e: Event) => {
         <!-- Messages -->
         <div
           ref="messagesContainer"
-          class="flex-1 overflow-y-auto py-2 font-mono text-sm"
+          class="flex-1 overflow-y-auto text-sm"
           @scroll="handleScroll"
         >
           <!-- Loading indicator for history -->
@@ -285,20 +285,12 @@ const handleScroll = (e: Event) => {
             <Icon name="heroicons:arrow-path" class="w-4 h-4 text-primary animate-spin mx-auto" />
           </div>
 
-          <!-- Empty state -->
-          <div v-if="!isLoadingMessages && messages.length === 0" class="text-center py-12">
-            <p class="text-[var(--text-muted)]">Нет сообщений</p>
-            <p class="text-sm text-[var(--text-muted)] mt-1">Напишите первое!</p>
-          </div>
-
-          <!-- Messages list (IRC style) -->
-          <CommunityMessage
-            v-for="msg in messages"
-            :key="msg.id"
-            :message="msg"
-            :is-own="msg.userId === authStore.user?.id"
+          <!-- Messages list (Telegram bubble style with date grouping) -->
+          <CommunityMessageList
+            :messages="messages"
+            :current-user-id="authStore.user?.id"
             :show-moderation="showModeration"
-            :is-user-moderator="isUserModerator(msg.userId)"
+            :is-user-moderator="isUserModerator"
             @contextmenu="handleContextMenu"
             @retry="handleRetry"
           />

@@ -3,6 +3,7 @@
 
 import type { SendMessageRequest, CommunityMessage } from '~/types/community'
 import { communityMessageLimiter, communityImageLimiter } from '~~/server/utils/rateLimit'
+import { sendCommunityNotifications, type NotificationPayload } from '~~/server/utils/communityNotifier'
 
 interface RpcResponse {
   success?: boolean
@@ -154,8 +155,69 @@ export default defineEventHandler(async (event) => {
     console.warn('Failed to broadcast message:', e)
   }
 
+  // Уведомления офлайн-пользователям через Telegram (fire-and-forget)
+  // Не блокируем ответ клиенту
+  notifyOfflineUsers(supabase, body.roomId, sessionUser.id, result).catch(e => {
+    console.warn('[Notifications] Failed to notify offline users:', e)
+  })
+
   return { message: result }
 })
+
+/**
+ * Отправка уведомлений офлайн-пользователям
+ */
+async function notifyOfflineUsers(
+  supabase: ReturnType<typeof useSupabaseServer>,
+  roomId: string,
+  senderId: string,
+  message: CommunityMessage
+): Promise<void> {
+  // Получаем офлайн-пользователей
+  const { data: offlineUsers, error } = await supabase.rpc('get_offline_room_members', {
+    p_room_id: roomId,
+    p_sender_id: senderId
+  })
+
+  if (error || !offlineUsers?.length) {
+    return
+  }
+
+  // Получаем имя комнаты
+  const { data: room } = await supabase
+    .from('community_rooms')
+    .select('name')
+    .eq('id', roomId)
+    .single()
+
+  const roomName = room?.name || 'Чат'
+  const senderName = message.user
+    ? `${message.user.firstName} ${message.user.lastName || ''}`.trim()
+    : 'Пользователь'
+
+  // Превью сообщения (до 100 символов)
+  let preview = message.content
+  if (message.contentType === 'image') {
+    preview = '📷 Изображение'
+  } else if (preview.length > 100) {
+    preview = preview.slice(0, 100) + '...'
+  }
+
+  // Формируем payloads
+  const payloads: NotificationPayload[] = offlineUsers.map((user: any) => ({
+    telegramChatId: user.telegram_id,
+    roomId,
+    roomName,
+    senderName,
+    messagePreview: preview
+  }))
+
+  // Отправляем (не ждём результата)
+  const result = await sendCommunityNotifications(payloads)
+  if (result.sent > 0 || result.failed > 0) {
+    console.log(`[Notifications] Sent ${result.sent}, failed ${result.failed} for room ${roomId}`)
+  }
+}
 
 // Форматирование времени мута
 function formatMuteMessage(mutedUntil?: string): string {

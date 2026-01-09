@@ -107,6 +107,35 @@ server/
 - `app/composables/useTelegramWebApp.ts` — BackButton, MainButton, HapticFeedback
 - `app/layouts/twa.vue` — Layout с управлением BackButton
 
+### Community Chat (Telegram-style)
+- `app/components/community/Message.vue` — Bubble-style сообщения
+- `app/components/community/MessageList.vue` — Группировка по датам
+- `app/components/community/MessageInput.vue` — Pill-style input
+- `server/utils/communityNotifier.ts` — Уведомления через Telegram Bot API
+
+## Community Chat Notifications
+
+Офлайн-пользователи получают уведомления о новых сообщениях через @PG19WEBAPP_bot.
+
+```
+Сообщение отправлено
+         │
+         ├── RPC get_offline_room_members (пользователи офлайн > 1 мин)
+         │
+         └── Telegram Bot API sendMessage
+                    │
+                    └── InlineKeyboard: "Открыть чат" → TWA
+```
+
+**Ключевые файлы:**
+- `migrations/046_community_notifications.sql` — RPC функция + настройки уведомлений
+- `server/utils/communityNotifier.ts` — Отправка через Bot API
+- `server/api/community/messages/send.post.ts` — Вызов notifyOfflineUsers()
+
+**Ограничения:**
+- Бот может отправить сообщение только если пользователь начал диалог с ботом (`/start`)
+- Порог офлайна: 1 минута (настраивается в RPC функции)
+
 ## API Endpoints
 
 | Endpoint | Auth | Description |

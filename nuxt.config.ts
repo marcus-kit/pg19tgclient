@@ -28,7 +28,8 @@ export default defineNuxtConfig({
     public: {
       supabaseUrl: process.env.SUPABASE_URL || 'https://supabase.doka.team',
       supabaseKey: process.env.SUPABASE_KEY || '',
-      telegramBotUsername: process.env.TELEGRAM_BOT_USERNAME || 'PG19WEBAPP_bot'
+      telegramBotUsername: process.env.TELEGRAM_BOT_USERNAME || 'PG19WEBAPP_bot',
+      twaUrl: process.env.TWA_URL || 'https://pg19-tg.doka.team'
     }
   },
 
