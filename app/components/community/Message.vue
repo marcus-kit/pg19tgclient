@@ -6,6 +6,7 @@ const props = defineProps<{
   isOwn: boolean
   showModeration?: boolean
   isUserModerator?: boolean
+  groupPosition?: 'start' | 'middle' | 'end' | 'single'
 }>()
 
 const emit = defineEmits<{
@@ -16,7 +17,11 @@ const emit = defineEmits<{
   mute: [userId: number]
   retry: [tempId: string]
   contextmenu: [event: MouseEvent, message: CommunityMessage]
+  scrollToMessage: [messageId: string]
 }>()
+
+// Telegram WebApp for haptic feedback
+const { hapticFeedback } = useTelegramWebApp()
 
 // Telegram-style time format: HH:MM
 const formattedTime = computed(() => {
@@ -30,6 +35,12 @@ const displayName = computed(() => {
   return props.message.user.nickname || props.message.user.firstName || 'Аноним'
 })
 
+// Show sender name only for first message in group (others' messages)
+const showSenderName = computed(() => {
+  if (props.isOwn) return false
+  return props.groupPosition === 'start' || props.groupPosition === 'single'
+})
+
 // Truncate helper for reply preview
 const truncate = (text: string, length: number) => {
   if (!text) return ''
@@ -40,34 +51,131 @@ const truncate = (text: string, length: number) => {
 const handleContextMenu = (event: MouseEvent) => {
   emit('contextmenu', event, props.message)
 }
+
+// Click on quote to scroll to original message
+const handleQuoteClick = () => {
+  if (props.message.replyTo?.id) {
+    emit('scrollToMessage', props.message.replyTo.id)
+  }
+}
+
+// ============================================
+// Swipe to Reply
+// ============================================
+const messageRef = ref<HTMLElement>()
+const swipeX = ref(0)
+const isSwiping = ref(false)
+const swipeThreshold = 60 // px to trigger reply
+const swipeMaxDistance = 80 // max swipe distance
+let startX = 0
+let startY = 0
+let isHorizontalSwipe: boolean | null = null
+
+const swipeStyle = computed(() => {
+  if (swipeX.value === 0) return {}
+  return {
+    transform: `translateX(${Math.min(swipeX.value, swipeMaxDistance)}px)`,
+    transition: isSwiping.value ? 'none' : 'transform 0.2s ease-out'
+  }
+})
+
+const swipeIconOpacity = computed(() => {
+  return Math.min(swipeX.value / swipeThreshold, 1)
+})
+
+const onTouchStart = (e: TouchEvent) => {
+  // Don't swipe on deleted messages or while sending
+  if (props.message.isDeleted || props.message.status === 'sending') return
+
+  startX = e.touches[0].clientX
+  startY = e.touches[0].clientY
+  isHorizontalSwipe = null
+  isSwiping.value = true
+}
+
+const onTouchMove = (e: TouchEvent) => {
+  if (!isSwiping.value) return
+
+  const currentX = e.touches[0].clientX
+  const currentY = e.touches[0].clientY
+  const diffX = currentX - startX
+  const diffY = currentY - startY
+
+  // Determine swipe direction on first significant movement
+  if (isHorizontalSwipe === null && (Math.abs(diffX) > 10 || Math.abs(diffY) > 10)) {
+    isHorizontalSwipe = Math.abs(diffX) > Math.abs(diffY)
+  }
+
+  // Only handle horizontal swipes to the right
+  if (isHorizontalSwipe && diffX > 0) {
+    e.preventDefault() // Prevent scroll
+    swipeX.value = Math.min(diffX, swipeMaxDistance)
+
+    // Haptic feedback when reaching threshold
+    if (swipeX.value >= swipeThreshold && diffX - 5 < swipeThreshold) {
+      hapticFeedback?.impactOccurred('light')
+    }
+  }
+}
+
+const onTouchEnd = () => {
+  if (!isSwiping.value) return
+
+  // Trigger reply if swiped past threshold
+  if (swipeX.value >= swipeThreshold) {
+    hapticFeedback?.impactOccurred('medium')
+    emit('reply', props.message)
+  }
+
+  // Reset
+  swipeX.value = 0
+  isSwiping.value = false
+  isHorizontalSwipe = null
+}
 </script>
 
 <template>
   <div
+    ref="messageRef"
     :class="[
-      'flex px-3 py-0.5',
+      'flex px-3',
       isOwn ? 'justify-end' : 'justify-start',
-      message.status === 'sending' && 'opacity-60',
-      message.status === 'failed' && 'opacity-80'
+      groupPosition === 'start' && 'mt-2',
+      groupPosition === 'middle' && 'mt-0.5',
+      groupPosition === 'end' && 'mt-0.5',
+      groupPosition === 'single' && 'mt-2'
     ]"
+    :style="swipeStyle"
+    @touchstart.passive="onTouchStart"
+    @touchmove="onTouchMove"
+    @touchend="onTouchEnd"
+    @touchcancel="onTouchEnd"
   >
+    <!-- Swipe reply icon (appears on left during swipe) -->
+    <div
+      v-if="swipeX > 0"
+      class="tg-swipe-reply-icon"
+      :style="{ opacity: swipeIconOpacity }"
+    >
+      <Icon name="heroicons:arrow-uturn-left" class="w-4 h-4 text-white" />
+    </div>
+
     <!-- Bubble -->
     <div
       :class="[
-        'relative max-w-[85%] min-w-[80px] px-3 py-2 rounded-2xl select-text',
-        isOwn
-          ? 'bg-primary text-white rounded-br-md'
-          : 'bg-white/10 text-[var(--text-primary)] rounded-bl-md',
-        message.isDeleted && 'opacity-60'
+        'tg-bubble select-text',
+        isOwn ? 'tg-bubble-own' : 'tg-bubble-other',
+        message.status === 'sending' && 'opacity-60',
+        message.status === 'failed' && 'opacity-80',
+        message.isDeleted && 'opacity-60',
+        // Group position classes for rounded corners
+        groupPosition && `tg-message-group-${groupPosition}`
       ]"
       @contextmenu.prevent="handleContextMenu"
     >
-      <!-- Sender name (only for others' messages) -->
-      <div
-        v-if="!isOwn && message.user"
-        class="flex items-center gap-1.5 mb-1"
-      >
-        <span class="text-sm font-medium text-secondary">{{ displayName }}</span>
+      <!-- Sender name (only for others' first message in group) -->
+      <div v-if="showSenderName" class="tg-sender-name flex items-center gap-1.5">
+        <span>{{ displayName }}</span>
         <span
           v-if="isUserModerator"
           class="text-[10px] text-yellow-400 bg-yellow-400/20 px-1.5 rounded"
@@ -77,24 +185,20 @@ const handleContextMenu = (event: MouseEvent) => {
       <!-- Reply quote -->
       <div
         v-if="message.replyTo"
-        :class="[
-          'mb-2 pl-2 py-1 border-l-2 rounded-r text-sm',
-          isOwn
-            ? 'bg-white/10 border-white/50'
-            : 'bg-white/5 border-secondary/50'
-        ]"
+        class="tg-quote"
+        @click="handleQuoteClick"
       >
-        <span :class="isOwn ? 'text-white/80' : 'text-secondary'">
+        <div class="tg-quote-name">
           {{ message.replyTo.user?.firstName || 'Аноним' }}
-        </span>
-        <p :class="isOwn ? 'text-white/60' : 'text-[var(--text-muted)]'">
+        </div>
+        <div class="tg-quote-text">
           {{ truncate(message.replyTo.content, 50) }}
-        </p>
+        </div>
       </div>
 
       <!-- Content -->
       <div class="break-words">
-        <span v-if="message.isDeleted" class="italic text-inherit/60">
+        <span v-if="message.isDeleted" class="italic opacity-60">
           Сообщение удалено
         </span>
         <template v-else>
@@ -118,42 +222,34 @@ const handleContextMenu = (event: MouseEvent) => {
           <!-- Text only -->
           <span v-else class="whitespace-pre-wrap">{{ message.content }}</span>
         </template>
-      </div>
 
-      <!-- Footer: time + status -->
-      <div
-        :class="[
-          'flex items-center justify-end gap-1 mt-1 text-[11px]',
-          isOwn ? 'text-white/60' : 'text-[var(--text-muted)]'
-        ]"
-      >
-        <!-- Pinned -->
-        <Icon
-          v-if="message.isPinned"
-          name="heroicons:bookmark-solid"
-          class="w-3 h-3 text-yellow-400"
-          title="Закреплено"
-        />
-
-        <!-- Time -->
-        <span>{{ formattedTime }}</span>
-
-        <!-- Status indicators -->
-        <Icon
-          v-if="message.status === 'sending'"
-          name="heroicons:clock"
-          class="w-3 h-3"
-        />
-        <Icon
-          v-else-if="message.status === 'failed'"
-          name="heroicons:exclamation-circle"
-          class="w-3 h-3 text-red-400"
-        />
-        <Icon
-          v-else-if="isOwn"
-          name="heroicons:check"
-          class="w-3 h-3"
-        />
+        <!-- Time and status (inline at end of text) -->
+        <span class="tg-time">
+          <!-- Pinned -->
+          <Icon
+            v-if="message.isPinned"
+            name="heroicons:bookmark-solid"
+            class="w-3 h-3 text-yellow-400 inline mr-1"
+            title="Закреплено"
+          />
+          {{ formattedTime }}
+          <!-- Status indicators -->
+          <Icon
+            v-if="message.status === 'sending'"
+            name="heroicons:clock"
+            class="w-3 h-3 inline ml-0.5"
+          />
+          <Icon
+            v-else-if="message.status === 'failed'"
+            name="heroicons:exclamation-circle"
+            class="w-3 h-3 text-red-400 inline ml-0.5"
+          />
+          <Icon
+            v-else-if="isOwn"
+            name="heroicons:check"
+            class="w-3 h-3 inline ml-0.5"
+          />
+        </span>
       </div>
 
       <!-- Failed retry button -->
@@ -161,8 +257,8 @@ const handleContextMenu = (event: MouseEvent) => {
         v-if="message.status === 'failed'"
         @click.stop="emit('retry', String(message.id))"
         :class="[
-          'absolute -bottom-5 text-xs underline',
-          isOwn ? 'right-0 text-red-400' : 'left-0 text-red-400'
+          'absolute -bottom-5 text-xs underline text-red-400',
+          isOwn ? 'right-0' : 'left-0'
         ]"
       >
         Повторить

@@ -1,0 +1,17 @@
+# /etc/systemd/system/pg19-notification-processor.service
+# Обработчик очереди уведомлений для PG19 TWA
+
+[Unit]
+Description=PG19 Community Notification Processor
+After=network.target
+
+[Service]
+Type=oneshot
+# Секретный ключ для авторизации (должен совпадать с INTERNAL_API_SECRET в docker-compose)
+Environment=INTERNAL_SECRET=your-secret-here
+ExecStart=/usr/bin/curl -s -X POST https://pg19-tg.doka.team/api/internal/process-notifications -H "Authorization: Bearer ${INTERNAL_SECRET}"
+# Таймаут 30 секунд
+TimeoutSec=30
+
+[Install]
+WantedBy=multi-user.target

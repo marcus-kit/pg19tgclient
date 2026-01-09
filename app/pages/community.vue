@@ -293,6 +293,7 @@ const handleScroll = (e: Event) => {
             :is-user-moderator="isUserModerator"
             @contextmenu="handleContextMenu"
             @retry="handleRetry"
+            @reply="(msg) => replyTo = msg"
           />
         </div>
 
