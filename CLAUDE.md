@@ -18,8 +18,8 @@ This file provides guidance to Claude Code when working with the Telegram Web Ap
 | Аспект | pg19v2client (Web) | pg19v2tgclient (TWA) |
 |--------|-------------------|---------------------|
 | Авторизация | Cookie сессия + Telegram Login Widget | `initData` из WebApp API + Cookie |
-| Layout | `default.vue` | `twa.vue` |
-| Навигация | AppHeader + MobileNav | TwaHeader + TwaMobileNav + BackButton API |
+| Layout | `default.vue` | `twa.vue` (без хедера) |
+| Навигация | AppHeader + MobileNav | TwaMobileNav + BackButton API |
 | Cookie | `sameSite: 'strict'` | `sameSite: 'none'` (для webview) |
 
 ## TWA Authentication Flow
@@ -58,7 +58,7 @@ app/
 ├── layouts/
 │   └── twa.vue              # TWA layout с BackButton
 ├── components/
-│   ├── twa/                 # TwaHeader, TwaMobileNav
+│   ├── twa/                 # TwaMobileNav
 │   ├── dashboard/           # BalanceCard, QuickActions, etc.
 │   ├── profile/             # Avatar, ContactInfo, etc.
 │   └── community/           # Message, MessageInput, etc.
@@ -110,7 +110,7 @@ server/
 ### Community Chat (Telegram-style)
 - `app/components/community/Message.vue` — Telegram-style bubbles с swipe-to-reply
 - `app/components/community/MessageList.vue` — Группировка по датам и авторам
-- `app/components/community/MessageInput.vue` — Pill-style input с reply preview
+- `app/components/community/MessageInput.vue` — Компактный pill-style input (отправка по Enter)
 - `app/components/community/TypingIndicator.vue` — Индикатор с аватарами печатающих
 - `server/utils/communityNotifier.ts` — Batch-уведомления через Telegram Bot API
 
@@ -120,6 +120,7 @@ server/
 - **Telegram colors** — purple #8774E1 (свои), dark #212121 (чужие)
 - **Scroll-to-quoted** — клик по quote скроллит к оригиналу с подсветкой
 - **Typing avatars** — аватары печатающих пользователей (max 3)
+- **Room sorting** — комнаты отсортированы: Город → Район → Дом
 
 ## Community Chat Notifications (Batch)
 

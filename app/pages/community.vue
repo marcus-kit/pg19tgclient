@@ -142,6 +142,19 @@ const levelIcon = (level: CommunityRoomLevel) => {
   }
 }
 
+// Sorted rooms: city → district → building
+const levelOrder: Record<CommunityRoomLevel, number> = {
+  city: 0,
+  district: 1,
+  building: 2
+}
+
+const sortedRooms = computed(() => {
+  return [...rooms.value].sort((a, b) => {
+    return (levelOrder[a.level] ?? 99) - (levelOrder[b.level] ?? 99)
+  })
+})
+
 // =====================================================
 // Mute Modal
 // =====================================================
@@ -213,9 +226,14 @@ const handleScroll = (e: Event) => {
   <div class="h-[calc(100vh-theme(spacing.16)-theme(spacing.20))] md:h-[calc(100vh-theme(spacing.16)-theme(spacing.6))] flex flex-col bg-[var(--bg-primary)]">
     <!-- Top Channel Tabs -->
     <header class="flex-shrink-0 border-b border-white/10">
-      <!-- Title row -->
+      <!-- Title row with members and online count -->
       <div class="flex items-center justify-between px-4 py-2">
-        <h2 class="font-bold text-[var(--text-primary)]">Сообщество</h2>
+        <div class="flex items-center gap-2">
+          <h2 class="font-bold text-[var(--text-primary)]">Сообщество</h2>
+          <span v-if="currentRoom" class="text-xs text-[var(--text-muted)]">
+            {{ currentRoom.membersCount }} участников
+          </span>
+        </div>
         <p class="text-xs text-[var(--text-muted)] flex items-center gap-1.5">
           <span class="w-2 h-2 rounded-full bg-accent animate-pulse" />
           {{ onlineCount }} онлайн
@@ -228,14 +246,14 @@ const handleScroll = (e: Event) => {
       </div>
 
       <!-- Empty -->
-      <div v-else-if="rooms.length === 0" class="text-center py-3 px-4">
+      <div v-else-if="sortedRooms.length === 0" class="text-center py-3 px-4">
         <p class="text-[var(--text-muted)] text-sm">Нет доступных чатов. Укажите адрес в профиле.</p>
       </div>
 
       <!-- Channel tabs -->
       <div v-else class="flex gap-1 px-2 pb-2 overflow-x-auto">
         <button
-          v-for="room in rooms"
+          v-for="room in sortedRooms"
           :key="room.id"
           @click="handleRoomSelect(room)"
           :class="[
@@ -263,11 +281,6 @@ const handleScroll = (e: Event) => {
     <!-- Chat Area -->
     <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
       <template v-if="currentRoom">
-        <!-- Room info bar -->
-        <div class="flex items-center gap-2 px-4 py-2 bg-white/5 text-xs text-[var(--text-muted)]">
-          <span>{{ currentRoom.membersCount }} участников</span>
-        </div>
-
         <!-- Pinned messages -->
         <CommunityPinnedMessages
           v-if="pinnedMessages.length > 0"

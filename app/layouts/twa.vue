@@ -49,11 +49,8 @@ onUnmounted(() => {
       paddingBottom: 'calc(64px + var(--twa-safe-bottom, 0px))'
     }"
   >
-    <!-- Header -->
-    <TwaHeader />
-
     <!-- Main Content -->
-    <main class="flex-1 pt-14">
+    <main class="flex-1">
       <div class="container mx-auto px-4 py-4">
         <slot />
       </div>
