@@ -108,33 +108,103 @@ server/
 - `app/layouts/twa.vue` — Layout с управлением BackButton
 
 ### Community Chat (Telegram-style)
-- `app/components/community/Message.vue` — Bubble-style сообщения
-- `app/components/community/MessageList.vue` — Группировка по датам
-- `app/components/community/MessageInput.vue` — Pill-style input
-- `server/utils/communityNotifier.ts` — Уведомления через Telegram Bot API
+- `app/components/community/Message.vue` — Telegram-style bubbles с swipe-to-reply
+- `app/components/community/MessageList.vue` — Группировка по датам и авторам
+- `app/components/community/MessageInput.vue` — Pill-style input с reply preview
+- `app/components/community/TypingIndicator.vue` — Индикатор с аватарами печатающих
+- `server/utils/communityNotifier.ts` — Batch-уведомления через Telegram Bot API
 
-## Community Chat Notifications
+### Telegram-style UI Features
+- **Swipe-to-reply** — свайп вправо на сообщении с haptic feedback
+- **Message grouping** — сообщения одного автора группируются (gap 2px vs 8px)
+- **Telegram colors** — purple #8774E1 (свои), dark #212121 (чужие)
+- **Scroll-to-quoted** — клик по quote скроллит к оригиналу с подсветкой
+- **Typing avatars** — аватары печатающих пользователей (max 3)
 
-Офлайн-пользователи получают уведомления о новых сообщениях через @PG19WEBAPP_bot.
+## Community Chat Notifications (Batch)
+
+Офлайн-пользователи получают **batch-уведомления** через @PG19WEBAPP_bot с задержкой 1 минута.
 
 ```
 Сообщение отправлено
          │
-         ├── RPC get_offline_room_members (пользователи офлайн > 1 мин)
-         │
-         └── Telegram Bot API sendMessage
+         └── RPC queue_community_notification
                     │
-                    └── InlineKeyboard: "Открыть чат" → TWA
+                    └── UPSERT в community_notification_queue
+                              │
+                              └── send_at = now() + 1 min (при первом сообщении)
+
+═══════════ Через 1 минуту ═══════════
+
+systemd timer (каждые 30 сек)
+         │
+         └── POST /api/internal/process-notifications
+                    │
+                    ├── RPC process_notification_queue (SELECT + DELETE атомарно)
+                    │
+                    └── Telegram Bot API sendMessage (batch)
+                              │
+                              └── InlineKeyboard: "Открыть чат" → TWA
 ```
 
-**Ключевые файлы:**
-- `migrations/046_community_notifications.sql` — RPC функция + настройки уведомлений
-- `server/utils/communityNotifier.ts` — Отправка через Bot API
-- `server/api/community/messages/send.post.ts` — Вызов notifyOfflineUsers()
+### Формат batch-уведомления
 
-**Ограничения:**
+**Одно сообщение:**
+```
+📬 Жители дома 5
+
+Иван Петров:
+Привет! Кто знает когда вода будет?
+
+[💬 Открыть чат]
+```
+
+**Несколько сообщений (2-3):**
+```
+📬 Жители дома 5
+
+3 новых сообщения:
+• Иван Петров: Привет! Кто зна...
+• Мария Сидорова: Вода будет зав...
+• Иван Петров: Понял, спасибо!
+
+[💬 Открыть чат]
+```
+
+### Ключевые файлы
+- `migrations/047_notification_queue.sql` — Таблица очереди + RPC функции
+- `server/utils/communityNotifier.ts` — `sendBatchNotification()`
+- `server/api/community/messages/send.post.ts` — Вызов `queueNotification()`
+- `server/api/internal/process-notifications.post.ts` — Обработчик очереди
+- `deploy/notification-processor.timer` — systemd timer (30 сек)
+- `deploy/notification-processor.service` — systemd service
+
+### RPC функции (Supabase)
+| Функция | Описание |
+|---------|----------|
+| `queue_community_notification` | Добавляет в очередь с дедупликацией по user+room |
+| `process_notification_queue` | Атомарно извлекает и удаляет готовые записи |
+| `cleanup_stale_notifications` | Удаляет застрявшие записи (pg_cron каждые 5 мин) |
+
+### Настройка на сервере
+```bash
+# Файлы в /etc/systemd/system/
+pg19-notification-processor.timer    # Timer каждые 30 сек
+pg19-notification-processor.service  # Curl к API
+
+# Команды
+sudo systemctl status pg19-notification-processor.timer
+sudo journalctl -u pg19-notification-processor.service -f
+```
+
+### Environment Variables
+- `NUXT_INTERNAL_API_SECRET` — Секрет для защиты /api/internal/* endpoints
+
+### Ограничения
 - Бот может отправить сообщение только если пользователь начал диалог с ботом (`/start`)
-- Порог офлайна: 1 минута (настраивается в RPC функции)
+- Задержка уведомления: 1 минута
+- Максимум превью в batch: 3 последних сообщения
+- Дедупликация: один user + один room = одно уведомление
 
 ## API Endpoints
 
@@ -148,6 +218,7 @@ server/
 | `POST /api/community/messages/send` | Yes | Отправить сообщение |
 | `GET /api/support/tickets` | Yes | Тикеты пользователя |
 | `POST /api/support/tickets` | Yes | Создать тикет |
+| `POST /api/internal/process-notifications` | Secret | Обработка очереди уведомлений (systemd) |
 
 ## Environment Variables
 
