@@ -22,8 +22,8 @@ export function generateSessionToken(): string {
 export function setSessionCookie(event: H3Event, token: string): void {
   setCookie(event, SESSION_COOKIE_NAME, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure: true, // Требуется для sameSite: 'none'
+    sameSite: 'none', // Для Telegram Web App (работает как webview)
     maxAge: SESSION_MAX_AGE,
     path: '/'
   })

@@ -47,8 +47,13 @@ export default defineNuxtRouteMiddleware(async (to) => {
     authStore.hydrate()
   }
 
-  // Если уже авторизован - пропускаем
-  if (authStore.isAuthenticated) return
+  // Проверяем наличие сессионного cookie
+  // Даже если store авторизован, нужно убедиться что сессия существует
+  const sessionCookie = useCookie('pg19_session')
+  const hasSession = !!sessionCookie.value
+
+  // Если есть и данные в store и cookie сессии - пропускаем
+  if (authStore.isAuthenticated && hasSession) return
 
   // Ждём загрузки Telegram WebApp SDK (до 3 секунд)
   const webApp = await waitForTelegramWebApp(3000)

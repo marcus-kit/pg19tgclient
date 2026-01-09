@@ -32,9 +32,12 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
+    console.log('[TWA Auth] Starting authentication...')
+
     // Валидация подписи initData (выбросит исключение при ошибке)
     // expiresIn: 86400 = 24 часа
     validate(body.initData, botToken, { expiresIn: 86400 })
+    console.log('[TWA Auth] initData validated')
 
     // Парсим данные
     const initData = parse(body.initData)
@@ -129,6 +132,7 @@ export default defineEventHandler(async (event) => {
     const tariffName = internetSub?.services?.name || 'Не подключен'
 
     // Создаём сессию с cookie
+    console.log('[TWA Auth] Creating session for user:', user.id)
     await createUserSession(
       event,
       user.id,
@@ -142,6 +146,7 @@ export default defineEventHandler(async (event) => {
         platform: 'telegram_webapp'
       }
     )
+    console.log('[TWA Auth] Session created successfully')
 
     // Обновляем telegram_username если изменился
     if (telegramUser.username && telegramUser.username !== user.telegram_username) {
