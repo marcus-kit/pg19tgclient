@@ -17,6 +17,16 @@ export function useTelegramWebApp() {
     const webApp = getWebApp()
     isInTelegram.value = !!webApp
     isReady.value = !!webApp
+
+    // Инициализация fullscreen состояния (Bot API 8.0+)
+    if (webApp) {
+      isFullscreen.value = webApp.isFullscreen || false
+
+      // Подписываемся на события fullscreen
+      webApp.onEvent('fullscreenChanged', () => {
+        isFullscreen.value = webApp.isFullscreen
+      })
+    }
   })
 
   // Получение initData для авторизации на сервере
@@ -138,6 +148,69 @@ export function useTelegramWebApp() {
     getWebApp()?.expand()
   }
 
+  // ========== Fullscreen (Bot API 8.0+) ==========
+  const isFullscreen = ref(false)
+
+  // Проверка поддержки fullscreen (версия >= 8.0)
+  const supportsFullscreen = computed(() => {
+    const webApp = getWebApp()
+    if (!webApp?.version) return false
+    const [major] = webApp.version.split('.').map(Number)
+    return major >= 8
+  })
+
+  // Запрос fullscreen
+  const requestFullscreen = async (): Promise<boolean> => {
+    const webApp = getWebApp()
+    if (!webApp || !supportsFullscreen.value) {
+      console.warn('[TWA] Fullscreen not supported')
+      return false
+    }
+
+    if (webApp.isFullscreen) {
+      return true
+    }
+
+    try {
+      await webApp.requestFullscreen()
+      hapticNotification('success')
+      return true
+    } catch (e) {
+      console.error('[TWA] requestFullscreen failed:', e)
+      hapticNotification('error')
+      return false
+    }
+  }
+
+  // Выход из fullscreen
+  const exitFullscreen = async (): Promise<boolean> => {
+    const webApp = getWebApp()
+    if (!webApp || !supportsFullscreen.value) {
+      return false
+    }
+
+    if (!webApp.isFullscreen) {
+      return true
+    }
+
+    try {
+      await webApp.exitFullscreen()
+      hapticImpact('light')
+      return true
+    } catch (e) {
+      console.error('[TWA] exitFullscreen failed:', e)
+      return false
+    }
+  }
+
+  // Toggle fullscreen
+  const toggleFullscreen = async (): Promise<boolean> => {
+    if (isFullscreen.value) {
+      return exitFullscreen()
+    }
+    return requestFullscreen()
+  }
+
   // ========== Viewport ==========
   const viewportHeight = computed(() => getWebApp()?.viewportHeight || window?.innerHeight || 0)
   const viewportStableHeight = computed(() => getWebApp()?.viewportStableHeight || window?.innerHeight || 0)
@@ -194,6 +267,13 @@ export function useTelegramWebApp() {
     // App control
     closeApp,
     expandApp,
+
+    // Fullscreen (Bot API 8.0+)
+    isFullscreen: readonly(isFullscreen),
+    supportsFullscreen,
+    requestFullscreen,
+    exitFullscreen,
+    toggleFullscreen,
 
     // Viewport
     viewportHeight,

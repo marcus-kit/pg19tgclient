@@ -42,24 +42,21 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   const authStore = useAuthStore()
 
-  // Гидратация store из localStorage
+  // Гидратация store из localStorage для быстрого отображения UI
   if (!authStore.isAuthenticated) {
     authStore.hydrate()
   }
-
-  // Проверяем наличие сессионного cookie
-  // Даже если store авторизован, нужно убедиться что сессия существует
-  const sessionCookie = useCookie('pg19_session')
-  const hasSession = !!sessionCookie.value
-
-  // Если есть и данные в store и cookie сессии - пропускаем
-  if (authStore.isAuthenticated && hasSession) return
 
   // Ждём загрузки Telegram WebApp SDK (до 3 секунд)
   const webApp = await waitForTelegramWebApp(3000)
 
   // Если не в Telegram - редирект на страницу ошибки
   if (!webApp) {
+    // Но если есть данные в localStorage - доверяем им (refresh вне Telegram)
+    if (authStore.isAuthenticated && authStore.user?.id) {
+      console.log('[TWA Auth] Using cached auth data')
+      return
+    }
     console.error('[TWA Auth] Telegram WebApp not available')
     return navigateTo('/twa-required')
   }
@@ -67,6 +64,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // Получаем initData для авторизации
   const initData = webApp.initData
   if (!initData) {
+    // Если есть localStorage данные - доверяем им (refresh внутри Telegram)
+    if (authStore.isAuthenticated && authStore.user?.id) {
+      console.log('[TWA Auth] Using cached auth data (no initData)')
+      return
+    }
     console.error('[TWA Auth] No initData available')
     return navigateTo('/twa-required')
   }

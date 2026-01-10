@@ -23,8 +23,24 @@ export default defineNuxtPlugin(() => {
     // Расширяем viewport на всю высоту
     WebApp.expand()
 
+    // Отключаем сворачивание при свайпе вниз
+    if (WebApp.disableVerticalSwipes) {
+      WebApp.disableVerticalSwipes()
+    }
+
     // Уведомляем Telegram что приложение готово
     WebApp.ready()
+
+    // Запрашиваем fullscreen режим (Bot API 8.0+)
+    // Работает как fallback если в BotFather не настроено
+    if (WebApp.requestFullscreen && !WebApp.isFullscreen) {
+      // Небольшая задержка чтобы Telegram успел инициализироваться
+      setTimeout(() => {
+        WebApp.requestFullscreen().catch(() => {
+          // Игнорируем ошибки - fullscreen может быть недоступен
+        })
+      }, 100)
+    }
 
     // Устанавливаем CSS переменные для safe area
     document.documentElement.style.setProperty(
@@ -34,6 +50,14 @@ export default defineNuxtPlugin(() => {
     document.documentElement.style.setProperty(
       '--twa-safe-bottom',
       `${WebApp.safeAreaInset?.bottom || 0}px`
+    )
+    document.documentElement.style.setProperty(
+      '--twa-safe-left',
+      `${WebApp.safeAreaInset?.left || 0}px`
+    )
+    document.documentElement.style.setProperty(
+      '--twa-safe-right',
+      `${WebApp.safeAreaInset?.right || 0}px`
     )
     document.documentElement.style.setProperty(
       '--twa-content-safe-top',
@@ -78,6 +102,44 @@ export default defineNuxtPlugin(() => {
       }
     })
 
+    // Слушаем изменения fullscreen (Bot API 8.0+)
+    WebApp.onEvent('fullscreenChanged', () => {
+      document.documentElement.classList.toggle('twa-fullscreen', WebApp.isFullscreen)
+      console.log('[TWA] Fullscreen changed:', WebApp.isFullscreen)
+    })
+
+    // Слушаем изменения safe area (важно для fullscreen!)
+    WebApp.onEvent('safeAreaChanged', () => {
+      document.documentElement.style.setProperty(
+        '--twa-safe-top',
+        `${WebApp.safeAreaInset?.top || 0}px`
+      )
+      document.documentElement.style.setProperty(
+        '--twa-safe-bottom',
+        `${WebApp.safeAreaInset?.bottom || 0}px`
+      )
+      document.documentElement.style.setProperty(
+        '--twa-safe-left',
+        `${WebApp.safeAreaInset?.left || 0}px`
+      )
+      document.documentElement.style.setProperty(
+        '--twa-safe-right',
+        `${WebApp.safeAreaInset?.right || 0}px`
+      )
+    })
+
+    // Слушаем изменения content safe area
+    WebApp.onEvent('contentSafeAreaChanged', () => {
+      document.documentElement.style.setProperty(
+        '--twa-content-safe-top',
+        `${WebApp.contentSafeAreaInset?.top || 0}px`
+      )
+      document.documentElement.style.setProperty(
+        '--twa-content-safe-bottom',
+        `${WebApp.contentSafeAreaInset?.bottom || 0}px`
+      )
+    })
+
     console.log('[TWA] Initialized successfully')
   } catch (error) {
     console.error('[TWA] Initialization failed:', error)
@@ -107,6 +169,14 @@ declare global {
     BackButton: TelegramBackButton
     MainButton: TelegramMainButton
     HapticFeedback: TelegramHapticFeedback
+    // Fullscreen API (Bot API 8.0+)
+    isFullscreen: boolean
+    requestFullscreen(): Promise<void>
+    exitFullscreen(): Promise<void>
+    // Swipe control (Bot API 7.7+)
+    isVerticalSwipesEnabled: boolean
+    disableVerticalSwipes(): void
+    enableVerticalSwipes(): void
     ready(): void
     expand(): void
     close(): void

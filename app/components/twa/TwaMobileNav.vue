@@ -28,11 +28,13 @@ const handleNavClick = () => {
 
 <template>
   <nav
-    class="fixed bottom-0 left-0 right-0 z-50 border-t"
+    class="fixed bottom-0 left-0 right-0 z-50 border-t transition-[padding]"
     :style="{
       backgroundColor: 'var(--tg-bg-color, var(--bg-surface))',
       borderColor: 'var(--glass-border)',
-      paddingBottom: 'var(--twa-safe-bottom, 0px)'
+      paddingBottom: 'var(--twa-safe-bottom, 0px)',
+      paddingLeft: 'var(--twa-safe-left, 0px)',
+      paddingRight: 'var(--twa-safe-right, 0px)'
     }"
   >
     <div class="flex items-center justify-around h-16">

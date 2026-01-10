@@ -20,11 +20,14 @@ const formattedBalance = computed(() => {
 
 <template>
   <header
-    class="fixed top-0 left-0 right-0 z-50 h-14 backdrop-blur-lg border-b"
+    class="fixed top-0 left-0 right-0 z-50 backdrop-blur-lg border-b"
     :style="{
       backgroundColor: 'var(--tg-header-bg-color, rgba(28, 28, 30, 0.9))',
       borderColor: 'var(--glass-border)',
-      paddingTop: 'var(--twa-safe-top, 0px)'
+      paddingTop: 'var(--twa-safe-top, 0px)',
+      paddingLeft: 'var(--twa-safe-left, 0px)',
+      paddingRight: 'var(--twa-safe-right, 0px)',
+      height: 'calc(56px + var(--twa-safe-top, 0px))'
     }"
   >
     <div class="h-full px-4 flex items-center justify-between">

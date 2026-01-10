@@ -46,11 +46,21 @@ onUnmounted(() => {
       backgroundColor: 'var(--tg-bg-color, var(--bg-base))',
       color: 'var(--tg-text-color, var(--text-primary))',
       paddingTop: 'var(--twa-content-safe-top, 0px)',
-      paddingBottom: 'calc(64px + var(--twa-safe-bottom, 0px))'
+      paddingBottom: 'calc(64px + var(--twa-safe-bottom, 0px))',
+      paddingLeft: 'var(--twa-safe-left, 0px)',
+      paddingRight: 'var(--twa-safe-right, 0px)'
     }"
   >
+    <!-- Header -->
+    <TwaHeader />
+
     <!-- Main Content -->
-    <main class="flex-1">
+    <main
+      class="flex-1"
+      :style="{
+        paddingTop: 'calc(56px + var(--twa-safe-top, 0px))'
+      }"
+    >
       <div class="container mx-auto px-4 py-4">
         <slot />
       </div>
@@ -85,5 +95,6 @@ onUnmounted(() => {
 .twa-layout {
   -ms-overflow-style: none;
   scrollbar-width: none;
+  transition: padding 0.3s ease;
 }
 </style>
