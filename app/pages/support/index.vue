@@ -76,6 +76,10 @@ const categories = [
   { value: 'other', label: 'Другое' }
 ]
 
+const openTicket = (ticketId: string) => {
+  navigateTo(`/support/${ticketId}`)
+}
+
 const submitTicket = async () => {
   if (!newTicket.value.subject.trim() || !newTicket.value.description.trim()) return
 
@@ -175,12 +179,11 @@ const submitTicket = async () => {
 
       <!-- Tickets List -->
       <div v-else-if="tickets.length" class="space-y-3">
-        <UCard
+        <div
           v-for="ticket in tickets"
           :key="ticket.id"
-          hover
-          class="cursor-pointer"
-          @click="router.push(`/support/${ticket.id}`)"
+          class="glass-card rounded-2xl p-6 cursor-pointer hover:bg-white/5 transition-colors"
+          @click="openTicket(ticket.id)"
         >
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="flex items-start gap-4">
@@ -213,7 +216,7 @@ const submitTicket = async () => {
             </div>
             <Icon name="heroicons:chevron-right" class="w-5 h-5 text-[var(--text-muted)] hidden sm:block" />
             </div>
-        </UCard>
+        </div>
       </div>
 
       <!-- Empty State -->

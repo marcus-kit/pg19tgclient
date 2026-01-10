@@ -64,7 +64,7 @@ npm run preview  # Preview production build
 ./deploy.sh tgclient --status  # Check status
 ```
 
-**ВАЖНО для Claude**: При запуске `npm run build` НЕ ограничивай вывод (не используй `| head -100`). Билд выводит ~150 строк, и без полного вывода не видно успешно ли он завершился.
+**ВАЖНО для Claude**: При запуске `npm run build` НЕ ограничивай вывод (не используй `| head -100`)
 
 ## Directory Structure
 
@@ -94,7 +94,9 @@ app/
 │   ├── services.vue          # Подключенные услуги
 │   ├── invoices.vue          # Счета на оплату
 │   ├── community.vue         # Чат сообщества
-│   ├── support.vue           # Тикеты поддержки
+│   ├── support/
+│   │   ├── index.vue         # Список тикетов
+│   │   └── [id].vue          # Детали тикета
 │   ├── profile.vue           # Профиль пользователя
 │   ├── more.vue              # Меню "Ещё"
 │   ├── twa-required.vue      # Ошибка: не в Telegram
@@ -138,7 +140,8 @@ server/
 | Услуги | `/services` | Подключенные услуги с детализацией |
 | Счета | `/invoices` | Счета на оплату, история |
 | Сообщество | `/community` | IRC-style чат по адресам |
-| Поддержка | `/support` | Тикеты, создание обращений |
+| Поддержка | `/support` | Список тикетов, создание обращений |
+| Детали тикета | `/support/[id]` | Просмотр тикета и переписка |
 | Профиль | `/profile` | Данные пользователя, адрес |
 | Ещё | `/more` | Дополнительные ссылки |
 | TWA Required | `/twa-required` | Ошибка: открыто не в Telegram |
@@ -830,6 +833,19 @@ if (!webApp) {
 
 **Причина:** Получение через broadcast и postgres_changes одновременно.
 **Решение:** Set `receivedViaBroadcast` для дедупликации (max 500 записей).
+
+### Навигация на подстраницу не работает (URL меняется, контент нет)
+
+**Причина:** Конфликт структуры маршрутов Nuxt. Если есть `pages/foo.vue` + `pages/foo/bar.vue`, Nuxt интерпретирует `foo.vue` как parent layout для `foo/*`, и без `<NuxtPage />` внутри дочерние роуты не рендерятся.
+**Решение:** Использовать `pages/foo/index.vue` + `pages/foo/bar.vue` — они будут независимыми sibling routes.
+
+```
+❌ Неправильно:              ✅ Правильно:
+pages/                       pages/foo/
+├── foo.vue      (parent)    ├── index.vue    (sibling)
+└── foo/                     └── bar.vue      (sibling)
+    └── bar.vue  (child)
+```
 
 ### Уведомления не приходят
 
