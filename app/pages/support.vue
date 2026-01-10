@@ -175,13 +175,13 @@ const submitTicket = async () => {
 
       <!-- Tickets List -->
       <div v-else-if="tickets.length" class="space-y-3">
-        <NuxtLink
+        <UCard
           v-for="ticket in tickets"
           :key="ticket.id"
-          :to="`/support/${ticket.id}`"
-          class="block"
+          hover
+          class="cursor-pointer"
+          @click="router.push(`/support/${ticket.id}`)"
         >
-          <UCard hover class="cursor-pointer">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="flex items-start gap-4">
               <div class="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10">
@@ -213,8 +213,7 @@ const submitTicket = async () => {
             </div>
             <Icon name="heroicons:chevron-right" class="w-5 h-5 text-[var(--text-muted)] hidden sm:block" />
             </div>
-          </UCard>
-        </NuxtLink>
+        </UCard>
       </div>
 
       <!-- Empty State -->
