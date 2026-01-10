@@ -15,69 +15,7 @@ const { fetchFaq } = useFaq()
 const { tickets, pending: ticketsPending, error: ticketsError, refresh: refreshTickets } = await fetchTickets()
 const { faq, pending: faqPending } = await fetchFaq()
 
-const activeTab = ref<'tickets' | 'faq' | 'chat'>('tickets')
-
-// Chat
-const chatStore = useChatStore()
-const authStore = useAuthStore()
-const { session, messages, isLoading: chatLoading, isSending, error: chatError, initSession, sendMessage } = useChat()
-
-const messageText = ref('')
-const messagesContainer = ref<HTMLElement | null>(null)
-const chatInitialized = ref(false)
-
-// Инициализация чата при переключении на вкладку
-watch(activeTab, async (tab) => {
-  if (tab === 'chat' && !chatInitialized.value) {
-    chatInitialized.value = true
-    const savedSessionId = chatStore.sessionId
-    if (savedSessionId) {
-      try {
-        await initSession({ chatId: savedSessionId, userId: authStore.user?.id })
-        if (session.value) {
-          chatStore.setSessionId(session.value.id)
-        }
-      } catch {
-        chatStore.sessionId = null
-      }
-    }
-    if (!savedSessionId && !session.value && authStore.isAuthenticated) {
-      await initSession({ userId: authStore.user?.id })
-      if (session.value) {
-        chatStore.setSessionId(session.value.id)
-      }
-    }
-  }
-})
-
-// Автоскролл при новых сообщениях
-watch(messages, () => {
-  nextTick(() => {
-    if (messagesContainer.value) {
-      messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
-    }
-  })
-}, { deep: true })
-
-// Отправка сообщения
-async function handleSendMessage() {
-  if (!messageText.value.trim() || isSending.value) return
-  const text = messageText.value
-  messageText.value = ''
-  try {
-    await sendMessage(text)
-    chatStore.clearUnread()
-  } catch {
-    messageText.value = text
-  }
-}
-
-function handleChatKeydown(e: KeyboardEvent) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault()
-    handleSendMessage()
-  }
-}
+const activeTab = ref<'tickets' | 'faq'>('tickets')
 
 // Статусы для UI
 const statusConfig: Record<string, { label: string; variant: 'info' | 'warning' | 'success' | 'neutral'; color: string }> = {
@@ -208,20 +146,6 @@ const submitTicket = async () => {
       >
         <Icon name="heroicons:question-mark-circle" class="w-4 h-4 mr-2 inline-block" />
         Частые вопросы
-      </button>
-      <button
-        @click="activeTab = 'chat'"
-        class="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-        :class="activeTab === 'chat'
-          ? 'bg-primary text-white'
-          : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'"
-        :style="activeTab !== 'chat' ? 'background: var(--glass-bg);' : ''"
-      >
-        <Icon name="heroicons:chat-bubble-left-right" class="w-4 h-4 mr-2 inline-block" />
-        Чат с поддержкой
-        <span v-if="chatStore.unreadCount > 0" class="ml-2 px-1.5 py-0.5 text-xs rounded-full bg-red-500 text-white">
-          {{ chatStore.unreadCount }}
-        </span>
       </button>
     </div>
 
@@ -360,85 +284,6 @@ const submitTicket = async () => {
           </div>
         </UCard>
       </template>
-    </div>
-
-    <!-- Chat Tab -->
-    <div v-if="activeTab === 'chat'" class="space-y-4">
-      <UCard class="overflow-hidden">
-        <!-- Chat Header -->
-        <div class="flex items-center gap-3 pb-4 border-b border-[var(--glass-border)]">
-          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-secondary/10 flex items-center justify-center">
-            <Icon name="heroicons:chat-bubble-left-right" class="w-5 h-5 text-primary" />
-          </div>
-          <div>
-            <h3 class="font-semibold text-[var(--text-primary)]">Чат с поддержкой</h3>
-            <p class="text-xs text-[var(--text-muted)]">
-              {{ session?.status === 'waiting' ? 'Ожидание оператора...' : session ? 'Онлайн' : 'Подключение...' }}
-            </p>
-          </div>
-        </div>
-
-        <!-- Chat Loading -->
-        <div v-if="chatLoading" class="py-16 flex items-center justify-center">
-          <Icon name="heroicons:arrow-path" class="w-8 h-8 text-primary animate-spin" />
-        </div>
-
-        <!-- Chat Content -->
-        <template v-else>
-          <!-- Messages Area -->
-          <div
-            ref="messagesContainer"
-            class="h-[400px] overflow-y-auto py-4 space-y-3"
-          >
-            <!-- Welcome message -->
-            <div v-if="messages.length === 0" class="text-center py-12">
-              <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/10 flex items-center justify-center">
-                <Icon name="heroicons:sparkles" class="w-8 h-8 text-primary" />
-              </div>
-              <h4 class="font-semibold text-[var(--text-primary)] mb-2">Добро пожаловать!</h4>
-              <p class="text-sm text-[var(--text-muted)]">
-                Напишите ваш вопрос и наш оператор ответит вам
-              </p>
-            </div>
-
-            <!-- Messages -->
-            <ChatMessage
-              v-for="msg in messages"
-              :key="msg.id"
-              :message="msg"
-            />
-          </div>
-
-          <!-- Input Area -->
-          <div class="pt-4 border-t border-[var(--glass-border)]">
-            <div v-if="chatError" class="text-red-400 text-sm mb-2">{{ chatError }}</div>
-
-            <div class="flex items-end gap-2">
-              <textarea
-                v-model="messageText"
-                @keydown="handleChatKeydown"
-                placeholder="Напишите сообщение..."
-                rows="1"
-                class="flex-1 px-4 py-3 rounded-xl text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none max-h-32"
-                style="background: var(--glass-bg); border: 1px solid var(--glass-border);"
-                :disabled="isSending"
-              ></textarea>
-
-              <button
-                @click="handleSendMessage"
-                :disabled="!messageText.trim() || isSending"
-                class="w-12 h-12 rounded-xl bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-white transition-all"
-              >
-                <Icon
-                  :name="isSending ? 'heroicons:arrow-path' : 'heroicons:paper-airplane'"
-                  class="w-5 h-5"
-                  :class="{ 'animate-spin': isSending }"
-                />
-              </button>
-            </div>
-          </div>
-        </template>
-      </UCard>
     </div>
 
     <!-- New Ticket Modal -->
