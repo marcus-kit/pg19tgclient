@@ -84,8 +84,21 @@ export default defineNuxtPlugin(() => {
       document.documentElement.style.setProperty('--tg-destructive-text-color', themeParams.destructive_text_color || '#ff3b30')
     }
 
+    // Устанавливаем класс dark/light на основе colorScheme Telegram
+    const updateColorScheme = () => {
+      if (WebApp.colorScheme === 'dark') {
+        document.documentElement.classList.add('dark')
+        document.documentElement.classList.remove('light')
+      } else {
+        document.documentElement.classList.add('light')
+        document.documentElement.classList.remove('dark')
+      }
+    }
+    updateColorScheme()
+
     // Слушаем изменения темы
     WebApp.onEvent('themeChanged', () => {
+      updateColorScheme()
       const params = WebApp.themeParams
       if (params) {
         document.documentElement.style.setProperty('--tg-bg-color', params.bg_color || '#1c1c1e')
