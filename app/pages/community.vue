@@ -223,11 +223,14 @@ const handleScroll = (e: Event) => {
 </script>
 
 <template>
-  <div class="h-[calc(100vh-theme(spacing.16)-theme(spacing.20))] md:h-[calc(100vh-theme(spacing.16)-theme(spacing.6))] flex flex-col bg-[var(--bg-primary)]">
-    <!-- Top Channel Tabs -->
-    <header class="flex-shrink-0 border-b border-white/10">
+  <div class="community-page">
+    <!-- Top Channel Tabs (fixed below TwaHeader) -->
+    <header
+      class="community-header fixed left-0 right-0 z-20 border-b border-white/10 bg-[var(--tg-bg-color,var(--bg-base))]"
+      :style="{ top: 'calc(56px + var(--twa-safe-top, 0px))' }"
+    >
       <!-- Title row with members and online count -->
-      <div class="flex items-center justify-between px-4 py-2">
+      <div class="flex items-center justify-between px-3 py-1">
         <div class="flex items-center gap-2">
           <h2 class="font-bold text-[var(--text-primary)]">Сообщество</h2>
           <span v-if="currentRoom" class="text-xs text-[var(--text-muted)]">
@@ -241,23 +244,23 @@ const handleScroll = (e: Event) => {
       </div>
 
       <!-- Loading -->
-      <div v-if="isLoadingRooms" class="flex items-center justify-center py-3">
+      <div v-if="isLoadingRooms" class="flex items-center justify-center py-2">
         <Icon name="heroicons:arrow-path" class="w-5 h-5 text-primary animate-spin" />
       </div>
 
       <!-- Empty -->
-      <div v-else-if="sortedRooms.length === 0" class="text-center py-3 px-4">
+      <div v-else-if="sortedRooms.length === 0" class="text-center py-2 px-3">
         <p class="text-[var(--text-muted)] text-sm">Нет доступных чатов. Укажите адрес в профиле.</p>
       </div>
 
       <!-- Channel tabs -->
-      <div v-else class="flex gap-1 px-2 pb-2 overflow-x-auto">
+      <div v-else class="flex gap-1 px-2 pb-1.5 overflow-x-auto">
         <button
           v-for="room in sortedRooms"
           :key="room.id"
           @click="handleRoomSelect(room)"
           :class="[
-            'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm whitespace-nowrap transition-colors',
+            'flex items-center gap-1.5 px-3 py-1 rounded-lg text-sm whitespace-nowrap transition-colors',
             currentRoom?.id === room.id
               ? 'bg-primary text-white'
               : 'bg-white/5 hover:bg-white/10 text-[var(--text-secondary)]'
@@ -278,8 +281,8 @@ const handleScroll = (e: Event) => {
       </div>
     </header>
 
-    <!-- Chat Area -->
-    <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+    <!-- Chat Area (scrollable between fixed header and input) -->
+    <main class="community-content">
       <template v-if="currentRoom">
         <!-- Pinned messages -->
         <CommunityPinnedMessages
@@ -290,7 +293,7 @@ const handleScroll = (e: Event) => {
         <!-- Messages -->
         <div
           ref="messagesContainer"
-          class="flex-1 overflow-y-auto text-sm"
+          class="messages-scroll"
           @scroll="handleScroll"
         >
           <!-- Loading indicator for history -->
@@ -309,35 +312,42 @@ const handleScroll = (e: Event) => {
             @reply="(msg) => replyTo = msg"
           />
         </div>
-
-        <!-- Typing indicator -->
-        <CommunityTypingIndicator :typing-users="typingUsers" />
-
-        <!-- Muted banner -->
-        <div
-          v-if="isMuted"
-          class="px-4 py-2 bg-yellow-500/20 text-yellow-400 text-sm flex items-center gap-2"
-        >
-          <Icon name="heroicons:speaker-x-mark" class="w-4 h-4" />
-          <span>Вы не можете писать до {{ mutedUntilFormatted }}</span>
-        </div>
-
-        <!-- Input -->
-        <CommunityMessageInput
-          :disabled="isSending || isMuted"
-          :reply-to="replyTo"
-          @send="handleSend"
-          @cancel-reply="replyTo = null"
-          @upload="handleUpload"
-          @typing="broadcastTyping"
-        />
       </template>
 
       <!-- No room selected -->
-      <div v-else class="flex-1 flex items-center justify-center">
+      <div v-else class="flex-1 flex items-center justify-center h-full">
         <p class="text-[var(--text-muted)]">Выберите канал выше</p>
       </div>
     </main>
+
+    <!-- Fixed bottom area (above TwaMobileNav) -->
+    <footer
+      v-if="currentRoom"
+      class="community-footer fixed left-0 right-0 z-20 bg-[var(--tg-bg-color,var(--bg-base))]"
+      :style="{ bottom: 'calc(64px + var(--twa-safe-bottom, 0px))' }"
+    >
+      <!-- Typing indicator -->
+      <CommunityTypingIndicator :typing-users="typingUsers" />
+
+      <!-- Muted banner -->
+      <div
+        v-if="isMuted"
+        class="px-4 py-2 bg-yellow-500/20 text-yellow-400 text-sm flex items-center gap-2"
+      >
+        <Icon name="heroicons:speaker-x-mark" class="w-4 h-4" />
+        <span>Вы не можете писать до {{ mutedUntilFormatted }}</span>
+      </div>
+
+      <!-- Input -->
+      <CommunityMessageInput
+        :disabled="isSending || isMuted"
+        :reply-to="replyTo"
+        @send="handleSend"
+        @cancel-reply="replyTo = null"
+        @upload="handleUpload"
+        @typing="broadcastTyping"
+      />
+    </footer>
 
     <!-- Context Menu -->
     <CommunityContextMenu
@@ -372,3 +382,51 @@ const handleScroll = (e: Event) => {
     />
   </div>
 </template>
+
+<style scoped>
+.community-page {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--tg-bg-color, var(--bg-base));
+}
+
+.community-content {
+  position: absolute;
+  left: 0;
+  right: 0;
+  /* Top: TwaHeader (56px + safe-top) + CommunityHeader (~70px) */
+  top: calc(56px + var(--twa-safe-top, 0px) + 70px);
+  /* Bottom: TwaMobileNav (64px + safe-bottom) + CommunityFooter (~56px) */
+  bottom: calc(64px + var(--twa-safe-bottom, 0px) + 56px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  /* Glass card effect */
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  margin: 0 8px;
+  border-radius: 16px;
+}
+
+.messages-scroll {
+  flex: 1;
+  overflow-y: auto;
+  font-size: 0.875rem;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px;
+}
+
+/* Hide scrollbar but keep functionality */
+.messages-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.messages-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+</style>

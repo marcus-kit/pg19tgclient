@@ -64,6 +64,8 @@ npm run preview  # Preview production build
 ./deploy.sh tgclient --status  # Check status
 ```
 
+**ВАЖНО для Claude**: При запуске `npm run build` НЕ ограничивай вывод (не используй `| head -100`). Билд выводит ~150 строк, и без полного вывода не видно успешно ли он завершился.
+
 ## Directory Structure
 
 ```
@@ -487,11 +489,27 @@ type CommunityReportReason =
 |---------|----------|
 | **Swipe-to-reply** | Свайп вправо на сообщении → reply с haptic feedback |
 | **Message grouping** | Сообщения одного автора группируются (gap 2px vs 8px) |
-| **Telegram colors** | Свои: purple #8774E1, Чужие: dark #212121 |
+| **Glass bubbles** | Полупрозрачные bubble с backdrop-filter blur |
+| **Fixed layout** | Header и input зафиксированы, сообщения скроллятся между ними |
 | **Scroll-to-quoted** | Клик по quote скроллит к оригиналу с подсветкой |
 | **Typing avatars** | Аватары печатающих (max 3) |
 | **Time grouping** | Разделители по датам |
 | **Read status** | ✓✓ для прочитанных |
+
+### Glass-style Bubbles (Dark Theme)
+
+```css
+/* Свои сообщения */
+--tg-bubble-own-bg: rgba(135, 116, 225, 0.3);
+border-color: rgba(135, 116, 225, 0.3);
+
+/* Чужие сообщения */
+--tg-bubble-other-bg: rgba(255, 255, 255, 0.08);
+border-color: rgba(255, 255, 255, 0.1);
+
+/* Общий эффект */
+backdrop-filter: blur(12px);
+```
 
 ## Batch Notifications (systemd)
 

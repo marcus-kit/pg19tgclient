@@ -466,11 +466,11 @@ html {
   --tg-quote-name-color: #3390EC;
 }
 
-/* Dark Theme - Telegram Colors */
+/* Dark Theme - Telegram Colors (Glass style) */
 .dark {
-  --tg-bubble-own-bg: #8774E1;
+  --tg-bubble-own-bg: rgba(135, 116, 225, 0.3);
   --tg-bubble-own-text: #FFFFFF;
-  --tg-bubble-other-bg: #212121;
+  --tg-bubble-other-bg: rgba(255, 255, 255, 0.08);
   --tg-bubble-other-text: #FFFFFF;
   --tg-name-color: #8774E1;
   --tg-time-color: rgba(255, 255, 255, 0.45);
@@ -491,6 +491,10 @@ html {
   border-radius: var(--tg-bubble-radius);
   word-wrap: break-word;
   position: relative;
+  /* Glass effect */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Own message bubble */
@@ -498,6 +502,7 @@ html {
   background: var(--tg-bubble-own-bg);
   color: var(--tg-bubble-own-text);
   border-bottom-right-radius: var(--tg-bubble-radius-tail);
+  border-color: rgba(135, 116, 225, 0.3);
 }
 
 /* Other's message bubble */
