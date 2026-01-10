@@ -10,12 +10,17 @@ const route = useRoute()
 const router = useRouter()
 const ticketId = route.params.id as string
 
-const { fetchTicket, addComment } = useTickets()
+const { fetchTicket, addComment, closeTicket } = useTickets()
 const { ticket, pending, error, refresh } = await fetchTicket(ticketId)
 
 // Форма ответа
 const replyContent = ref('')
 const submitting = ref(false)
+
+// Закрытие тикета
+const showCloseModal = ref(false)
+const closeStatus = ref<'resolved' | 'closed'>('resolved')
+const closing = ref(false)
 
 // Статусы для UI
 const statusConfig: Record<string, { label: string; variant: 'info' | 'warning' | 'success' | 'neutral'; color: string }> = {
@@ -83,6 +88,40 @@ const canReply = computed(() => {
   if (!ticket.value) return false
   return !['closed', 'resolved'].includes(ticket.value.status)
 })
+
+// Можно ли закрыть тикет
+const canClose = computed(() => {
+  if (!ticket.value) return false
+  return !['closed', 'resolved'].includes(ticket.value.status)
+})
+
+// Открыть модалку закрытия
+const openCloseModal = (status: 'resolved' | 'closed') => {
+  closeStatus.value = status
+  showCloseModal.value = true
+}
+
+// Закрыть тикет
+const handleClose = async () => {
+  if (!ticket.value || closing.value) return
+
+  closing.value = true
+  try {
+    const { success, error: closeError } = await closeTicket(ticket.value.id, closeStatus.value)
+
+    if (closeError) {
+      console.error('Error closing ticket:', closeError)
+      return
+    }
+
+    if (success) {
+      showCloseModal.value = false
+      await refresh()
+    }
+  } finally {
+    closing.value = false
+  }
+}
 
 // Scroll to bottom on mount
 onMounted(() => {
@@ -158,6 +197,26 @@ useHead({
                 Создана {{ formatDate(ticket.createdAt) }}
               </p>
             </div>
+          </div>
+
+          <!-- Кнопки закрытия -->
+          <div v-if="canClose" class="flex gap-2 flex-shrink-0">
+            <UButton
+              variant="success"
+              size="sm"
+              @click="openCloseModal('resolved')"
+            >
+              <Icon name="heroicons:check" class="w-4 h-4 mr-1" />
+              Решено
+            </UButton>
+            <UButton
+              variant="secondary"
+              size="sm"
+              @click="openCloseModal('closed')"
+            >
+              <Icon name="heroicons:x-mark" class="w-4 h-4 mr-1" />
+              Закрыть
+            </UButton>
           </div>
         </div>
 
@@ -287,5 +346,66 @@ useHead({
         </UButton>
       </UCard>
     </template>
+
+    <!-- Модалка подтверждения закрытия -->
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition-opacity duration-200"
+        leave-active-class="transition-opacity duration-200"
+        enter-from-class="opacity-0"
+        leave-to-class="opacity-0"
+      >
+        <div
+          v-if="showCloseModal"
+          class="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style="background-color: var(--modal-backdrop);"
+          @click.self="showCloseModal = false"
+        >
+          <div class="w-full max-w-md rounded-2xl p-6" style="background: var(--bg-surface); border: 1px solid var(--glass-border);">
+            <div class="text-center mb-6">
+              <div
+                class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+                :class="closeStatus === 'resolved' ? 'bg-accent/20' : 'bg-[var(--glass-bg)]'"
+              >
+                <Icon
+                  :name="closeStatus === 'resolved' ? 'heroicons:check-circle' : 'heroicons:x-circle'"
+                  class="w-8 h-8"
+                  :class="closeStatus === 'resolved' ? 'text-accent' : 'text-[var(--text-muted)]'"
+                />
+              </div>
+              <h3 class="text-lg font-semibold text-[var(--text-primary)]">
+                {{ closeStatus === 'resolved' ? 'Отметить как решённую?' : 'Закрыть заявку?' }}
+              </h3>
+              <p class="text-sm text-[var(--text-muted)] mt-2">
+                {{ closeStatus === 'resolved'
+                  ? 'Подтвердите, что ваша проблема была решена. После этого вы не сможете добавлять сообщения.'
+                  : 'Заявка будет закрыта. Если у вас появятся вопросы, создайте новую заявку.'
+                }}
+              </p>
+            </div>
+
+            <div class="flex gap-3">
+              <UButton
+                variant="secondary"
+                class="flex-1"
+                @click="showCloseModal = false"
+                :disabled="closing"
+              >
+                Отмена
+              </UButton>
+              <UButton
+                :variant="closeStatus === 'resolved' ? 'success' : 'primary'"
+                class="flex-1"
+                @click="handleClose"
+                :disabled="closing"
+              >
+                <Icon v-if="closing" name="heroicons:arrow-path" class="w-4 h-4 mr-2 animate-spin" />
+                {{ closing ? 'Закрытие...' : (closeStatus === 'resolved' ? 'Решено' : 'Закрыть') }}
+              </UButton>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
