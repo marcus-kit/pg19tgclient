@@ -9,7 +9,7 @@ export interface FaqItem {
 }
 
 export default defineEventHandler(async (event) => {
-  const supabase = useSupabaseServer()
+  const supabase = useSupabaseServer(event)
 
   // Получаем страницу FAQ
   const { data: page } = await supabase

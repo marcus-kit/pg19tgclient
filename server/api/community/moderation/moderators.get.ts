@@ -11,7 +11,7 @@ export default defineEventHandler(async (event): Promise<GetModeratorsResponse> 
     throw createError({ statusCode: 400, message: 'roomId обязателен' })
   }
 
-  const supabase = useSupabaseServer()
+  const supabase = useSupabaseServer(event)
 
   // Авторизация
   const sessionUser = await getUserFromSession(event)

@@ -8,7 +8,7 @@ interface AddCommentBody {
 }
 
 export default defineEventHandler(async (event) => {
-  const supabase = useSupabaseServer()
+  const supabase = useSupabaseServer(event)
 
   const ticketId = getRouterParam(event, 'id')
   if (!ticketId) {

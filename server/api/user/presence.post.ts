@@ -3,7 +3,7 @@
 // Вызывается клиентом каждые 30-60 секунд
 
 export default defineEventHandler(async (event) => {
-  const supabase = useSupabaseServer()
+  const supabase = useSupabaseServer(event)
 
   // Авторизация
   const sessionUser = await getUserFromSession(event)

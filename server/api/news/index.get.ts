@@ -1,14 +1,10 @@
-import { createClient } from '@supabase/supabase-js'
+import { serverSupabaseClient } from '#supabase/server'
 
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig()
   const query = getQuery(event)
 
   // Публичный доступ через ANON key (RLS автоматически фильтрует)
-  const supabase = createClient(
-    config.public.supabaseUrl,
-    config.public.supabaseKey
-  )
+  const supabase = await serverSupabaseClient(event)
 
   let queryBuilder = supabase
     .from('news')

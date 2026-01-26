@@ -24,7 +24,7 @@ interface TicketRow {
 }
 
 export default defineEventHandler(async (event) => {
-  const supabase = useSupabaseServer()
+  const supabase = useSupabaseServer(event)
 
   // Получаем пользователя из сессии
   const sessionUser = await getUserFromSession(event)

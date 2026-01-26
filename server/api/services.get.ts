@@ -1,5 +1,3 @@
-import { createClient } from '@supabase/supabase-js'
-
 interface ServiceRow {
   id: string
   name: string
@@ -16,13 +14,8 @@ interface ServiceRow {
   sort_order: number
 }
 
-export default defineEventHandler(async () => {
-  const config = useRuntimeConfig()
-
-  const supabase = createClient(
-    config.public.supabaseUrl,
-    config.supabaseServiceKey
-  )
+export default defineEventHandler(async (event) => {
+  const supabase = useSupabaseServer(event)
 
   const { data, error } = await supabase
     .from('services')

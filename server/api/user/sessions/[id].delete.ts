@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const supabase = useSupabaseServer()
+  const supabase = useSupabaseServer(event)
 
   // Проверяем, что сессия принадлежит пользователю
   const { data: session, error: fetchError } = await supabase

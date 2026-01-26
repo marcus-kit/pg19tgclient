@@ -1,4 +1,3 @@
-import type { RealtimeChannel } from '@supabase/supabase-js'
 import type {
   CommunityRoom,
   CommunityMessage,
@@ -57,8 +56,8 @@ export function useCommunityChat() {
   const onlineUsers = ref<Map<string, PresenceUser>>(new Map())
   const onlineCount = computed(() => onlineUsers.value.size)
 
-  let channel: RealtimeChannel | null = null
-  let roomsChannel: RealtimeChannel | null = null
+  let channel: ReturnType<typeof supabase.channel> | null = null
+  let roomsChannel: ReturnType<typeof supabase.channel> | null = null
   let hasSubscribedOnce = false // Флаг для отличия reconnect от первого подключения
 
   // Set для дедупликации сообщений, полученных через Broadcast

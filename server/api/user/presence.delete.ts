@@ -2,7 +2,7 @@
 // Пометить пользователя как offline (при выходе)
 
 export default defineEventHandler(async (event) => {
-  const supabase = useSupabaseServer()
+  const supabase = useSupabaseServer(event)
 
   // Авторизация
   const sessionUser = await getUserFromSession(event)

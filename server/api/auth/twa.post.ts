@@ -35,7 +35,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const telegramUser = initData.user
-    const supabase = useSupabaseServer()
+    const supabase = useSupabaseServer(event)
 
     // Find user by telegram_id
     const { data: existingUser, error: findError } = await supabase

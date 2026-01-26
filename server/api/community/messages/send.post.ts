@@ -46,7 +46,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Сообщение не может быть пустым' })
   }
 
-  const supabase = useSupabaseServer()
+  const supabase = useSupabaseServer(event)
 
   // Авторизация
   const sessionUser = await getUserFromSession(event)

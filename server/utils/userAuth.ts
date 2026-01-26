@@ -55,7 +55,7 @@ export async function getUserFromSession(event: H3Event): Promise<SessionUser | 
     return null
   }
 
-  const supabase = useSupabaseServer()
+  const supabase = useSupabaseServer(event)
 
   const { data: session, error } = await supabase
     .from('auth_sessions')
@@ -105,7 +105,7 @@ export async function createUserSession(
   identifier: string,
   metadata?: Record<string, unknown>
 ): Promise<string> {
-  const supabase = useSupabaseServer()
+  const supabase = useSupabaseServer(event)
   const token = generateSessionToken()
 
   const sessionExpiry = new Date()
@@ -143,7 +143,7 @@ export async function endUserSession(event: H3Event): Promise<void> {
   const token = getSessionToken(event)
 
   if (token) {
-    const supabase = useSupabaseServer()
+    const supabase = useSupabaseServer(event)
 
     await supabase
       .from('auth_sessions')

@@ -1,5 +1,3 @@
-import { createClient } from '@supabase/supabase-js'
-
 interface UpdateUserData {
   userId: number
   data: {
@@ -15,7 +13,6 @@ interface UpdateUserData {
 }
 
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig()
   const body = await readBody<UpdateUserData>(event)
 
   // Проверяем наличие userId
@@ -26,11 +23,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // Подключаемся к Supabase с service role
-  const supabase = createClient(
-    config.public.supabaseUrl,
-    config.supabaseServiceKey
-  )
+  const supabase = useSupabaseServer(event)
 
   // Маппинг camelCase → snake_case (только заполненные поля)
   const dbData: Record<string, unknown> = {}

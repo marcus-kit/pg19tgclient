@@ -3,7 +3,7 @@ export default defineEventHandler(async (event) => {
   const sessionUser = await requireUser(event)
   const userId = sessionUser.id
 
-  const supabase = useSupabaseServer()
+  const supabase = useSupabaseServer(event)
 
   const { data, error } = await supabase
     .from('users')

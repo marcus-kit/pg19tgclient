@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
   const sessionUser = await requireUser(event)
   const userId = sessionUser.id
 
-  const supabase = useSupabaseServer()
+  const supabase = useSupabaseServer(event)
 
   // Получаем реферальный код пользователя
   const { data: codeData, error: codeError } = await supabase

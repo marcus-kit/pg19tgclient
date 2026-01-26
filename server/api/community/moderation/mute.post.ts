@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Длительность должна быть от 1 до 10080 минут (7 дней)' })
   }
 
-  const supabase = useSupabaseServer()
+  const supabase = useSupabaseServer(event)
 
   // Авторизация
   const sessionUser = await getUserFromSession(event)

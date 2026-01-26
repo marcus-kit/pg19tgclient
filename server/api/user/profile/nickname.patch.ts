@@ -6,7 +6,7 @@ import type { UpdateNicknameRequest, UpdateNicknameResponse } from '~/types/comm
 export default defineEventHandler(async (event): Promise<UpdateNicknameResponse> => {
   const body = await readBody<UpdateNicknameRequest>(event)
 
-  const supabase = useSupabaseServer()
+  const supabase = useSupabaseServer(event)
 
   // Авторизация
   const sessionUser = await getUserFromSession(event)
