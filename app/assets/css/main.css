@@ -1,6 +1,38 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
+/* ============================================
+   Page Transitions - Instant Navigation Feel
+   ============================================ */
+
+/* View Transitions API (for modern browsers) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 100ms;
+}
+
+/* Fallback page transitions */
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 80ms ease;
+}
+
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+}
+
+/* Layout transitions */
+.layout-enter-active,
+.layout-leave-active {
+  transition: opacity 80ms ease;
+}
+
+.layout-enter-from,
+.layout-leave-to {
+  opacity: 0;
+}
+
 /* Telegram WebApp theme sync */
 :root {
   --tg-theme-bg-color: var(--color-neutral-50);

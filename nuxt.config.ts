@@ -8,6 +8,20 @@ export default defineNuxtConfig({
     compatibilityVersion: 4
   },
 
+  // Экспериментальные фичи для скорости
+  experimental: {
+    viewTransition: true, // Плавные переходы между страницами
+    payloadExtraction: false // Не нужно для SPA
+  },
+
+  // Настройки роутера
+  router: {
+    options: {
+      hashMode: false,
+      scrollBehaviorType: 'smooth'
+    }
+  },
+
   css: ['~/assets/css/main.css'],
 
   modules: [
@@ -39,6 +53,10 @@ export default defineNuxtConfig({
   },
 
   app: {
+    // Быстрые переходы между страницами
+    pageTransition: { name: 'page', mode: 'out-in' },
+    layoutTransition: { name: 'layout', mode: 'out-in' },
+
     head: {
       title: 'ПЖ19 — Личный кабинет',
       meta: [

@@ -8,6 +8,12 @@ useHead({
 
 <template>
   <NuxtLayout>
-    <NuxtPage />
+    <NuxtPage
+      :keepalive="{
+        max: 5,
+        include: ['dashboard', 'services', 'invoices', 'community', 'more', 'support']
+      }"
+      :page-key="$route.fullPath"
+    />
   </NuxtLayout>
 </template>

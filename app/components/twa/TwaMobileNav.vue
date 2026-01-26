@@ -42,6 +42,7 @@ const handleNavClick = () => {
         v-for="item in navigation"
         :key="item.href"
         :to="item.href"
+        prefetch
         class="flex flex-col items-center gap-1 py-2 px-3 transition-colors"
         :style="{
           color: isActive(item.href)
