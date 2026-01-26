@@ -4,7 +4,7 @@ export const useTickets = () => {
   /**
    * Получить список тикетов
    */
-  const fetchTickets = async (options: {
+  const fetchTickets = (options: {
     status?: TicketStatus
   } = {}) => {
     const { status } = options
@@ -12,11 +12,12 @@ export const useTickets = () => {
     const query: Record<string, string> = {}
     if (status) query.status = status
 
-    const { data, error, pending, refresh } = await useFetch<{ tickets: Ticket[] }>(
+    const { data, error, pending, refresh } = useFetch<{ tickets: Ticket[] }>(
       '/api/support/tickets',
       {
         query,
-        key: `tickets-${JSON.stringify(query)}`
+        key: `tickets-${JSON.stringify(query)}`,
+        lazy: true
       }
     )
 
@@ -31,11 +32,12 @@ export const useTickets = () => {
   /**
    * Получить тикет с комментариями
    */
-  const fetchTicket = async (id: string) => {
-    const { data, error, pending, refresh } = await useFetch<{ ticket: TicketDetail }>(
+  const fetchTicket = (id: string) => {
+    const { data, error, pending, refresh } = useFetch<{ ticket: TicketDetail }>(
       `/api/support/tickets/${id}`,
       {
-        key: `ticket-${id}`
+        key: `ticket-${id}`,
+        lazy: true
       }
     )
 

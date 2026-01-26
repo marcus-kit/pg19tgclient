@@ -11,9 +11,9 @@ const router = useRouter()
 const { fetchTickets, createTicket } = useTickets()
 const { fetchFaq } = useFaq()
 
-// Загружаем данные
-const { tickets, pending: ticketsPending, error: ticketsError, refresh: refreshTickets } = await fetchTickets()
-const { faq, pending: faqPending } = await fetchFaq()
+// Загружаем данные (lazy - не блокирует навигацию)
+const { tickets, pending: ticketsPending, error: ticketsError, refresh: refreshTickets } = fetchTickets()
+const { faq, pending: faqPending } = fetchFaq()
 
 const activeTab = ref<'tickets' | 'faq'>('tickets')
 

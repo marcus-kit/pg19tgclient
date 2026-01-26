@@ -4,11 +4,12 @@ export const useFaq = () => {
   /**
    * Получить FAQ
    */
-  const fetchFaq = async () => {
-    const { data, error, pending, refresh } = await useFetch<{ faq: FaqItem[] }>(
+  const fetchFaq = () => {
+    const { data, error, pending, refresh } = useFetch<{ faq: FaqItem[] }>(
       '/api/faq',
       {
-        key: 'faq-list'
+        key: 'faq-list',
+        lazy: true
       }
     )
 

@@ -11,7 +11,7 @@ const router = useRouter()
 const ticketId = route.params.id as string
 
 const { fetchTicket, addComment, closeTicket } = useTickets()
-const { ticket, pending, error, refresh } = await fetchTicket(ticketId)
+const { ticket, pending, error, refresh } = fetchTicket(ticketId)
 
 // Форма ответа
 const replyContent = ref('')

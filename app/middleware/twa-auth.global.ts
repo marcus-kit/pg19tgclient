@@ -73,9 +73,30 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return navigateTo('/twa-required')
   }
 
-  // Если уже авторизованы в localStorage - не блокируем, обновим в фоне
+  // Если уже авторизованы в localStorage - не блокируем навигацию
   const hasLocalAuth = authStore.isAuthenticated && authStore.user?.id
 
+  if (hasLocalAuth) {
+    // Обновляем данные в фоне, не блокируя навигацию
+    $fetch<{
+      success: boolean
+      user: any
+      account: any
+    }>('/api/auth/telegram-webapp', {
+      method: 'POST',
+      body: { initData }
+    }).then((response) => {
+      if (response.success) {
+        authStore.setAuthData(response.user, response.account)
+      }
+    }).catch((e) => {
+      // Игнорируем ошибки при фоновом обновлении
+      console.warn('[TWA Auth] Background refresh failed:', e.data?.message || e.message)
+    })
+    return
+  }
+
+  // Первичная авторизация - блокируем до получения данных
   try {
     const response = await $fetch<{
       success: boolean
@@ -92,15 +113,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
   } catch (e: any) {
     console.error('[TWA Auth] Authentication failed:', e.data?.message || e.message)
 
-    // Если аккаунт не привязан к Telegram - всегда показываем страницу привязки
+    // Если аккаунт не привязан к Telegram - показываем страницу привязки
     if (e.data?.statusCode === 404) {
       return navigateTo('/twa-link-account')
-    }
-
-    // Другие ошибки - используем localStorage если есть
-    if (hasLocalAuth) {
-      console.log('[TWA Auth] API failed, using cached auth data')
-      return
     }
 
     return navigateTo('/twa-required')

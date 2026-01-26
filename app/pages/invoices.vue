@@ -8,8 +8,8 @@ definePageMeta({
 
 const { fetchInvoices } = useInvoices()
 
-// Загружаем все счета
-const { invoices, pending, error, refresh } = await fetchInvoices()
+// Загружаем все счета (lazy - не блокирует навигацию)
+const { invoices, pending, error, refresh } = fetchInvoices()
 
 const filter = ref<'all' | 'unpaid' | 'paid'>('all')
 

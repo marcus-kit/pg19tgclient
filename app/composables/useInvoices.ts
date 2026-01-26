@@ -4,7 +4,7 @@ export const useInvoices = () => {
   /**
    * Получить список счетов
    */
-  const fetchInvoices = async (options: {
+  const fetchInvoices = (options: {
     status?: InvoiceStatus
     limit?: number
   } = {}) => {
@@ -13,11 +13,12 @@ export const useInvoices = () => {
     const query: Record<string, string | number> = { limit }
     if (status) query.status = status
 
-    const { data, error, pending, refresh } = await useFetch<{ invoices: Invoice[] }>(
+    const { data, error, pending, refresh } = useFetch<{ invoices: Invoice[] }>(
       '/api/invoices',
       {
         query,
-        key: `invoices-${JSON.stringify(query)}`
+        key: `invoices-${JSON.stringify(query)}`,
+        lazy: true
       }
     )
 
