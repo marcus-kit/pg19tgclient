@@ -21,3 +21,305 @@ body {
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
 }
+
+/* ============================================
+   Theme Variables
+   ============================================ */
+
+:root {
+  /* Backgrounds */
+  --bg-base: #ffffff;
+  --bg-surface: #f8fafc;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.08);
+}
+
+.dark {
+  --bg-base: #111827;
+  --bg-surface: #1f2937;
+  --text-primary: #ffffff;
+  --text-secondary: #d1d5db;
+  --text-muted: #9ca3af;
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+}
+
+/* ============================================
+   Telegram-style Community Chat
+   ============================================ */
+
+:root {
+  /* Telegram Typography */
+  --tg-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --tg-message-font-size: 16px;
+  --tg-message-line-height: 1.3125;
+  --tg-time-font-size: 11px;
+  --tg-name-font-size: 13px;
+
+  /* Telegram Bubble Styling */
+  --tg-bubble-radius: 18px;
+  --tg-bubble-radius-tail: 4px;
+  --tg-bubble-padding-x: 12px;
+  --tg-bubble-padding-y: 8px;
+  --tg-bubble-max-width: 85%;
+
+  /* Telegram Spacing */
+  --tg-message-gap-same: 2px;
+  --tg-message-gap-different: 8px;
+  --tg-date-separator-margin: 16px;
+
+  /* Light Theme - Telegram Colors */
+  --tg-bubble-own-bg: #E3FFC4;
+  --tg-bubble-own-text: #000000;
+  --tg-bubble-other-bg: #FFFFFF;
+  --tg-bubble-other-text: #000000;
+  --tg-name-color: #3390EC;
+  --tg-time-color: rgba(0, 0, 0, 0.45);
+  --tg-time-own-color: rgba(0, 0, 0, 0.45);
+  --tg-quote-border: #3390EC;
+  --tg-quote-bg: rgba(0, 0, 0, 0.04);
+  --tg-quote-name-color: #3390EC;
+}
+
+/* Dark Theme - Telegram Colors (Glass style) */
+.dark {
+  --tg-bubble-own-bg: rgba(135, 116, 225, 0.3);
+  --tg-bubble-own-text: #FFFFFF;
+  --tg-bubble-other-bg: rgba(255, 255, 255, 0.08);
+  --tg-bubble-other-text: #FFFFFF;
+  --tg-name-color: #8774E1;
+  --tg-time-color: rgba(255, 255, 255, 0.45);
+  --tg-time-own-color: rgba(255, 255, 255, 0.6);
+  --tg-quote-border: #8774E1;
+  --tg-quote-bg: rgba(255, 255, 255, 0.06);
+  --tg-quote-name-color: #8774E1;
+}
+
+/* Telegram Message Bubble Base */
+.tg-bubble {
+  font-family: var(--tg-font-family);
+  font-size: var(--tg-message-font-size);
+  line-height: var(--tg-message-line-height);
+  max-width: var(--tg-bubble-max-width);
+  min-width: 60px;
+  padding: var(--tg-bubble-padding-y) var(--tg-bubble-padding-x);
+  border-radius: var(--tg-bubble-radius);
+  word-wrap: break-word;
+  position: relative;
+  /* Glass effect */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Own message bubble */
+.tg-bubble-own {
+  background: var(--tg-bubble-own-bg);
+  color: var(--tg-bubble-own-text);
+  border-bottom-right-radius: var(--tg-bubble-radius-tail);
+  border-color: rgba(135, 116, 225, 0.3);
+}
+
+/* Other's message bubble */
+.tg-bubble-other {
+  background: var(--tg-bubble-other-bg);
+  color: var(--tg-bubble-other-text);
+  border-bottom-left-radius: var(--tg-bubble-radius-tail);
+}
+
+/* Sender name in bubble */
+.tg-sender-name {
+  font-size: var(--tg-name-font-size);
+  font-weight: 500;
+  color: var(--tg-name-color);
+  margin-bottom: 2px;
+}
+
+/* Time in bubble */
+.tg-time {
+  font-size: var(--tg-time-font-size);
+  color: var(--tg-time-color);
+  float: right;
+  margin-left: 8px;
+  margin-top: 4px;
+}
+
+.tg-bubble-own .tg-time {
+  color: var(--tg-time-own-color);
+}
+
+/* Reply quote block */
+.tg-quote {
+  background: var(--tg-quote-bg);
+  border-left: 2px solid var(--tg-quote-border);
+  border-radius: 0 4px 4px 0;
+  padding: 4px 8px;
+  margin-bottom: 6px;
+  cursor: pointer;
+}
+
+.tg-quote-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--tg-quote-name-color);
+}
+
+.tg-quote-text {
+  font-size: 14px;
+  color: var(--tg-bubble-other-text);
+  opacity: 0.7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.tg-bubble-own .tg-quote-text {
+  color: var(--tg-bubble-own-text);
+  opacity: 0.8;
+}
+
+/* Date separator */
+.tg-date-separator {
+  display: flex;
+  justify-content: center;
+  margin: var(--tg-date-separator-margin) 0;
+}
+
+.tg-date-label {
+  background: rgba(0, 0, 0, 0.3);
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+
+/* Typing indicator with avatars */
+.tg-typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+}
+
+.tg-typing-avatars {
+  display: flex;
+  margin-left: -4px;
+}
+
+.tg-typing-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-base);
+  margin-left: -8px;
+}
+
+.tg-typing-avatar:first-child {
+  margin-left: 0;
+}
+
+.tg-typing-dots {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+
+.tg-typing-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--tg-name-color);
+  border-radius: 50%;
+  animation: tg-typing-bounce 1.4s infinite ease-in-out both;
+}
+
+.tg-typing-dot:nth-child(1) { animation-delay: -0.32s; }
+.tg-typing-dot:nth-child(2) { animation-delay: -0.16s; }
+.tg-typing-dot:nth-child(3) { animation-delay: 0s; }
+
+@keyframes tg-typing-bounce {
+  0%, 80%, 100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Swipe to reply indicator */
+.tg-swipe-reply-icon {
+  position: absolute;
+  left: -40px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  background: var(--tg-name-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.tg-swipe-reply-icon.active {
+  opacity: 1;
+}
+
+.tg-swipe-reply-icon svg {
+  width: 18px;
+  height: 18px;
+  color: white;
+}
+
+/* Message highlight animation (when scrolling to quoted) */
+@keyframes tg-highlight-pulse {
+  0% { background-color: transparent; }
+  50% { background-color: rgba(135, 116, 225, 0.3); }
+  100% { background-color: transparent; }
+}
+
+.tg-highlight {
+  animation: tg-highlight-pulse 1.5s ease-out;
+}
+
+/* Message grouping - reduce gap for same author */
+.tg-message-group-start { margin-top: var(--tg-message-gap-different); }
+.tg-message-group-middle { margin-top: var(--tg-message-gap-same); }
+.tg-message-group-end { margin-top: var(--tg-message-gap-same); }
+
+/* Hide name for consecutive messages from same author */
+.tg-message-group-middle .tg-sender-name,
+.tg-message-group-end .tg-sender-name {
+  display: none;
+}
+
+/* Adjust border-radius for grouped messages */
+.tg-bubble-other.tg-message-group-start {
+  border-bottom-left-radius: var(--tg-bubble-radius-tail);
+}
+.tg-bubble-other.tg-message-group-middle {
+  border-top-left-radius: var(--tg-bubble-radius-tail);
+  border-bottom-left-radius: var(--tg-bubble-radius-tail);
+}
+.tg-bubble-other.tg-message-group-end {
+  border-top-left-radius: var(--tg-bubble-radius-tail);
+}
+
+.tg-bubble-own.tg-message-group-start {
+  border-bottom-right-radius: var(--tg-bubble-radius-tail);
+}
+.tg-bubble-own.tg-message-group-middle {
+  border-top-right-radius: var(--tg-bubble-radius-tail);
+  border-bottom-right-radius: var(--tg-bubble-radius-tail);
+}
+.tg-bubble-own.tg-message-group-end {
+  border-top-right-radius: var(--tg-bubble-radius-tail);
+}
