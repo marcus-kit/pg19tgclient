@@ -21,7 +21,7 @@ const emit = defineEmits<{
 }>()
 
 // Telegram WebApp for haptic feedback
-const { hapticFeedback } = useTelegramWebApp()
+const { haptic } = useTwa()
 
 // Telegram-style time format: HH:MM
 const formattedTime = computed(() => {
@@ -113,7 +113,7 @@ const onTouchMove = (e: TouchEvent) => {
 
     // Haptic feedback when reaching threshold
     if (swipeX.value >= swipeThreshold && diffX - 5 < swipeThreshold) {
-      hapticFeedback?.impactOccurred('light')
+      haptic.impactOccurred('light')
     }
   }
 }
@@ -123,7 +123,7 @@ const onTouchEnd = () => {
 
   // Trigger reply if swiped past threshold
   if (swipeX.value >= swipeThreshold) {
-    hapticFeedback?.impactOccurred('medium')
+    haptic.impactOccurred('medium')
     emit('reply', props.message)
   }
 

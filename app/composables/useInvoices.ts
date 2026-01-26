@@ -29,27 +29,7 @@ export const useInvoices = () => {
     }
   }
 
-  /**
-   * Получить неоплаченные счета (для dashboard)
-   */
-  const fetchUnpaidInvoices = async () => {
-    const { data, error, pending, refresh } = await useFetch<{ invoices: Invoice[] }>(
-      '/api/invoices/unpaid',
-      {
-        key: 'invoices-unpaid'
-      }
-    )
-
-    return {
-      invoices: computed(() => data.value?.invoices || []),
-      error,
-      pending,
-      refresh
-    }
-  }
-
   return {
-    fetchInvoices,
-    fetchUnpaidInvoices
+    fetchInvoices
   }
 }

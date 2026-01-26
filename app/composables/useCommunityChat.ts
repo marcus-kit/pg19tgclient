@@ -750,8 +750,8 @@ export function useCommunityChat() {
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
         )
       }
-    } catch (e) {
-      console.error('Failed to load messages since:', afterId, e)
+    } catch {
+      // Игнорируем ошибки загрузки пропущенных сообщений
     }
   }
 
@@ -790,18 +790,6 @@ export function useCommunityChat() {
 
     // Или текущую загруженную роль
     return currentUserRole.value === 'moderator' || currentUserRole.value === 'admin'
-  }
-
-  // Проверка роли admin в комнате
-  function isRoomAdmin(roomId?: number): boolean {
-    if (authStore.user?.role === 'admin') return true
-
-    const rid = roomId || currentRoom.value?.id
-    if (rid) {
-      return userRolesCache.value.get(rid) === 'admin'
-    }
-
-    return currentUserRole.value === 'admin'
   }
 
   // Проверка, является ли пользователь модератором комнаты
@@ -902,7 +890,6 @@ export function useCommunityChat() {
 
     // Роли и модерация
     isModerator,
-    isRoomAdmin,
     isUserModerator,
     muteUser,
     unmuteUser,
