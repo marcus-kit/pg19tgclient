@@ -427,6 +427,11 @@ export function useCommunityChat() {
     const tempId = `temp-${Date.now()}`
     const contentType: CommunityContentType = options?.imageUrl ? 'image' : 'text'
 
+    // Находим оригинальное сообщение для reply preview
+    const replyToMessage = options?.replyToId
+      ? messages.value.find(m => m.id === options.replyToId || m.id === String(options.replyToId))
+      : null
+
     const optimisticMessage: CommunityMessage = {
       id: tempId,
       roomId: currentRoom.value.id,
@@ -441,6 +446,11 @@ export function useCommunityChat() {
       deletedAt: null,
       deletedBy: null,
       replyToId: options?.replyToId ? String(options.replyToId) : null,
+      replyTo: replyToMessage ? {
+        id: replyToMessage.id,
+        content: replyToMessage.content,
+        user: replyToMessage.user
+      } : null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       status: 'sending',
@@ -484,8 +494,16 @@ export function useCommunityChat() {
       // 6. Проверяем, не было ли уже добавлено через realtime (race condition)
       const existingIdx = messages.value.findIndex(m => m.id === response.message.id)
       if (existingIdx === -1) {
-        // Добавляем реальное сообщение
-        messages.value.push({ ...response.message, status: 'sent' })
+        // Добавляем реальное сообщение, сохраняя replyTo из optimistic (сервер его не возвращает)
+        messages.value.push({
+          ...response.message,
+          replyTo: replyToMessage ? {
+            id: replyToMessage.id,
+            content: replyToMessage.content,
+            user: replyToMessage.user
+          } : null,
+          status: 'sent'
+        })
       } else {
         // Обновляем статус если уже было добавлено
         messages.value[existingIdx] = { ...messages.value[existingIdx], status: 'sent' }
@@ -609,6 +627,20 @@ export function useCommunityChat() {
 
           // Игнорируем если уже получили
           if (messages.value.some(m => m.id === message.id)) return
+
+          // Если есть replyToId, но нет replyTo — находим в локальных сообщениях
+          if (message.replyToId && !message.replyTo) {
+            const replyMsg = messages.value.find(
+              m => m.id === message.replyToId || m.id === Number(message.replyToId)
+            )
+            if (replyMsg) {
+              message.replyTo = {
+                id: replyMsg.id,
+                content: replyMsg.content,
+                user: replyMsg.user
+              }
+            }
+          }
 
           // Добавляем и помечаем как полученное через Broadcast
           receivedViaBroadcast.add(message.id)

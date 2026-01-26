@@ -72,10 +72,17 @@ export interface CommunityMember {
   user?: CommunityUser
 }
 
+// Preview для reply (только нужные поля для отображения цитаты)
+export interface CommunityReplyPreview {
+  id: string | number
+  content: string
+  user?: CommunityUser
+}
+
 // Сообщение
 export interface CommunityMessage {
-  id: string
-  roomId: string
+  id: string | number
+  roomId: string | number
   userId: string
   content: string
   contentType: CommunityContentType
@@ -91,7 +98,7 @@ export interface CommunityMessage {
   updatedAt: string
   // Joined fields
   user?: CommunityUser
-  replyTo?: CommunityMessage | null
+  replyTo?: CommunityReplyPreview | null
   // Optimistic UI status (клиентское поле, не хранится в БД)
   status?: MessageStatus
 }

@@ -25,3 +25,8 @@
 ## Команды
 - `pnpm run build` — сборка
 - `pnpm run dev` — dev server
+
+## Community Chat (useCommunityChat.ts)
+- Optimistic UI: temp-сообщение должно содержать ВСЕ данные для отображения (включая `replyTo` объект, не только `replyToId`)
+- Broadcast messages: входящие сообщения могут не содержать joined fields — дополнять из локального `messages.value`
+- Типы: `CommunityReplyPreview` для цитат, `CommunityMessage` для полных сообщений
