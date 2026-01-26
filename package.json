@@ -15,10 +15,10 @@
     "@nuxt/ui": "^4.3.0",
     "@nuxtjs/supabase": "^2.0.0",
     "@pinia/nuxt": "^0.11.0",
+    "@tma.js/sdk-vue": "^1.0.15",
     "nuxt": "^4.0.0",
     "tailwindcss": "^4.1.18",
-    "vue": "^3.5.0",
-    "vue-tg": "^0.7.0"
+    "vue": "^3.5.0"
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.0.0",

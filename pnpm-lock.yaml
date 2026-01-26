@@ -17,6 +17,9 @@ importers:
       '@pinia/nuxt':
         specifier: ^0.11.0
         version: 0.11.3(magicast@0.5.1)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.27(typescript@5.9.3)))
+      '@tma.js/sdk-vue':
+        specifier: ^1.0.15
+        version: 1.0.15(typescript@5.9.3)(vue@3.5.27(typescript@5.9.3))
       nuxt:
         specifier: ^4.0.0
         version: 4.3.0(@parcel/watcher@2.5.6)(@types/node@25.0.10)(@vue/compiler-sfc@3.5.27)(cac@6.7.14)(db0@0.3.4)(eslint@9.39.2(jiti@2.6.1))(ioredis@5.9.2)(lightningcss@1.31.1)(magicast@0.5.1)(optionator@0.9.4)(rollup@4.56.0)(terser@5.46.0)(typescript@5.9.3)(vite@7.3.1(@types/node@25.0.10)(jiti@2.6.1)(lightningcss@1.31.1)(terser@5.46.0)(yaml@2.8.2))(yaml@2.8.2)
@@ -26,9 +29,6 @@ importers:
       vue:
         specifier: ^3.5.0
         version: 3.5.27(typescript@5.9.3)
-      vue-tg:
-        specifier: ^0.7.0
-        version: 0.7.0(vue@3.5.27(typescript@5.9.3))
     devDependencies:
       '@nuxt/eslint':
         specifier: ^1.0.0
@@ -1909,6 +1909,29 @@ packages:
       y-protocols: ^1.0.1
       yjs: ^13.5.38
 
+  '@tma.js/bridge@2.2.2':
+    resolution: {integrity: sha512-dL7iZzYP/VC4/qJYSXPI1GXLGP3gLTp10L7iGY6PcjB2F4xXS2JnHUoYvD2DgQG1ogjE93zWnVIMN7inx1v+Eg==}
+
+  '@tma.js/sdk-vue@1.0.15':
+    resolution: {integrity: sha512-KrdCtFB3LYrbvMT2VbWIjM4E2pbSHV6Div01TnIolsfJ7KMYeDTd45YfiRn75qE/MFKwQEfk+iWRwfZd2A1NcQ==}
+    peerDependencies:
+      vue: ^3.0.0
+
+  '@tma.js/sdk@3.1.6':
+    resolution: {integrity: sha512-NENkQa7G5N9kwbL20ErUMO9Fukxl9eVhcJ439PbCg2WYMk/x9oNbx2DhEzhX4xM718zSjYejmSj1oXCKk0PxYA==}
+
+  '@tma.js/signals@1.0.1':
+    resolution: {integrity: sha512-i2HUuwGqL4BmM5KAklAUhMhlEgUOF+F4nMHHS/zxrmD0upHE/0CiXCEdQxVeeOGN6e2RrKlonA40sDtR6OUDCw==}
+
+  '@tma.js/toolkit@1.0.4':
+    resolution: {integrity: sha512-6CDlkgc+43WD2jy6jog3B50yt9t+/wRwrN25zOa4iSw4IzfqoFjaQcJzTupBYaRxz19C3Rrir7p0/qStS/Z8vw==}
+
+  '@tma.js/transformers@1.1.3':
+    resolution: {integrity: sha512-zRL+fdo/NBpGqCJfl8ItAvcJIFT5Zy6UOYJwQPmUV5/gTHgmSvmGlrP43PeVi9XZ7Ggf4xbO6LUa4ehxozhMTA==}
+
+  '@tma.js/types@1.0.2':
+    resolution: {integrity: sha512-qs4mi+U1xZmMQBdMhWAo1X4YqUJ/ae0y28s+GNCpQq58bsJo0h8rvyVOB1RwPvXogIY9+yribbZe6z3AIJmsAQ==}
+
   '@tybys/wasm-util@0.10.1':
     resolution: {integrity: sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==}
 
@@ -1939,9 +1962,6 @@ packages:
 
   '@types/resolve@1.20.2':
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
-
-  '@types/telegram-web-app@7.10.1':
-    resolution: {integrity: sha512-GKL659G6lnHRAt3Dt7L1Fa0dwvc+ZZQtJcYrJVJGwjvsbi/Rcp1qKs9pFwb34/KC04+J+TlQj4D7yKo10sBSEw==}
 
   '@types/web-bluetooth@0.0.20':
     resolution: {integrity: sha512-g9gZnnXVq7gM7v3tJCWV/qw7w+KeOlSHAhgF9RytFyifW6AF61hdT2ucrYhPq9hLs5JIryeupHV3qGk95dH9ow==}
@@ -2412,6 +2432,9 @@ packages:
     resolution: {integrity: sha512-e23vBV1ZLfjb9apvfPk4rHVu2ry6RIr2Wfs+O324okSidrX7pTAnEJPCh/O5BtRlr7QtZI7ktOP3vsqr7Z5XoA==}
     hasBin: true
 
+  better-promises@1.0.0:
+    resolution: {integrity: sha512-gPgL2nRgeSbMIe3QpsYdKR3K0S9OZuphVuos60Eqsw8d/6GivOkyJ5D/zmnolJ6hzh7upnnflBUWUlQh4qpU2A==}
+
   bindings@1.5.0:
     resolution: {integrity: sha512-p2q/t/mhvuOj/UeLlV6566GD/guowlr0hHxClI0W9m7MWYkL1F0hLo+0Aexs9HSPCtR1SXQ0TD3MMKrXZajbiQ==}
 
@@ -2867,6 +2890,9 @@ packages:
     resolution: {integrity: sha512-TWrgLOFUQTH994YUyl1yT4uyavY5nNB5muff+RtWaqNVCAK408b5ZnnbNAUEWLTCpum9w6arT70i1XdQ4UeOPA==}
     engines: {node: '>=0.12'}
 
+  error-kid@1.0.2:
+    resolution: {integrity: sha512-Xvq0ZrY/azCbREWKt9E/3mXDF0MkuEVVvHnOKutUhtq2O8pyneEixQ4nSFkA19Xfn+/OVSg//iVG0dxIDj7DIA==}
+
   error-stack-parser-es@1.0.5:
     resolution: {integrity: sha512-5qucVt2XcuGMcEGgWI7i+yZpmpByQ8J1lHhcL7PwqCwu9FPP3VUXzT4ltHe5i2z9dePwEHcDVOAfSnHsOlCXRA==}
 
@@ -3147,6 +3173,9 @@ packages:
   foreground-child@3.3.1:
     resolution: {integrity: sha512-gIXjKqtFuWEgzFRJA9WCQeSJLZDjgJUOMCMzxtvFq/37KojM1BFGufqsCy0r4qSQmYLsZYMeyRqzIWOMup03sw==}
     engines: {node: '>=14'}
+
+  fp-ts@2.16.11:
+    resolution: {integrity: sha512-LaI+KaX2NFkfn1ZGHoKCmcfv7yrZsC3b8NtWsTVQeHkq4F27vI5igUuO53sxqDEa2gNQMHFPmpojDw/1zmUK7w==}
 
   fraction.js@5.3.4:
     resolution: {integrity: sha512-1X1NTtiJphryn/uLQz3whtY6jK3fTqoE3ohKs0tT+Ujr1W59oopxmoEh7Lu5p6vBaPbgoM0bzveAW4Qi5RyWDQ==}
@@ -5121,11 +5150,6 @@ packages:
     resolution: {integrity: sha512-Hz9q5sa33Yhduglwz6g9skT8OBPii+4bFn88w6J+J4MfEo4KRRpmiNG/hHHkdbRFlLBOqxN8y8gf2Fb0MTUgVg==}
     peerDependencies:
       vue: ^3.5.0
-
-  vue-tg@0.7.0:
-    resolution: {integrity: sha512-7T61Jez7Luj2EMT+YXQXKqev+/yW55tYGjTTTZzBQcDNGZOlwGG+jfRtfY2T6IOr3oEpm1ZkarE0sD4979qRcA==}
-    peerDependencies:
-      vue: ^3
 
   vue@3.5.27:
     resolution: {integrity: sha512-aJ/UtoEyFySPBGarREmN4z6qNKpbEguYHMmXSiOGk69czc+zhs0NF6tEFrY8TZKAl8N/LYAkd4JHVd5E/AsSmw==}
@@ -7247,6 +7271,59 @@ snapshots:
       y-protocols: 1.0.7(yjs@13.6.29)
       yjs: 13.6.29
 
+  '@tma.js/bridge@2.2.2(typescript@5.9.3)':
+    dependencies:
+      '@tma.js/signals': 1.0.1
+      '@tma.js/toolkit': 1.0.4
+      '@tma.js/transformers': 1.1.3(typescript@5.9.3)
+      '@tma.js/types': 1.0.2
+      better-promises: 1.0.0
+      error-kid: 1.0.2
+      fp-ts: 2.16.11
+      mitt: 3.0.1
+      valibot: 1.2.0(typescript@5.9.3)
+    transitivePeerDependencies:
+      - typescript
+
+  '@tma.js/sdk-vue@1.0.15(typescript@5.9.3)(vue@3.5.27(typescript@5.9.3))':
+    dependencies:
+      '@tma.js/sdk': 3.1.6(typescript@5.9.3)
+      vue: 3.5.27(typescript@5.9.3)
+    transitivePeerDependencies:
+      - typescript
+
+  '@tma.js/sdk@3.1.6(typescript@5.9.3)':
+    dependencies:
+      '@tma.js/bridge': 2.2.2(typescript@5.9.3)
+      '@tma.js/signals': 1.0.1
+      '@tma.js/toolkit': 1.0.4
+      '@tma.js/transformers': 1.1.3(typescript@5.9.3)
+      '@tma.js/types': 1.0.2
+      better-promises: 1.0.0
+      error-kid: 1.0.2
+      fp-ts: 2.16.11
+      valibot: 1.2.0(typescript@5.9.3)
+    transitivePeerDependencies:
+      - typescript
+
+  '@tma.js/signals@1.0.1': {}
+
+  '@tma.js/toolkit@1.0.4':
+    dependencies:
+      better-promises: 1.0.0
+      fp-ts: 2.16.11
+
+  '@tma.js/transformers@1.1.3(typescript@5.9.3)':
+    dependencies:
+      '@tma.js/toolkit': 1.0.4
+      '@tma.js/types': 1.0.2
+      fp-ts: 2.16.11
+      valibot: 1.2.0(typescript@5.9.3)
+    transitivePeerDependencies:
+      - typescript
+
+  '@tma.js/types@1.0.2': {}
+
   '@tybys/wasm-util@0.10.1':
     dependencies:
       tslib: 2.8.1
@@ -7276,8 +7353,6 @@ snapshots:
   '@types/phoenix@1.6.7': {}
 
   '@types/resolve@1.20.2': {}
-
-  '@types/telegram-web-app@7.10.1': {}
 
   '@types/web-bluetooth@0.0.20': {}
 
@@ -7801,6 +7876,10 @@ snapshots:
 
   baseline-browser-mapping@2.9.18: {}
 
+  better-promises@1.0.0:
+    dependencies:
+      error-kid: 1.0.2
+
   bindings@1.5.0:
     dependencies:
       file-uri-to-path: 1.0.0
@@ -8206,6 +8285,8 @@ snapshots:
   entities@4.5.0: {}
 
   entities@7.0.1: {}
+
+  error-kid@1.0.2: {}
 
   error-stack-parser-es@1.0.5: {}
 
@@ -8628,6 +8709,8 @@ snapshots:
     dependencies:
       cross-spawn: 7.0.6
       signal-exit: 4.1.0
+
+  fp-ts@2.16.11: {}
 
   fraction.js@5.3.4: {}
 
@@ -10662,7 +10745,6 @@ snapshots:
   valibot@1.2.0(typescript@5.9.3):
     optionalDependencies:
       typescript: 5.9.3
-    optional: true
 
   vaul-vue@0.4.1(reka-ui@2.7.0(typescript@5.9.3)(vue@3.5.27(typescript@5.9.3)))(vue@3.5.27(typescript@5.9.3)):
     dependencies:
@@ -10790,11 +10872,6 @@ snapshots:
   vue-router@4.6.4(vue@3.5.27(typescript@5.9.3)):
     dependencies:
       '@vue/devtools-api': 6.6.4
-      vue: 3.5.27(typescript@5.9.3)
-
-  vue-tg@0.7.0(vue@3.5.27(typescript@5.9.3)):
-    dependencies:
-      '@types/telegram-web-app': 7.10.1
       vue: 3.5.27(typescript@5.9.3)
 
   vue@3.5.27(typescript@5.9.3):
