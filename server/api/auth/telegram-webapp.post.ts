@@ -2,9 +2,9 @@
  * Telegram Web App Authentication Endpoint
  * Валидирует initData и авторизует пользователя
  */
-import { createClient } from '@supabase/supabase-js'
 import { validateInitData, parseInitData } from '../../utils/telegramAuth'
 import { createUserSession } from '../../utils/userAuth'
+import { serverSupabaseServiceRole } from '#supabase/server'
 
 interface TelegramWebAppAuthBody {
   initData: string
@@ -50,10 +50,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // Подключаемся к Supabase с service role
-    const supabase = createClient(
-      config.public.supabaseUrl,
-      config.supabaseServiceKey
-    )
+    const supabase = serverSupabaseServiceRole(event)
 
     // Ищем пользователя по telegram_id
     const { data: user, error: userError } = await supabase
