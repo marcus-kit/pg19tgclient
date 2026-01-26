@@ -4,7 +4,7 @@
  * Нижняя навигация для Telegram Web App
  */
 const route = useRoute()
-const { hapticSelection } = useTelegramWebApp()
+const { haptic } = useTwa()
 
 const navigation = [
   { name: 'Главная', href: '/dashboard', icon: 'heroicons:home' },
@@ -22,7 +22,7 @@ const isActive = (href: string) => {
 }
 
 const handleNavClick = () => {
-  hapticSelection()
+  haptic.selectionChanged()
 }
 </script>
 

@@ -11,8 +11,15 @@ const authStore = useAuthStore()
         <p class="text-sm text-[var(--text-muted)] mb-1">Подключение</p>
         <p class="text-lg font-semibold text-[var(--text-primary)]">{{ authStore.account?.tariff }}</p>
       </div>
-      <div class="icon-container">
-        <Icon name="heroicons:wifi" class="w-6 h-6 text-primary" />
+      <div
+        class="w-12 h-12 rounded-xl flex items-center justify-center"
+        :class="authStore.isBlocked ? 'bg-red-500/20' : 'bg-orange-500/20'"
+      >
+        <Icon
+          name="heroicons:wifi"
+          class="w-6 h-6"
+          :class="authStore.isBlocked ? 'text-red-400' : 'text-orange-400'"
+        />
       </div>
     </div>
 

@@ -64,7 +64,7 @@ const categoryVariants: Record<NewsCategory, 'warning' | 'info' | 'success'> = {
     <section>
       <UCard class="p-0 overflow-hidden border-primary/30 bg-gradient-to-r from-primary/10 to-secondary/5">
         <div class="p-6 flex flex-col md:flex-row md:items-center gap-6">
-          <div class="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+          <div class="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-500 to-orange-400 flex items-center justify-center">
             <Icon name="heroicons:gift" class="w-8 h-8 text-white" />
           </div>
           <div class="flex-1">

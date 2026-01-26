@@ -53,7 +53,10 @@ const statusConfig = computed(() => {
           </span>
         </div>
       </div>
-      <div class="icon-container">
+      <div
+        class="w-12 h-12 rounded-xl flex items-center justify-center"
+        :class="authStore.isBlocked ? 'bg-red-500/20' : 'bg-accent/20'"
+      >
         <Icon :name="statusConfig.icon" class="w-6 h-6" :class="statusConfig.iconColor" />
       </div>
     </div>
