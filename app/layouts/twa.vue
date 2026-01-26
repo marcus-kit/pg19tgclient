@@ -18,15 +18,47 @@ const handleBackClick = () => {
   router.back()
 }
 
+// Безопасные методы для BackButton (vue-tg может быть не готов)
+const safeBackButton = {
+  show: () => {
+    try {
+      if (backButton?.show) backButton.show()
+    } catch (e) {
+      console.warn('[TWA Layout] BackButton.show() failed:', e)
+    }
+  },
+  hide: () => {
+    try {
+      if (backButton?.hide) backButton.hide()
+    } catch (e) {
+      console.warn('[TWA Layout] BackButton.hide() failed:', e)
+    }
+  },
+  onClick: (fn: () => void) => {
+    try {
+      if (backButton?.onClick) backButton.onClick(fn)
+    } catch (e) {
+      console.warn('[TWA Layout] BackButton.onClick() failed:', e)
+    }
+  },
+  offClick: (fn: () => void) => {
+    try {
+      if (backButton?.offClick) backButton.offClick(fn)
+    } catch (e) {
+      console.warn('[TWA Layout] BackButton.offClick() failed:', e)
+    }
+  }
+}
+
 // Управление BackButton
 watch(
   () => route.path,
   () => {
     if (canGoBack.value) {
-      backButton.show()
-      backButton.onClick(handleBackClick)
+      safeBackButton.show()
+      safeBackButton.onClick(handleBackClick)
     } else {
-      backButton.hide()
+      safeBackButton.hide()
     }
   },
   { immediate: true }
@@ -34,8 +66,8 @@ watch(
 
 // Очистка при размонтировании
 onUnmounted(() => {
-  backButton.offClick(handleBackClick)
-  backButton.hide()
+  safeBackButton.offClick(handleBackClick)
+  safeBackButton.hide()
 })
 </script>
 
