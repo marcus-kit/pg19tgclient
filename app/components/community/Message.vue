@@ -87,8 +87,11 @@ const onTouchStart = (e: TouchEvent) => {
   // Don't swipe on deleted messages or while sending
   if (props.message.isDeleted || props.message.status === 'sending') return
 
-  startX = e.touches[0].clientX
-  startY = e.touches[0].clientY
+  const touch = e.touches[0]
+  if (!touch) return
+
+  startX = touch.clientX
+  startY = touch.clientY
   isHorizontalSwipe = null
   isSwiping.value = true
 }
@@ -96,8 +99,11 @@ const onTouchStart = (e: TouchEvent) => {
 const onTouchMove = (e: TouchEvent) => {
   if (!isSwiping.value) return
 
-  const currentX = e.touches[0].clientX
-  const currentY = e.touches[0].clientY
+  const touch = e.touches[0]
+  if (!touch) return
+
+  const currentX = touch.clientX
+  const currentY = touch.clientY
   const diffX = currentX - startX
   const diffY = currentY - startY
 
@@ -113,7 +119,7 @@ const onTouchMove = (e: TouchEvent) => {
 
     // Haptic feedback when reaching threshold
     if (swipeX.value >= swipeThreshold && diffX - 5 < swipeThreshold) {
-      haptic.impactOccurred('light')
+      haptic?.impactOccurred('light')
     }
   }
 }
@@ -123,7 +129,7 @@ const onTouchEnd = () => {
 
   // Trigger reply if swiped past threshold
   if (swipeX.value >= swipeThreshold) {
-    haptic.impactOccurred('medium')
+    haptic?.impactOccurred('medium')
     emit('reply', props.message)
   }
 
