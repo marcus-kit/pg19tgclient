@@ -24,7 +24,7 @@ const reasons: { value: CommunityReportReason; label: string; icon: string }[] =
   { value: 'other', label: 'Другое', icon: 'heroicons:question-mark-circle' }
 ]
 
-const handleSubmit = async () => {
+async function handleSubmit() {
   if (!selectedReason.value) {
     error.value = 'Выберите причину жалобы'
     return
@@ -40,7 +40,7 @@ const handleSubmit = async () => {
   })
 }
 
-const handleBackdropClick = (e: MouseEvent) => {
+function handleBackdropClick(e: MouseEvent) {
   if (e.target === e.currentTarget) {
     emit('close')
   }

@@ -31,32 +31,32 @@ const availableServices = computed(() => {
 })
 
 // Форматирование цены
-const formatPrice = (kopeks: number) => {
+function formatPrice(kopeks: number) {
   return (kopeks / 100).toLocaleString('ru-RU')
 }
 
 // Получить цену подписки (custom или стандартная)
-const getSubscriptionPrice = (sub: Subscription) => {
+function getSubscriptionPrice(sub: Subscription) {
   return sub.customPrice ?? sub.service?.priceMonthly ?? 0
 }
 
 // Статус подписки
-const getStatusColor = (status: string) => {
+function getStatusColor(status: string) {
   const colorMap: Record<string, string> = {
     green: 'bg-accent/20 text-accent',
     yellow: 'bg-yellow-500/20 text-yellow-400',
-    gray: 'bg-gray-600/20 text-gray-400'
+    gray: 'bg-gray-600/20 text-gray-400',
   }
   return colorMap[subscriptionStatusColors[status as keyof typeof subscriptionStatusColors]] || colorMap.gray
 }
 
 // Иконка услуги
-const getServiceIcon = (service: Service | undefined) => {
+function getServiceIcon(service: Service | undefined) {
   return service?.icon || 'heroicons:cube'
 }
 
 // Запрос на подключение услуги
-const requestConnection = async (service: Service) => {
+async function requestConnection(service: Service) {
   connectingServiceId.value = service.id
   try {
     const { ticket, error } = await createTicket({

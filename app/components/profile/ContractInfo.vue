@@ -3,7 +3,7 @@ import { useAuthStore } from '~/stores/auth'
 
 const authStore = useAuthStore()
 
-const formatDate = (date: string) => {
+function formatDate(date: string) {
   return new Date(date).toLocaleDateString('ru-RU', {
     day: 'numeric',
     month: 'long',

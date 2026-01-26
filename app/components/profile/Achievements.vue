@@ -9,7 +9,7 @@ const unlockedCount = computed(() =>
 
 const totalCount = computed(() => authStore.achievements.length)
 
-const formatDate = (dateString: string) => {
+function formatDate(dateString: string) {
   return new Date(dateString).toLocaleDateString('ru-RU', {
     day: 'numeric',
     month: 'short',
@@ -17,7 +17,7 @@ const formatDate = (dateString: string) => {
   })
 }
 
-const getProgressPercent = (achievement: { progress?: number; maxProgress?: number }) => {
+function getProgressPercent(achievement: { progress?: number; maxProgress?: number }) {
   if (!achievement.progress || !achievement.maxProgress) return 0
   return Math.round((achievement.progress / achievement.maxProgress) * 100)
 }

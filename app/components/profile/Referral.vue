@@ -10,7 +10,7 @@ const referralLink = computed(() => {
 
 const copySuccess = ref(false)
 
-const copyCode = async () => {
+async function copyCode() {
   const code = authStore.referralProgram?.code
   if (!code) return
 
@@ -35,7 +35,7 @@ const copyCode = async () => {
   }
 }
 
-const copyLink = async () => {
+async function copyLink() {
   try {
     await navigator.clipboard.writeText(referralLink.value)
     copySuccess.value = true
@@ -47,7 +47,7 @@ const copyLink = async () => {
   }
 }
 
-const formatDate = (dateString: string) => {
+function formatDate(dateString: string) {
   return new Date(dateString).toLocaleDateString('ru-RU', {
     day: 'numeric',
     month: 'long',

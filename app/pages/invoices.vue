@@ -30,23 +30,23 @@ const filters = [
 ]
 
 // Форматирование суммы
-const formatAmount = (kopeks: number) => {
+function formatAmount(kopeks: number) {
   return (kopeks / 100).toLocaleString('ru-RU')
 }
 
 // Форматирование даты
-const formatDate = (dateString: string | null) => {
+function formatDate(dateString: string | null) {
   if (!dateString) return ''
   return new Date(dateString).toLocaleDateString('ru-RU')
 }
 
 // Цвет бейджа статуса
-const getStatusBadgeClass = (status: InvoiceStatus) => {
+function getStatusBadgeClass(status: InvoiceStatus) {
   const colorMap: Record<string, string> = {
     gray: 'bg-gray-600/20 text-gray-400',
     primary: 'bg-primary/20 text-primary',
     green: 'bg-accent/20 text-accent',
-    red: 'bg-red-500/20 text-red-400'
+    red: 'bg-red-500/20 text-red-400',
   }
   return colorMap[invoiceStatusColors[status]] || colorMap.gray
 }

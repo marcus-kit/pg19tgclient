@@ -35,21 +35,21 @@ const {
   broadcastTyping
 } = useCommunityChat()
 
-// Load rooms on mount
+// Загружаем комнаты при монтировании
 onMounted(async () => {
   await loadRooms()
 
-  // Auto-select building room (or first available)
+  // Автовыбор комнаты здания (или первой доступной)
   if (rooms.value.length > 0) {
     const buildingRoom = rooms.value.find(r => r.level === 'building')
     await selectRoom(buildingRoom || rooms.value[0])
   }
 })
 
-// Messages container ref for auto-scroll
+// Реф контейнера сообщений для автоскролла
 const messagesContainer = ref<HTMLElement>()
 
-// Auto-scroll on new messages
+// Автоскролл при новых сообщениях
 watch(messages, () => {
   nextTick(() => {
     if (messagesContainer.value) {
@@ -58,10 +58,10 @@ watch(messages, () => {
   })
 }, { deep: true })
 
-// Reply state
+// Состояние ответа на сообщение
 const replyTo = ref<CommunityMessage | null>(null)
 
-// Context menu state
+// Состояние контекстного меню
 const contextMenu = ref({
   show: false,
   x: 0,
@@ -69,71 +69,71 @@ const contextMenu = ref({
   message: null as CommunityMessage | null
 })
 
-// Handlers
-const handleSend = async (content: string, options?: { replyToId?: number }) => {
+// Обработчики
+async function handleSend(content: string, options?: { replyToId?: number }) {
   await sendMessage(content, options)
 }
 
-const handleUpload = async (file: File) => {
+async function handleUpload(file: File) {
   const { url, width, height } = await uploadImage(file)
   await sendMessage('', { imageUrl: url, imageWidth: width, imageHeight: height })
 }
 
-const handlePin = async (messageId: number) => {
+async function handlePin(messageId: number) {
   await togglePin(messageId)
 }
 
-const handleDelete = async (messageId: number) => {
+async function handleDelete(messageId: number) {
   if (confirm('Удалить это сообщение?')) {
     await deleteMessage(messageId)
   }
 }
 
-const handleRetry = async (tempId: string) => {
+async function handleRetry(tempId: string) {
   await retryMessage(tempId)
 }
 
-const handleRoomSelect = async (room: CommunityRoom) => {
+async function handleRoomSelect(room: CommunityRoom) {
   await selectRoom(room)
 }
 
-// Context menu handlers
-const handleContextMenu = (event: MouseEvent, message: CommunityMessage) => {
+// Обработчики контекстного меню
+function handleContextMenu(event: MouseEvent, message: CommunityMessage) {
   contextMenu.value = {
     show: true,
     x: event.clientX,
     y: event.clientY,
-    message
+    message,
   }
 }
 
-const closeContextMenu = () => {
+function closeContextMenu() {
   contextMenu.value.show = false
 }
 
-const handleContextReply = () => {
+function handleContextReply() {
   if (contextMenu.value.message) {
     replyTo.value = contextMenu.value.message
   }
 }
 
-const handleContextPin = () => {
+function handleContextPin() {
   if (contextMenu.value.message) {
     handlePin(contextMenu.value.message.id as number)
   }
 }
 
-const handleContextDelete = () => {
+function handleContextDelete() {
   if (contextMenu.value.message) {
     handleDelete(contextMenu.value.message.id as number)
   }
 }
 
-// Moderation check
+// Проверка модерации
 const showModeration = computed(() => isModerator())
 
-// Level icons
-const levelIcon = (level: CommunityRoomLevel) => {
+// Иконки уровней комнат
+function levelIcon(level: CommunityRoomLevel) {
   switch (level) {
     case 'city': return 'heroicons:building-office-2'
     case 'district': return 'heroicons:map'
@@ -142,7 +142,7 @@ const levelIcon = (level: CommunityRoomLevel) => {
   }
 }
 
-// Sorted rooms: city → district → building
+// Сортировка комнат: город → район → здание
 const levelOrder: Record<CommunityRoomLevel, number> = {
   city: 0,
   district: 1,
@@ -162,20 +162,20 @@ const showMuteModal = ref(false)
 const muteTargetUserId = ref<number | null>(null)
 const muteTargetUserName = ref('')
 
-const handleMuteClick = (userId: number) => {
+function handleMuteClick(userId: number) {
   const msg = messages.value.find(m => m.userId === userId)
   muteTargetUserName.value = msg?.user?.nickname || msg?.user?.firstName || 'Пользователь'
   muteTargetUserId.value = userId
   showMuteModal.value = true
 }
 
-const handleMuteSubmit = async (data: { userId: number; duration: number; reason: string }) => {
+async function handleMuteSubmit(data: { userId: number; duration: number; reason: string }) {
   try {
     await muteUser(data.userId, data.duration, data.reason || undefined)
     showMuteModal.value = false
     muteTargetUserId.value = null
   } catch {
-    // Error handled in composable
+    // Ошибка обрабатывается в composable
   }
 }
 
@@ -185,18 +185,18 @@ const handleMuteSubmit = async (data: { userId: number; duration: number; reason
 const showReportModal = ref(false)
 const reportTargetMessageId = ref<number | null>(null)
 
-const handleReportClick = (messageId: number) => {
+function handleReportClick(messageId: number) {
   reportTargetMessageId.value = messageId
   showReportModal.value = true
 }
 
-const handleReportSubmit = async (data: { messageId: number; reason: CommunityReportReason; details: string }) => {
+async function handleReportSubmit(data: { messageId: number; reason: CommunityReportReason; details: string }) {
   try {
     await reportMessage(data.messageId, data.reason, data.details || undefined)
     showReportModal.value = false
     reportTargetMessageId.value = null
   } catch {
-    // Error handled in composable
+    // Ошибка обрабатывается в composable
   }
 }
 
@@ -213,8 +213,8 @@ const mutedUntilFormatted = computed(() => {
   })
 })
 
-// Infinite scroll handler
-const handleScroll = (e: Event) => {
+// Обработчик бесконечной прокрутки
+function handleScroll(e: Event) {
   const el = e.target as HTMLElement
   if (el.scrollTop < 100 && hasMoreMessages.value && !isLoadingMessages.value) {
     loadMore()

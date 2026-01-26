@@ -20,53 +20,53 @@ const emit = defineEmits<{
   scrollToMessage: [messageId: string]
 }>()
 
-// Telegram WebApp for haptic feedback
+// Telegram WebApp для тактильной отдачи
 const { haptic } = useTwa()
 
-// Telegram-style time format: HH:MM
+// Формат времени в стиле Telegram: ЧЧ:ММ
 const formattedTime = computed(() => {
   const date = new Date(props.message.createdAt)
   return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
 })
 
-// Display name: nickname > firstName
+// Отображаемое имя: nickname > firstName
 const displayName = computed(() => {
   if (!props.message.user) return 'Аноним'
   return props.message.user.nickname || props.message.user.firstName || 'Аноним'
 })
 
-// Show sender name only for first message in group (others' messages)
+// Показывать имя отправителя только для первого сообщения в группе
 const showSenderName = computed(() => {
   if (props.isOwn) return false
   return props.groupPosition === 'start' || props.groupPosition === 'single'
 })
 
-// Truncate helper for reply preview
-const truncate = (text: string, length: number) => {
+// Хелпер для обрезки текста в превью ответа
+function truncate(text: string, length: number) {
   if (!text) return ''
   return text.length > length ? text.slice(0, length) + '...' : text
 }
 
-// Context menu handler
-const handleContextMenu = (event: MouseEvent) => {
+// Обработчик контекстного меню
+function handleContextMenu(event: MouseEvent) {
   emit('contextmenu', event, props.message)
 }
 
-// Click on quote to scroll to original message
-const handleQuoteClick = () => {
+// Клик по цитате для прокрутки к оригинальному сообщению
+function handleQuoteClick() {
   if (props.message.replyTo?.id) {
     emit('scrollToMessage', props.message.replyTo.id)
   }
 }
 
 // ============================================
-// Swipe to Reply
+// Свайп для ответа
 // ============================================
 const messageRef = ref<HTMLElement>()
 const swipeX = ref(0)
 const isSwiping = ref(false)
-const swipeThreshold = 60 // px to trigger reply
-const swipeMaxDistance = 80 // max swipe distance
+const swipeThreshold = 60 // px для активации ответа
+const swipeMaxDistance = 80 // макс. расстояние свайпа
 let startX = 0
 let startY = 0
 let isHorizontalSwipe: boolean | null = null
@@ -75,7 +75,7 @@ const swipeStyle = computed(() => {
   if (swipeX.value === 0) return {}
   return {
     transform: `translateX(${Math.min(swipeX.value, swipeMaxDistance)}px)`,
-    transition: isSwiping.value ? 'none' : 'transform 0.2s ease-out'
+    transition: isSwiping.value ? 'none' : 'transform 0.2s ease-out',
   }
 })
 
@@ -83,8 +83,8 @@ const swipeIconOpacity = computed(() => {
   return Math.min(swipeX.value / swipeThreshold, 1)
 })
 
-const onTouchStart = (e: TouchEvent) => {
-  // Don't swipe on deleted messages or while sending
+function onTouchStart(e: TouchEvent) {
+  // Не свайпаем удалённые или отправляемые сообщения
   if (props.message.isDeleted || props.message.status === 'sending') return
 
   const touch = e.touches[0]
@@ -96,7 +96,7 @@ const onTouchStart = (e: TouchEvent) => {
   isSwiping.value = true
 }
 
-const onTouchMove = (e: TouchEvent) => {
+function onTouchMove(e: TouchEvent) {
   if (!isSwiping.value) return
 
   const touch = e.touches[0]
@@ -107,33 +107,33 @@ const onTouchMove = (e: TouchEvent) => {
   const diffX = currentX - startX
   const diffY = currentY - startY
 
-  // Determine swipe direction on first significant movement
+  // Определяем направление свайпа при первом значительном движении
   if (isHorizontalSwipe === null && (Math.abs(diffX) > 10 || Math.abs(diffY) > 10)) {
     isHorizontalSwipe = Math.abs(diffX) > Math.abs(diffY)
   }
 
-  // Only handle horizontal swipes to the right
+  // Обрабатываем только горизонтальные свайпы вправо
   if (isHorizontalSwipe && diffX > 0) {
-    e.preventDefault() // Prevent scroll
+    e.preventDefault() // Предотвращаем скролл
     swipeX.value = Math.min(diffX, swipeMaxDistance)
 
-    // Haptic feedback when reaching threshold
+    // Тактильная отдача при достижении порога
     if (swipeX.value >= swipeThreshold && diffX - 5 < swipeThreshold) {
       haptic?.impactOccurred('light')
     }
   }
 }
 
-const onTouchEnd = () => {
+function onTouchEnd() {
   if (!isSwiping.value) return
 
-  // Trigger reply if swiped past threshold
+  // Активируем ответ если свайпнули достаточно
   if (swipeX.value >= swipeThreshold) {
     haptic?.impactOccurred('medium')
     emit('reply', props.message)
   }
 
-  // Reset
+  // Сброс
   swipeX.value = 0
   isSwiping.value = false
   isHorizontalSwipe = null

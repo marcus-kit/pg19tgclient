@@ -61,13 +61,13 @@ const notificationTypes = computed(() => [
   }
 ])
 
-const toggleChannel = (key: 'email' | 'sms' | 'push' | 'telegram') => {
+function toggleChannel(key: 'email' | 'sms' | 'push' | 'telegram') {
   authStore.updateNotifications({
     [key]: !authStore.notifications[key]
   })
 }
 
-const toggleType = (key: 'payments' | 'maintenance' | 'promotions' | 'news') => {
+function toggleType(key: 'payments' | 'maintenance' | 'promotions' | 'news') {
   authStore.updateNotifications({
     types: {
       ...authStore.notifications.types,

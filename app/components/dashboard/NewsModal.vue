@@ -29,7 +29,7 @@ const categoryVariants: Record<NewsCategory, 'warning' | 'info' | 'success'> = {
 }
 
 // Форматирование даты
-const formatDate = (dateStr: string) => {
+function formatDate(dateStr: string) {
   const date = new Date(dateStr)
   return date.toLocaleDateString('ru-RU', {
     day: 'numeric',
@@ -39,7 +39,7 @@ const formatDate = (dateStr: string) => {
 }
 
 // Форматирование размера файла
-const formatFileSize = (bytes: number | null) => {
+function formatFileSize(bytes: number | null) {
   if (!bytes) return 'Неизвестно'
   if (bytes < 1024) return `${bytes} Б`
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} КБ`
@@ -47,7 +47,7 @@ const formatFileSize = (bytes: number | null) => {
 }
 
 // Закрытие по ESC
-const handleEscape = (e: KeyboardEvent) => {
+function handleEscape(e: KeyboardEvent) {
   if (e.key === 'Escape') emit('close')
 }
 

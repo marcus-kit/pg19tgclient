@@ -12,7 +12,7 @@ const editData = ref({
   vkId: ''
 })
 
-const startEdit = () => {
+function startEdit() {
   editData.value = {
     phone: authStore.user?.phone || '',
     email: authStore.user?.email || '',
@@ -21,11 +21,11 @@ const startEdit = () => {
   isEditing.value = true
 }
 
-const cancelEdit = () => {
+function cancelEdit() {
   isEditing.value = false
 }
 
-const saveChanges = async () => {
+async function saveChanges() {
   isSaving.value = true
   const success = await authStore.updateUserData({
     phone: editData.value.phone,

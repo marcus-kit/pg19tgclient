@@ -10,7 +10,7 @@ const passwordForm = ref({
   confirm: ''
 })
 
-const formatDate = (dateString: string) => {
+function formatDate(dateString: string) {
   const date = new Date(dateString)
   const now = new Date()
   const diffMs = now.getTime() - date.getTime()
@@ -29,7 +29,7 @@ const formatDate = (dateString: string) => {
   })
 }
 
-const getDeviceIcon = (device: string) => {
+function getDeviceIcon(device: string) {
   const lower = device.toLowerCase()
   if (lower.includes('iphone') || lower.includes('android') || lower.includes('phone')) {
     return 'heroicons:device-phone-mobile'
@@ -40,7 +40,7 @@ const getDeviceIcon = (device: string) => {
   return 'heroicons:computer-desktop'
 }
 
-const handlePasswordChange = () => {
+function handlePasswordChange() {
   // Validate
   if (passwordForm.value.new !== passwordForm.value.confirm) {
     alert('Пароли не совпадают')
@@ -58,13 +58,13 @@ const handlePasswordChange = () => {
   passwordForm.value = { current: '', new: '', confirm: '' }
 }
 
-const terminateSession = (sessionId: string) => {
+function terminateSession(sessionId: string) {
   if (confirm('Завершить сессию?')) {
     authStore.terminateSession(sessionId)
   }
 }
 
-const terminateAllSessions = () => {
+function terminateAllSessions() {
   if (confirm('Завершить все сессии кроме текущей?')) {
     const currentSessionId = authStore.sessions.find(s => s.current)?.id
     authStore.sessions

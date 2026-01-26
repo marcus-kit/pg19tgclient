@@ -15,7 +15,7 @@ const menuItems = [
   { name: 'Профиль', href: '/profile', icon: 'heroicons:user', description: 'Настройки аккаунта' }
 ]
 
-const handleLogout = async () => {
+async function handleLogout() {
   haptic.impactOccurred('medium')
   authStore.logout()
   webApp.close()

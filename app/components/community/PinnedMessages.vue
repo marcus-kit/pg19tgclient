@@ -8,7 +8,7 @@ const props = defineProps<{
 const currentIndex = ref(0)
 const currentMessage = computed(() => props.messages[currentIndex.value])
 
-const next = () => {
+function next() {
   currentIndex.value = (currentIndex.value + 1) % props.messages.length
 }
 </script>

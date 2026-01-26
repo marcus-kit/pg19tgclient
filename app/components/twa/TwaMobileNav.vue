@@ -14,14 +14,14 @@ const navigation = [
   { name: 'Ещё', href: '/more', icon: 'heroicons:ellipsis-horizontal' }
 ]
 
-const isActive = (href: string) => {
+function isActive(href: string) {
   if (href === '/dashboard') {
     return route.path === '/dashboard' || route.path === '/'
   }
   return route.path === href || route.path.startsWith(href + '/')
 }
 
-const handleNavClick = () => {
+function handleNavClick() {
   haptic.selectionChanged()
 }
 </script>

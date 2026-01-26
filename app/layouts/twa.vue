@@ -14,7 +14,7 @@ const canGoBack = computed(() => {
 })
 
 // Обработчик нажатия кнопки назад
-const handleBackClick = () => {
+function handleBackClick() {
   router.back()
 }
 

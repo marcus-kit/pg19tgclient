@@ -15,16 +15,16 @@ const { news, pending, error } = fetchNews({ limit: 3, active: true })
 // Модальное окно
 const selectedNewsId = ref<number | null>(null)
 
-const openNewsModal = (id: number) => {
+function openNewsModal(id: number) {
   selectedNewsId.value = id
 }
 
-const closeNewsModal = () => {
+function closeNewsModal() {
   selectedNewsId.value = null
 }
 
 // Форматирование даты (короткий формат)
-const formatShortDate = (dateStr: string) => {
+function formatShortDate(dateStr: string) {
   const date = new Date(dateStr)
   const months = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек']
   return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`

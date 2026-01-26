@@ -16,25 +16,25 @@ const emit = defineEmits<{
 const text = ref('')
 const fileInput = ref<HTMLInputElement>()
 
-const handleSend = () => {
+function handleSend() {
   if (!text.value.trim() || props.disabled) return
 
   emit('send', text.value, {
-    replyToId: props.replyTo?.id
+    replyToId: props.replyTo?.id,
   })
 
   text.value = ''
   emit('cancelReply')
 }
 
-const handleKeydown = (e: KeyboardEvent) => {
+function handleKeydown(e: KeyboardEvent) {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault()
     handleSend()
   }
 }
 
-const handleFileSelect = (e: Event) => {
+function handleFileSelect(e: Event) {
   const input = e.target as HTMLInputElement
   const file = input.files?.[0]
 

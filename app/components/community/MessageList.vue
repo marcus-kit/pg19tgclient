@@ -20,7 +20,7 @@ const messageRefs = ref<Map<string, HTMLElement>>(new Map())
 const highlightedMessageId = ref<string | null>(null)
 
 // Register message element ref
-const setMessageRef = (id: string, el: HTMLElement | null) => {
+function setMessageRef(id: string, el: HTMLElement | null) {
   if (el) {
     messageRefs.value.set(id, el)
   } else {
@@ -29,7 +29,7 @@ const setMessageRef = (id: string, el: HTMLElement | null) => {
 }
 
 // Scroll to message and highlight
-const scrollToMessage = (messageId: string) => {
+function scrollToMessage(messageId: string) {
   const el = messageRefs.value.get(messageId)
   if (el) {
     el.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -45,7 +45,7 @@ const scrollToMessage = (messageId: string) => {
 defineExpose({ scrollToMessage })
 
 // Watch for scroll requests from child
-const handleScrollToMessage = (messageId: string) => {
+function handleScrollToMessage(messageId: string) {
   scrollToMessage(messageId)
   emit('scrollToMessage', messageId)
 }

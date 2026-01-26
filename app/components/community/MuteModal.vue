@@ -22,7 +22,7 @@ const durations = [
   { value: 10080, label: '7 дней' }
 ]
 
-const handleSubmit = async () => {
+async function handleSubmit() {
   isSubmitting.value = true
   emit('mute', {
     userId: props.userId,
@@ -31,7 +31,7 @@ const handleSubmit = async () => {
   })
 }
 
-const handleBackdropClick = (e: MouseEvent) => {
+function handleBackdropClick(e: MouseEvent) {
   if (e.target === e.currentTarget) {
     emit('close')
   }

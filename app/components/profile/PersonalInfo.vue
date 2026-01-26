@@ -13,7 +13,7 @@ const editData = ref({
   birthDate: ''
 })
 
-const startEdit = () => {
+function startEdit() {
   editData.value = {
     lastName: authStore.user?.lastName || '',
     firstName: authStore.user?.firstName || '',
@@ -23,11 +23,11 @@ const startEdit = () => {
   isEditing.value = true
 }
 
-const cancelEdit = () => {
+function cancelEdit() {
   isEditing.value = false
 }
 
-const saveChanges = async () => {
+async function saveChanges() {
   isSaving.value = true
   const success = await authStore.updateUserData({
     lastName: editData.value.lastName,
@@ -78,18 +78,18 @@ const isSavingNickname = ref(false)
 const nicknameInput = ref('')
 const nicknameError = ref('')
 
-const startEditNickname = () => {
+function startEditNickname() {
   nicknameInput.value = authStore.user?.nickname || ''
   nicknameError.value = ''
   isEditingNickname.value = true
 }
 
-const cancelEditNickname = () => {
+function cancelEditNickname() {
   isEditingNickname.value = false
   nicknameError.value = ''
 }
 
-const saveNickname = async () => {
+async function saveNickname() {
   const nickname = nicknameInput.value.trim() || null
 
   // Валидация

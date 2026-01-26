@@ -26,11 +26,11 @@ const avatarGradient = computed(() => {
 const fileInput = ref<HTMLInputElement | null>(null)
 const isUploading = ref(false)
 
-const handleAvatarClick = () => {
+function handleAvatarClick() {
   fileInput.value?.click()
 }
 
-const handleFileChange = async (event: Event) => {
+async function handleFileChange(event: Event) {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
 
@@ -70,7 +70,7 @@ const handleFileChange = async (event: Event) => {
   }
 }
 
-const removeAvatar = async () => {
+async function removeAvatar() {
   isUploading.value = true
   try {
     const response = await $fetch<{ success: boolean }>('/api/user/avatar', {

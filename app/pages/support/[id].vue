@@ -31,7 +31,7 @@ const statusConfig: Record<string, { label: string; variant: 'info' | 'warning' 
   closed: { label: 'Закрыт', variant: 'neutral', color: 'text-[var(--text-muted)]' }
 }
 
-const formatDate = (dateString: string) => {
+function formatDate(dateString: string) {
   const date = new Date(dateString)
   return date.toLocaleDateString('ru-RU', {
     day: 'numeric',
@@ -42,7 +42,7 @@ const formatDate = (dateString: string) => {
   })
 }
 
-const formatRelativeDate = (dateString: string) => {
+function formatRelativeDate(dateString: string) {
   const date = new Date(dateString)
   const now = new Date()
   const diffMs = now.getTime() - date.getTime()
@@ -63,7 +63,7 @@ const formatRelativeDate = (dateString: string) => {
   })
 }
 
-const submitReply = async () => {
+async function submitReply() {
   if (!replyContent.value.trim() || !ticket.value) return
 
   submitting.value = true
@@ -96,13 +96,13 @@ const canClose = computed(() => {
 })
 
 // Открыть модалку закрытия
-const openCloseModal = (status: 'resolved' | 'closed') => {
+function openCloseModal(status: 'resolved' | 'closed') {
   closeStatus.value = status
   showCloseModal.value = true
 }
 
 // Закрыть тикет
-const handleClose = async () => {
+async function handleClose() {
   if (!ticket.value || closing.value) return
 
   closing.value = true

@@ -28,11 +28,11 @@ const statusConfig: Record<string, { label: string; variant: 'info' | 'warning' 
 
 const expandedFaq = ref<number | null>(null)
 
-const toggleFaq = (id: number) => {
+function toggleFaq(id: number) {
   expandedFaq.value = expandedFaq.value === id ? null : id
 }
 
-const formatRelativeDate = (dateString: string) => {
+function formatRelativeDate(dateString: string) {
   const date = new Date(dateString)
   const now = new Date()
   const diffMs = now.getTime() - date.getTime()
@@ -76,11 +76,11 @@ const categories = [
   { value: 'other', label: 'Другое' }
 ]
 
-const openTicket = (ticketId: string) => {
+function openTicket(ticketId: string) {
   navigateTo(`/support/${ticketId}`)
 }
 
-const submitTicket = async () => {
+async function submitTicket() {
   if (!newTicket.value.subject.trim() || !newTicket.value.description.trim()) return
 
   submitting.value = true
