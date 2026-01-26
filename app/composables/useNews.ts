@@ -7,7 +7,7 @@ export const useNews = () => {
    * @param category - фильтр по категории
    * @param active - только активные (не истёкшие)
    */
-  const fetchNews = async (options: {
+  const fetchNews = (options: {
     limit?: number
     category?: string
     active?: boolean
@@ -18,11 +18,12 @@ export const useNews = () => {
     if (category) query.category = category
     if (active) query.active = 'true'
 
-    const { data, error, pending, refresh } = await useFetch<{ news: News[] }>(
+    const { data, error, pending, refresh } = useFetch<{ news: News[] }>(
       '/api/news',
       {
         query,
         key: `news-list-${JSON.stringify(query)}`,
+        lazy: true,
         transform: (response) => {
           // Ограничение на клиенте (API возвращает все)
           return {

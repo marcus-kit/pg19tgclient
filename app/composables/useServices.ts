@@ -4,11 +4,12 @@ export const useServices = () => {
   /**
    * Получить список доступных услуг
    */
-  const fetchServices = async () => {
-    const { data, error, pending, refresh } = await useFetch<{ services: Service[] }>(
+  const fetchServices = () => {
+    const { data, error, pending, refresh } = useFetch<{ services: Service[] }>(
       '/api/services',
       {
-        key: 'services-list'
+        key: 'services-list',
+        lazy: true
       }
     )
 
@@ -23,11 +24,12 @@ export const useServices = () => {
   /**
    * Получить подписки (подключенные услуги) пользователя
    */
-  const fetchSubscriptions = async () => {
-    const { data, error, pending, refresh } = await useFetch<{ subscriptions: Subscription[] }>(
+  const fetchSubscriptions = () => {
+    const { data, error, pending, refresh } = useFetch<{ subscriptions: Subscription[] }>(
       '/api/account/subscriptions',
       {
-        key: 'account-subscriptions'
+        key: 'account-subscriptions',
+        lazy: true
       }
     )
 

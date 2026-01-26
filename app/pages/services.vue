@@ -13,14 +13,9 @@ const { createTicket } = useTickets()
 // Состояние для запроса подключения
 const connectingServiceId = ref<string | null>(null)
 
-// Загружаем данные параллельно
-const [servicesData, subscriptionsData] = await Promise.all([
-  fetchServices(),
-  fetchSubscriptions()
-])
-
-const { services, pending: servicesPending, error: servicesError } = servicesData
-const { subscriptions, pending: subsPending, error: subsError } = subscriptionsData
+// Загружаем данные (lazy - не блокирует навигацию)
+const { services, pending: servicesPending, error: servicesError } = fetchServices()
+const { subscriptions, pending: subsPending, error: subsError } = fetchSubscriptions()
 
 const pending = computed(() => servicesPending.value || subsPending.value)
 const error = computed(() => servicesError.value || subsError.value)

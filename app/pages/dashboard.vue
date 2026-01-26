@@ -8,9 +8,9 @@ definePageMeta({
 
 const authStore = useAuthStore()
 
-// Загрузка новостей из API
+// Загрузка новостей из API (lazy - не блокирует навигацию)
 const { fetchNews } = useNews()
-const { news, pending, error } = await fetchNews({ limit: 3, active: true })
+const { news, pending, error } = fetchNews({ limit: 3, active: true })
 
 // Модальное окно
 const selectedNewsId = ref<number | null>(null)
