@@ -33,7 +33,7 @@ export interface CommunityRoom {
   level: CommunityRoomLevel
   parentId: string | null
   city: string
-  district: string | null  // Район (заменил street)
+  district: string | null
   building: string | null
   name: string
   description: string | null
@@ -164,9 +164,9 @@ export interface GetRoomsResponse {
 export interface GetMessagesRequest {
   roomId: string
   limit?: number
-  before?: string  // cursor для пагинации (message id)
-  pinned?: boolean // только закреплённые
-  ids?: string     // конкретные id
+  before?: string
+  pinned?: boolean
+  ids?: string
 }
 
 export interface GetMessagesResponse {
@@ -196,49 +196,11 @@ export interface UploadImageResponse {
   height: number
 }
 
-// POST /api/community/moderation/ban
-export interface BanUserRequest {
-  roomId: string
-  userId: string
-  reason?: string
-  expiresAt?: string  // ISO date string, null = permanent
-}
-
-// POST /api/community/moderation/unban
-export interface UnbanUserRequest {
-  roomId: string
-  userId: string
-}
-
-// POST /api/community/messages/:id/pin
-export interface PinMessageRequest {
-  pin: boolean  // true = pin, false = unpin
-}
-
-// POST /api/community/messages/:id/delete
-export interface DeleteMessageRequest {
-  // no body needed
-}
-
-// =====================================================
-// Новые API (v2)
-// =====================================================
-
-// PATCH /api/user/profile/nickname
-export interface UpdateNicknameRequest {
-  nickname: string | null
-}
-
-export interface UpdateNicknameResponse {
-  success: boolean
-  nickname: string | null
-}
-
 // POST /api/community/moderation/mute
 export interface MuteUserRequest {
   roomId: string
   userId: string
-  duration: number  // минуты
+  duration: number
   reason?: string
 }
 
@@ -254,33 +216,6 @@ export interface ReportMessageRequest {
   details?: string
 }
 
-// GET /api/community/moderation/reports
-export interface GetReportsRequest {
-  roomId?: string
-  status?: CommunityReportStatus
-  limit?: number
-  offset?: number
-}
-
-export interface GetReportsResponse {
-  reports: CommunityReport[]
-  total: number
-}
-
-// POST /api/community/moderation/reports/:id/review
-export interface ReviewReportRequest {
-  action: 'dismiss' | 'delete_message' | 'mute_user' | 'ban_user'
-  muteDuration?: number  // минуты, если action = mute_user
-  banReason?: string     // если action = ban_user
-}
-
-// POST /api/community/moderation/set-role
-export interface SetRoleRequest {
-  roomId: string
-  userId: string
-  role: CommunityMemberRole
-}
-
 // GET /api/community/rooms/:id/info
 export interface GetRoomInfoResponse {
   room: CommunityRoom
@@ -290,19 +225,7 @@ export interface GetRoomInfoResponse {
   mutedUntil: string | null
 }
 
-// GET /api/community/rooms/:id/my-role
-export interface GetMyRoleResponse {
-  role: CommunityMemberRole
-  isMuted: boolean
-  mutedUntil: string | null
-}
-
 // POST /api/community/rooms/mark-read
 export interface MarkReadRequest {
   roomId: string
-}
-
-// GET /api/community/moderation/moderators
-export interface GetModeratorsResponse {
-  moderators: CommunityModerator[]
 }

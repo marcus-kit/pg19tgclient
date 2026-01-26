@@ -1,45 +1,40 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2025-07-15',
+  compatibilityDate: '2025-01-26',
   devtools: { enabled: true },
 
-  css: [
-    '~/assets/css/main.css'
-  ],
+  future: {
+    compatibilityVersion: 4
+  },
+
+  css: ['~/assets/css/main.css'],
 
   modules: [
-    '@nuxtjs/tailwindcss',
-    '@nuxt/icon',
-    '@nuxtjs/google-fonts',
+    '@nuxt/ui',
+    '@nuxt/eslint',
     '@pinia/nuxt',
     '@nuxtjs/supabase'
   ],
 
   supabase: {
-    // Отключаем встроенный redirect - используем свой middleware
     redirect: false
   },
 
-  runtimeConfig: {
-    // Server-only (не попадают в клиентский бандл)
-    telegramBotToken: process.env.TELEGRAM_BOT_TOKEN || '',
-    supabaseServiceKey: process.env.SUPABASE_SERVICE_KEY || '',
-    internalApiSecret: process.env.INTERNAL_API_SECRET || '', // Для защиты /api/internal/*
-    // Public (доступны и на клиенте)
-    public: {
-      supabaseUrl: process.env.SUPABASE_URL || 'https://supabase.doka.team',
-      supabaseKey: process.env.SUPABASE_KEY || '',
-      telegramBotUsername: process.env.TELEGRAM_BOT_USERNAME || 'PG19WEBAPP_bot',
-      twaUrl: process.env.TWA_URL || 'https://pg19-tg.doka.team'
+  eslint: {
+    config: {
+      stylistic: true
     }
   },
 
-  googleFonts: {
-    families: {
-      Outfit: [400, 500, 600, 700, 800]
-    },
-    display: 'swap',
-    preload: true
+  runtimeConfig: {
+    telegramBotToken: process.env.TELEGRAM_BOT_TOKEN || '',
+    supabaseServiceKey: process.env.SUPABASE_SERVICE_KEY || '',
+    public: {
+      supabaseUrl: process.env.SUPABASE_URL || 'https://supabase.doka.team',
+      supabaseKey: process.env.SUPABASE_KEY || '',
+      telegramBotUsername: process.env.TELEGRAM_BOT_USERNAME || '',
+      twaUrl: process.env.TWA_URL || 'https://pg19v3-tg.doka.team'
+    }
   },
 
   app: {

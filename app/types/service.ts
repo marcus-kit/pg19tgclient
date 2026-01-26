@@ -50,7 +50,7 @@ export const subscriptionStatusLabels: Record<SubscriptionStatus, string> = {
 }
 
 export const subscriptionStatusColors: Record<SubscriptionStatus, string> = {
-  active: 'green',
-  paused: 'yellow',
-  cancelled: 'gray'
+  active: 'success',
+  paused: 'warning',
+  cancelled: 'neutral'
 }

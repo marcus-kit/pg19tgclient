@@ -1,98 +1,31 @@
 <script setup lang="ts">
-/**
- * TWA Layout
- * Основной layout для Telegram Web App
- * Управляет BackButton, safe areas и heartbeat
- */
+const { backButton } = useTwa()
 const route = useRoute()
 const router = useRouter()
-const { showBackButton, hideBackButton, offBackButton } = useTelegramWebApp()
 
-// Определяем, можно ли вернуться назад
-const canGoBack = computed(() => {
-  // На главной странице (dashboard) кнопку назад не показываем
-  return route.path !== '/dashboard' && route.path !== '/'
-})
+// Show back button on non-root pages
+watch(() => route.path, (path) => {
+  if (path !== '/' && path !== '/dashboard') {
+    backButton.showBackButton()
+  }
+  else {
+    backButton.hideBackButton()
+  }
+}, { immediate: true })
 
-// Обработчик нажатия кнопки назад
-const handleBackClick = () => {
+// Handle back button click
+backButton.onBackButtonClicked(() => {
   router.back()
-}
-
-// Управление BackButton
-watch(
-  () => route.path,
-  () => {
-    if (canGoBack.value) {
-      showBackButton(handleBackClick)
-    } else {
-      hideBackButton()
-    }
-  },
-  { immediate: true }
-)
-
-// Очистка при размонтировании
-onUnmounted(() => {
-  offBackButton(handleBackClick)
-  hideBackButton()
 })
 </script>
 
 <template>
-  <div
-    class="twa-layout min-h-screen flex flex-col"
-    :style="{
-      backgroundColor: 'var(--tg-bg-color, var(--bg-base))',
-      color: 'var(--tg-text-color, var(--text-primary))',
-      paddingBottom: 'calc(64px + var(--twa-safe-bottom, 0px))',
-      paddingLeft: 'var(--twa-safe-left, 0px)',
-      paddingRight: 'var(--twa-safe-right, 0px)'
-    }"
-  >
-    <!-- Header -->
-    <TwaHeader />
-
-    <!-- Main Content -->
-    <main
-      class="flex-1"
-      :style="{
-        paddingTop: 'calc(56px + var(--twa-safe-top, 0px))'
-      }"
-    >
-      <div class="container mx-auto px-4 py-4">
-        <slot />
-      </div>
+  <div class="min-h-screen bg-default">
+    <main class="pb-20">
+      <slot />
     </main>
 
-    <!-- Bottom Navigation -->
+    <!-- Mobile Navigation -->
     <TwaMobileNav />
   </div>
 </template>
-
-<style>
-/* Маппинг Telegram темы на CSS переменные приложения */
-.twa-layout {
-  --bg-base: var(--tg-bg-color, #121212);
-  --bg-surface: var(--tg-secondary-bg-color, #1e1e1e);
-  --text-primary: var(--tg-text-color, #ffffff);
-  --text-secondary: var(--tg-text-color, #ffffff);
-  --text-muted: var(--tg-hint-color, #8b8b8b);
-  --primary: var(--tg-button-color, #F7941D);
-  --primary-hover: var(--tg-button-color, #F7941D);
-  --glass-bg: var(--tg-secondary-bg-color, rgba(255, 255, 255, 0.05));
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --link-color: var(--tg-link-color, #007aff);
-  --destructive: var(--tg-destructive-text-color, #ff3b30);
-}
-
-/* Скрываем скроллбар в WebApp */
-.twa-layout::-webkit-scrollbar {
-  display: none;
-}
-
-.twa-layout {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-</style>

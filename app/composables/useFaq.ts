@@ -1,4 +1,4 @@
-import type { FaqItem } from '~/server/api/faq.get'
+import type { FaqItem } from '~/types/faq'
 
 export const useFaq = () => {
   /**

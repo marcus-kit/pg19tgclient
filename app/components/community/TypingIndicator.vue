@@ -101,6 +101,8 @@ const extraCount = computed(() => {
 </template>
 
 <style scoped>
+@reference "tailwindcss";
+
 .tg-typing-avatar {
   @apply w-6 h-6 rounded-full flex items-center justify-center;
   @apply border-2 border-[var(--bg-base)] -ml-2;

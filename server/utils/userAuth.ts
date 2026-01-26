@@ -22,8 +22,8 @@ export function generateSessionToken(): string {
 export function setSessionCookie(event: H3Event, token: string): void {
   setCookie(event, SESSION_COOKIE_NAME, token, {
     httpOnly: true,
-    secure: true, // Требуется для sameSite: 'none'
-    sameSite: 'none', // Для Telegram Web App (работает как webview)
+    secure: true,
+    sameSite: 'none', // Для Telegram Web App
     maxAge: SESSION_MAX_AGE,
     path: '/'
   })
@@ -47,7 +47,6 @@ export function getSessionToken(event: H3Event): string | undefined {
 
 /**
  * Получает пользователя из сессии.
- * Возвращает null если сессия не валидна или истекла.
  */
 export async function getUserFromSession(event: H3Event): Promise<SessionUser | null> {
   const token = getSessionToken(event)
@@ -58,7 +57,6 @@ export async function getUserFromSession(event: H3Event): Promise<SessionUser | 
 
   const supabase = useSupabaseServer()
 
-  // Ищем активную сессию по токену
   const { data: session, error } = await supabase
     .from('auth_sessions')
     .select('user_id, account_id, expires_at')
@@ -70,7 +68,6 @@ export async function getUserFromSession(event: H3Event): Promise<SessionUser | 
     return null
   }
 
-  // Проверяем что сессия не истекла
   if (new Date(session.expires_at) < new Date()) {
     return null
   }
@@ -83,7 +80,6 @@ export async function getUserFromSession(event: H3Event): Promise<SessionUser | 
 
 /**
  * Требует авторизованного пользователя.
- * Выбрасывает 401 ошибку если пользователь не авторизован.
  */
 export async function requireUser(event: H3Event): Promise<SessionUser> {
   const user = await getUserFromSession(event)
@@ -135,7 +131,6 @@ export async function createUserSession(
     })
   }
 
-  // Устанавливаем cookie
   setSessionCookie(event, token)
 
   return token
@@ -150,7 +145,6 @@ export async function endUserSession(event: H3Event): Promise<void> {
   if (token) {
     const supabase = useSupabaseServer()
 
-    // Помечаем сессию как истёкшую
     await supabase
       .from('auth_sessions')
       .update({ expires_at: new Date().toISOString() })

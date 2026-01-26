@@ -1,8 +1,13 @@
+<script setup lang="ts">
+useHead({
+  htmlAttrs: {
+    lang: 'ru'
+  }
+})
+</script>
+
 <template>
-  <div>
-    <NuxtRouteAnnouncer />
-    <NuxtLayout>
-      <NuxtPage />
-    </NuxtLayout>
-  </div>
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
 </template>

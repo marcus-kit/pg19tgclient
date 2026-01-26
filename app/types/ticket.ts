@@ -59,10 +59,10 @@ export const ticketStatusLabels: Record<TicketStatus, string> = {
 
 export const ticketStatusColors: Record<TicketStatus, string> = {
   new: 'primary',
-  open: 'blue',
-  pending: 'yellow',
-  resolved: 'green',
-  closed: 'gray'
+  open: 'info',
+  pending: 'warning',
+  resolved: 'success',
+  closed: 'neutral'
 }
 
 export const ticketCategoryLabels: Record<TicketCategory, string> = {
@@ -75,12 +75,12 @@ export const ticketCategoryLabels: Record<TicketCategory, string> = {
 }
 
 export const ticketCategoryIcons: Record<TicketCategory, string> = {
-  technical: 'heroicons:wrench-screwdriver',
-  billing: 'heroicons:credit-card',
-  connection: 'heroicons:wifi',
-  tariff: 'heroicons:arrow-path',
-  equipment: 'heroicons:tv',
-  other: 'heroicons:question-mark-circle'
+  technical: 'i-heroicons-wrench-screwdriver',
+  billing: 'i-heroicons-credit-card',
+  connection: 'i-heroicons-wifi',
+  tariff: 'i-heroicons-arrow-path',
+  equipment: 'i-heroicons-tv',
+  other: 'i-heroicons-question-mark-circle'
 }
 
 export const ticketPriorityLabels: Record<TicketPriority, string> = {

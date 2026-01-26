@@ -1,35 +1,32 @@
 {
-  "name": "pg19-website",
+  "name": "pg19v3-tgclient",
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "nuxt build",
     "dev": "nuxt dev",
+    "build": "nuxt build",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
-    "@nuxtjs/color-mode": "^4.0.0",
-    "@nuxtjs/supabase": "^2.0.3",
-    "@pinia/nuxt": "^0.11.3",
-    "@tiptap/extension-image": "^3.15.1",
-    "@tiptap/extension-link": "^3.15.1",
-    "@tiptap/starter-kit": "^3.15.1",
-    "@tiptap/vue-3": "^3.15.1",
-    "@tma.js/init-data-node": "^2.0.6",
-    "@tma.js/sdk-vue": "^1.0.15",
-    "imask": "^7.6.1",
-    "nuxt": "^4.2.2",
-    "pinia-plugin-persistedstate": "^4.7.1",
-    "vue": "^3.5.26",
-    "vue-router": "^4.6.4"
+    "@nuxt/ui": "^4.3.0",
+    "@nuxtjs/supabase": "^2.0.0",
+    "@pinia/nuxt": "^0.11.0",
+    "@tma.js/init-data-node": "^2.0.0",
+    "nuxt": "^4.0.0",
+    "pinia-plugin-persistedstate": "^4.0.0",
+    "tailwindcss": "^4.1.18",
+    "vue": "^3.5.0",
+    "vue-router": "^4.5.0",
+    "vue-tg": "^0.7.0"
   },
   "devDependencies": {
-    "@iconify-json/heroicons": "^1.2.3",
-    "@iconify-json/simple-icons": "^1.2.65",
-    "@nuxt/icon": "^1.12.0",
-    "@nuxtjs/google-fonts": "^3.2.0",
-    "@nuxtjs/tailwindcss": "^6.14.0"
-  }
+    "@nuxt/eslint": "^1.0.0",
+    "eslint": "^9.0.0",
+    "typescript": "^5.7.0"
+  },
+  "packageManager": "pnpm@9.15.0"
 }

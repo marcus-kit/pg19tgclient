@@ -91,7 +91,7 @@ export const useTickets = () => {
    * Закрыть тикет (resolved или closed)
    */
   const closeTicket = async (ticketId: string, status: 'resolved' | 'closed') => {
-    const { data, error } = await useFetch<{ success: boolean; status: string }>(
+    const { data, error } = await useFetch<{ success: boolean, status: string }>(
       `/api/support/tickets/${ticketId}/close`,
       {
         method: 'POST',

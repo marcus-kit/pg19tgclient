@@ -33,9 +33,9 @@ export const invoiceStatusLabels: Record<InvoiceStatus, string> = {
 }
 
 export const invoiceStatusColors: Record<InvoiceStatus, string> = {
-  draft: 'gray',
+  draft: 'neutral',
   issued: 'primary',
-  paid: 'green',
-  overdue: 'red',
-  cancelled: 'gray'
+  paid: 'success',
+  overdue: 'error',
+  cancelled: 'neutral'
 }
