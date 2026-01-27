@@ -95,7 +95,7 @@ export function useQrLogin() {
       state.token = token
       haptic.notificationOccurred('success')
 
-      // Получаем запись из Supabase
+      // Получаем QR-запрос из Supabase
       const { data: request, error: fetchError } = await supabase
         .from('qr_auth_requests')
         .select('*')
@@ -108,12 +108,45 @@ export function useQrLogin() {
         throw new Error('QR-код недействителен или истёк')
       }
 
-      // Обновляем статус на 'scanned'
+      const telegramId = user.value?.id?.toString()
+      if (!telegramId) {
+        throw new Error('Не удалось получить Telegram ID')
+      }
+
+      // Ищем пользователя по telegram_id
+      const { data: dbUser, error: userError } = await supabase
+        .from('users')
+        .select('id, status')
+        .eq('telegram_id', telegramId)
+        .single()
+
+      if (userError || !dbUser) {
+        throw new Error('Пользователь с этим Telegram не найден. Войдите по договору и привяжите Telegram в профиле.')
+      }
+
+      if (dbUser.status === 'suspended' || dbUser.status === 'terminated') {
+        throw new Error('Ваш аккаунт заблокирован')
+      }
+
+      // Получаем account по user_id
+      const { data: account, error: accountError } = await supabase
+        .from('accounts')
+        .select('id')
+        .eq('user_id', dbUser.id)
+        .single()
+
+      if (accountError || !account) {
+        throw new Error('Аккаунт не найден')
+      }
+
+      // Обновляем статус на 'scanned' с user_id и account_id
       const { error: updateError } = await supabase
         .from('qr_auth_requests')
         .update({
           status: 'scanned',
-          telegram_id: user.value?.id?.toString() || null,
+          user_id: dbUser.id,
+          account_id: account.id,
+          telegram_id: telegramId,
           telegram_username: user.value?.username || null,
           scanned_at: new Date().toISOString()
         })
