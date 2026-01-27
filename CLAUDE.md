@@ -1,15 +1,15 @@
 # PG19 Telegram Client
 
 ## Stack
-- Nuxt 4 (SSR disabled), Pinia, Supabase, @tma.js/sdk-vue
+- Nuxt 4 (SSR disabled), Pinia, Supabase, @telegram-apps/sdk v3
 - `vue-router` встроен в Nuxt — не добавлять в dependencies
 
 ## Telegram WebApp
 - Используй `useTwa()` из `~/composables/useTwa.ts` для доступа к Telegram API
 - НЕ существует `useTelegramWebApp()` — это ошибка
-- SDK: @tma.js/sdk-vue (официальный Telegram Mini Apps SDK)
-- Возвращает: webApp, backButton, haptic, user, isReady
-- НЕ использовать vue-tg или @telegram-apps/sdk-vue — deprecated
+- SDK: @telegram-apps/sdk v3.x (официальный Telegram Mini Apps SDK)
+- Возвращает: webApp, backButton, haptic, qrScanner, user, isReady
+- НЕ использовать vue-tg или @tma.js/sdk-vue — устаревшие
 
 ## Performance
 - `useFetch` с `lazy: true` — не блокирует навигацию, показывает skeleton

@@ -1,9 +1,7 @@
-import { init, backButton, miniApp } from '@tma.js/sdk-vue'
-
 /**
  * Telegram Web App Plugin
- * Инициализирует @tma.js/sdk и настраивает приложение
- * Устанавливает CSS переменные для safe areas и темы
+ * Настраивает CSS переменные для safe areas и темы
+ * SDK инициализируется в useTwa() composable
  */
 export default defineNuxtPlugin(() => {
   // Проверяем что мы на клиенте
@@ -15,21 +13,6 @@ export default defineNuxtPlugin(() => {
   if (!WebApp) {
     console.warn('[TWA] Not running inside Telegram WebApp')
     return
-  }
-
-  // Инициализируем @tma.js/sdk
-  try {
-    init()
-
-    // Монтируем компоненты SDK
-    if (backButton.mount.isAvailable()) {
-      backButton.mount()
-    }
-    if (miniApp.mount.isAvailable()) {
-      miniApp.mount()
-    }
-  } catch (e) {
-    console.warn('[TWA] SDK init failed:', e)
   }
 
   try {

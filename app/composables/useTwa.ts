@@ -1,31 +1,62 @@
 import {
+  init,
   backButton,
   hapticFeedback,
   miniApp,
-  initData,
+  qrScanner,
   retrieveLaunchParams,
-  useSignal,
-  qrScanner
-} from '@tma.js/sdk-vue'
+  type LaunchParams
+} from '@telegram-apps/sdk'
 
 /**
- * Composable для работы с Telegram Mini App SDK
- * Обёртка над @tma.js/sdk-vue для удобного использования
+ * Composable для работы с Telegram Mini App SDK v3
+ * Обёртка над @telegram-apps/sdk для удобного использования в Vue
  */
-export function useTwa() {
-  // Получаем launch params для доступа к initData
-  let launchParams: ReturnType<typeof retrieveLaunchParams> | null = null
+
+// Инициализация SDK (один раз)
+let initialized = false
+let launchParams: LaunchParams | null = null
+
+function initSdk() {
+  if (initialized) return
+
   try {
+    // Инициализируем SDK
+    init()
+
+    // Получаем launch params
     launchParams = retrieveLaunchParams()
-  } catch {
+
+    // Монтируем компоненты которые требуют mount
+    if (backButton.mount.isAvailable()) {
+      backButton.mount()
+    }
+
+    initialized = true
+  } catch (e) {
+    console.warn('[useTwa] SDK initialization failed:', e)
     // Не в Telegram окружении
   }
+}
 
-  // Реактивные сигналы
-  const isBackButtonVisible = useSignal(backButton.isVisible)
-  const isMiniAppMounted = useSignal(miniApp.isMounted)
+export function useTwa() {
+  // Инициализируем при первом вызове
+  initSdk()
 
-  // Computed значения для совместимости с предыдущим API
+  // Реактивные значения для Vue
+  const isBackButtonVisible = ref(false)
+
+  // Синхронизация с SDK сигналами
+  if (initialized && backButton.isMounted()) {
+    isBackButtonVisible.value = backButton.isVisible()
+
+    // Подписываемся на изменения
+    backButton.on('change:isVisible', (visible: boolean) => {
+      isBackButtonVisible.value = visible
+    })
+  }
+
+  // Computed значения
   const initDataRaw = computed(() => launchParams?.initDataRaw)
   const user = computed(() => launchParams?.initData?.user)
   const isReady = computed(() => !!launchParams?.initData)
@@ -49,7 +80,7 @@ export function useTwa() {
     }
   }
 
-  // Обёртка для backButton с проверкой доступности
+  // Обёртка для backButton
   const backButtonWrapper = {
     show: () => {
       if (backButton.show.isAvailable()) {
@@ -68,8 +99,8 @@ export function useTwa() {
       return () => {}
     },
     offClick: (fn: VoidFunction) => {
-      if (backButton.offClick.isAvailable()) {
-        backButton.offClick(fn)
+      if (backButton.off.isAvailable()) {
+        backButton.off('click', fn)
       }
     },
     isVisible: isBackButtonVisible
@@ -91,7 +122,7 @@ export function useTwa() {
     initDataUnsafe: launchParams?.initData
   }
 
-  // Обёртка для QR сканера
+  // Обёртка для QR сканера (SDK v3 API)
   const qrScannerWrapper = {
     /**
      * Открывает встроенный QR сканер Telegram
@@ -99,28 +130,28 @@ export function useTwa() {
      * @param validateFn - Функция валидации содержимого QR (по умолчанию проверяет pg19qr://)
      * @returns Promise<string> - содержимое QR-кода
      */
-    open: (text?: string, validateFn?: (content: string) => boolean): Promise<string> => {
-      return new Promise((resolve, reject) => {
-        if (!qrScanner.open.isAvailable()) {
-          reject(new Error('QR Scanner not available'))
-          return
+    open: async (text?: string, validateFn?: (content: string) => boolean): Promise<string> => {
+      if (!qrScanner.open.isAvailable()) {
+        throw new Error('QR Scanner not available')
+      }
+
+      const defaultValidate = (content: string) => content.startsWith('pg19qr://')
+      const validate = validateFn || defaultValidate
+
+      // SDK v3: capture принимает строку напрямую и возвращает boolean
+      const result = await qrScanner.open({
+        text: text || 'Наведите камеру на QR-код на экране компьютера',
+        capture: (qr) => {
+          console.log('[QrScanner] Captured:', qr)
+          return validate(qr)
         }
-
-        const defaultValidate = (content: string) => content.startsWith('pg19qr://')
-
-        qrScanner.open({
-          text: text || 'Наведите камеру на QR-код на экране компьютера',
-          capture: (content) => {
-            console.log('[QrScanner] Captured content:', content)
-
-            // DEBUG: Принимаем любой QR код чтобы увидеть содержимое
-            // TODO: Вернуть валидацию после отладки
-            qrScanner.close()
-            resolve(content)
-            return true
-          }
-        })
       })
+
+      if (!result) {
+        throw new Error('QR Scanner closed without result')
+      }
+
+      return result
     },
 
     close: () => {
@@ -150,7 +181,6 @@ export function useTwa() {
       backButton,
       hapticFeedback,
       miniApp,
-      initData,
       qrScanner
     }
   }

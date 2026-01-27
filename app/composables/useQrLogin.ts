@@ -46,24 +46,14 @@ export function useQrLogin() {
 
     try {
       // Открываем сканер и ждём результат
+      // Валидация pg19qr:// происходит внутри qrScanner.open()
       const qrContent = await qrScanner.open()
-
-      console.log('[QrLogin] Raw QR content:', qrContent)
-
-      // DEBUG: Показываем содержимое QR для отладки
-      // eslint-disable-next-line no-alert
-      alert(`QR содержимое: ${qrContent}`)
-
-      // Проверяем формат pg19qr://
-      if (!qrContent.startsWith('pg19qr://')) {
-        throw new Error(`Неверный формат QR. Получено: ${qrContent.substring(0, 50)}...`)
-      }
 
       // Парсим токен из QR
       const token = qrContent.replace('pg19qr://', '')
 
       if (token.length !== 32) {
-        throw new Error(`Неверная длина токена: ${token.length} (ожидается 32)`)
+        throw new Error('Неверный формат QR-кода')
       }
 
       state.token = token
