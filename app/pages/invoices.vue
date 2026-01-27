@@ -11,6 +11,11 @@ const { fetchInvoices } = useInvoices()
 // Загружаем все счета (lazy - не блокирует навигацию)
 const { invoices, pending, error, refresh } = fetchInvoices()
 
+// Обновляем данные при реактивации из KeepAlive кэша
+onActivated(() => {
+  refresh()
+})
+
 const filter = ref<'all' | 'unpaid' | 'paid'>('all')
 
 const filteredInvoices = computed(() => {

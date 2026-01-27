@@ -14,8 +14,14 @@ const { createTicket } = useTickets()
 const connectingServiceId = ref<string | null>(null)
 
 // Загружаем данные (lazy - не блокирует навигацию)
-const { services, pending: servicesPending, error: servicesError } = fetchServices()
-const { subscriptions, pending: subsPending, error: subsError } = fetchSubscriptions()
+const { services, pending: servicesPending, error: servicesError, refresh: refreshServices } = fetchServices()
+const { subscriptions, pending: subsPending, error: subsError, refresh: refreshSubscriptions } = fetchSubscriptions()
+
+// Обновляем данные при реактивации из KeepAlive кэша
+onActivated(() => {
+  refreshServices()
+  refreshSubscriptions()
+})
 
 const pending = computed(() => servicesPending.value || subsPending.value)
 const error = computed(() => servicesError.value || subsError.value)
