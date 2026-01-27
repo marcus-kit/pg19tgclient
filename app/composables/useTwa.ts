@@ -43,18 +43,10 @@ export function useTwa() {
   // Инициализируем при первом вызове
   initSdk()
 
-  // Реактивные значения для Vue
-  const isBackButtonVisible = ref(false)
-
-  // Синхронизация с SDK сигналами
-  if (initialized && backButton.isMounted()) {
-    isBackButtonVisible.value = backButton.isVisible()
-
-    // Подписываемся на изменения
-    backButton.on('change:isVisible', (visible: boolean) => {
-      isBackButtonVisible.value = visible
-    })
-  }
+  // Реактивное значение для isVisible (синхронизируется при show/hide)
+  const isBackButtonVisible = ref(
+    initialized && backButton.isMounted() ? backButton.isVisible() : false
+  )
 
   // Computed значения
   const initDataRaw = computed(() => launchParams?.initDataRaw)
@@ -85,11 +77,13 @@ export function useTwa() {
     show: () => {
       if (backButton.show.isAvailable()) {
         backButton.show()
+        isBackButtonVisible.value = true
       }
     },
     hide: () => {
       if (backButton.hide.isAvailable()) {
         backButton.hide()
+        isBackButtonVisible.value = false
       }
     },
     onClick: (fn: VoidFunction) => {
