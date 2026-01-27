@@ -111,13 +111,13 @@ export function useTwa() {
         qrScanner.open({
           text: text || 'Наведите камеру на QR-код на экране компьютера',
           capture: (content) => {
-            const isValid = (validateFn || defaultValidate)(content)
-            if (isValid) {
-              qrScanner.close()
-              resolve(content)
-              return true // Прекращаем сканирование
-            }
-            return false // Продолжаем сканирование
+            console.log('[QrScanner] Captured content:', content)
+
+            // DEBUG: Принимаем любой QR код чтобы увидеть содержимое
+            // TODO: Вернуть валидацию после отладки
+            qrScanner.close()
+            resolve(content)
+            return true
           }
         })
       })
