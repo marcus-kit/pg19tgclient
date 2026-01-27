@@ -4,7 +4,8 @@ import {
   miniApp,
   initData,
   retrieveLaunchParams,
-  useSignal
+  useSignal,
+  qrScanner
 } from '@tma.js/sdk-vue'
 
 /**
@@ -90,11 +91,53 @@ export function useTwa() {
     initDataUnsafe: launchParams?.initData
   }
 
+  // Обёртка для QR сканера
+  const qrScannerWrapper = {
+    /**
+     * Открывает встроенный QR сканер Telegram
+     * @param text - Текст подсказки для пользователя
+     * @param validateFn - Функция валидации содержимого QR (по умолчанию проверяет pg19qr://)
+     * @returns Promise<string> - содержимое QR-кода
+     */
+    open: (text?: string, validateFn?: (content: string) => boolean): Promise<string> => {
+      return new Promise((resolve, reject) => {
+        if (!qrScanner.open.isAvailable()) {
+          reject(new Error('QR Scanner not available'))
+          return
+        }
+
+        const defaultValidate = (content: string) => content.startsWith('pg19qr://')
+
+        qrScanner.open({
+          text: text || 'Наведите камеру на QR-код на экране компьютера',
+          capture: (content) => {
+            const isValid = (validateFn || defaultValidate)(content)
+            if (isValid) {
+              qrScanner.close()
+              resolve(content)
+              return true // Прекращаем сканирование
+            }
+            return false // Продолжаем сканирование
+          }
+        })
+      })
+    },
+
+    close: () => {
+      if (qrScanner.close.isAvailable()) {
+        qrScanner.close()
+      }
+    },
+
+    isAvailable: () => qrScanner.open.isAvailable()
+  }
+
   return {
     // Основные объекты SDK
     webApp,
     backButton: backButtonWrapper,
     haptic,
+    qrScanner: qrScannerWrapper,
 
     // Данные инициализации
     initData: initDataRaw,
@@ -107,7 +150,8 @@ export function useTwa() {
       backButton,
       hapticFeedback,
       miniApp,
-      initData
+      initData,
+      qrScanner
     }
   }
 }

@@ -12,7 +12,8 @@ const { webApp, haptic } = useTwa()
 
 const menuItems = [
   { name: 'Поддержка', href: '/support', icon: 'heroicons:chat-bubble-left-right', description: 'Тикеты и FAQ' },
-  { name: 'Профиль', href: '/profile', icon: 'heroicons:user', description: 'Настройки аккаунта' }
+  { name: 'Профиль', href: '/profile', icon: 'heroicons:user', description: 'Настройки аккаунта' },
+  { name: 'Вход на сайте', href: '/scan-qr', icon: 'heroicons:qr-code', description: 'Авторизация по QR-коду' }
 ]
 
 async function handleLogout() {
