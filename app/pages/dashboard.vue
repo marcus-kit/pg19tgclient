@@ -10,12 +10,7 @@ const authStore = useAuthStore()
 
 // Загрузка новостей из API (lazy - не блокирует навигацию)
 const { fetchNews } = useNews()
-const { news, pending, error, refresh } = fetchNews({ limit: 3, active: true })
-
-// Обновляем данные при реактивации из KeepAlive кэша
-onActivated(() => {
-  refresh()
-})
+const { news, pending, error } = fetchNews({ limit: 3, active: true })
 
 // Модальное окно
 const selectedNewsId = ref<number | null>(null)

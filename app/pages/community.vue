@@ -46,12 +46,6 @@ onMounted(async () => {
   }
 })
 
-// Обновляем данные при реактивации из KeepAlive кэша
-onActivated(async () => {
-  // Перезагружаем комнаты (обновит unreadCount и другие данные)
-  await loadRooms()
-})
-
 // Реф контейнера сообщений для автоскролла
 const messagesContainer = ref<HTMLElement>()
 
