@@ -59,7 +59,12 @@ function parseUserAgent(ua: string | null): { browser: string; os: string } {
 
 export function useQrLogin() {
   const supabase = useSupabaseClient()
-  const { qrScanner, haptic, user } = useTwa()
+  const { qrScanner, haptic } = useTwa()
+
+  // Получаем Telegram user напрямую из WebApp API (более надёжно чем SDK)
+  const getTelegramUser = () => {
+    return window.Telegram?.WebApp?.initDataUnsafe?.user
+  }
 
   const state = reactive<QrLoginState>({
     status: 'idle',
@@ -108,7 +113,8 @@ export function useQrLogin() {
         throw new Error('QR-код недействителен или истёк')
       }
 
-      const telegramId = user.value?.id?.toString()
+      const tgUser = getTelegramUser()
+      const telegramId = tgUser?.id?.toString()
       if (!telegramId) {
         throw new Error('Не удалось получить Telegram ID')
       }
@@ -147,7 +153,7 @@ export function useQrLogin() {
           user_id: dbUser.id,
           account_id: account.id,
           telegram_id: telegramId,
-          telegram_username: user.value?.username || null,
+          telegram_username: tgUser?.username || null,
           scanned_at: new Date().toISOString()
         })
         .eq('token', token)
@@ -161,8 +167,8 @@ export function useQrLogin() {
         type: 'broadcast',
         event: 'scanned',
         payload: {
-          telegramId: user.value?.id,
-          telegramUsername: user.value?.username
+          telegramId: tgUser?.id,
+          telegramUsername: tgUser?.username
         }
       })
 
@@ -209,12 +215,13 @@ export function useQrLogin() {
       }
 
       // Отправляем broadcast через Realtime
+      const tgUser = getTelegramUser()
       await supabase.channel(`qr-auth:${state.token}`).send({
         type: 'broadcast',
         event: 'confirmed',
         payload: {
-          telegramId: user.value?.id,
-          telegramUsername: user.value?.username
+          telegramId: tgUser?.id,
+          telegramUsername: tgUser?.username
         }
       })
 
