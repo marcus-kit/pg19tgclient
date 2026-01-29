@@ -31,3 +31,6 @@ logs
 *.tif
 *.psd
 *.ai
+
+# Plans
+docs/plans/
