@@ -33,11 +33,11 @@ export default defineEventHandler(async (event) => {
   const status = query.status as InvoiceStatus | undefined
   const limit = Number(query.limit) || 50
 
-  // Запрос счетов
+  // Запрос счетов из view
   let dbQuery = supabase
-    .from('invoices')
+    .from('invoices_view')
     .select('*')
-    .eq('account_id', sessionUser.accountId)
+    .eq('user_id', sessionUser.id)
     .order('date_created', { ascending: false })
     .limit(limit)
 
@@ -66,7 +66,7 @@ export default defineEventHandler(async (event) => {
     dueDate: row.due_date,
     paidAt: row.paid_at,
     createdAt: row.date_created,
-    updatedAt: row.date_updated
+    updatedAt: row.date_updated,
   }))
 
   return { invoices }
