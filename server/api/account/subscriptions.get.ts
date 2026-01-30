@@ -56,7 +56,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Маппинг в camelCase
-  const subscriptions: Subscription[] = (data as SubscriptionRow[]).map(row => {
+  const subscriptions: Subscription[] = (data as SubscriptionRow[]).map((row) => {
     const svc = row.service
     return {
       id: row.id,
@@ -69,20 +69,22 @@ export default defineEventHandler(async (event) => {
       isPrimary: row.is_primary,
       createdAt: row.date_created,
       updatedAt: row.date_updated,
-      service: svc ? {
-        id: svc.id,
-        name: svc.name,
-        slug: svc.slug,
-        description: svc.description,
-        priceMonthly: svc.price_monthly,
-        priceConnection: svc.price_connection,
-        icon: svc.icon,
-        color: svc.color,
-        features: svc.features,
-        equipment: svc.equipment,
-        sortOrder: svc.sort_order,
-        isActive: svc.is_active
-      } : undefined
+      service: svc
+        ? {
+            id: svc.id,
+            name: svc.name,
+            slug: svc.slug,
+            description: svc.description,
+            priceMonthly: svc.price_monthly,
+            priceConnection: svc.price_connection,
+            icon: svc.icon,
+            color: svc.color,
+            features: svc.features,
+            equipment: svc.equipment,
+            sortOrder: svc.sort_order,
+            isActive: svc.is_active,
+          }
+        : undefined,
     }
   })
 

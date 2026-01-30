@@ -63,16 +63,24 @@ function handleFileSelect(e: Event) {
       v-if="replyTo"
       class="mb-1.5 mx-1 flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-xl border-l-2 border-primary"
     >
-      <Icon name="heroicons:arrow-uturn-left" class="w-4 h-4 text-primary flex-shrink-0" />
+      <Icon
+        name="heroicons:arrow-uturn-left"
+        class="w-4 h-4 text-primary flex-shrink-0"
+      />
       <div class="flex-1 min-w-0">
         <span class="text-sm font-medium text-primary">{{ replyTo.user?.firstName || 'Аноним' }}</span>
-        <p class="text-sm text-[var(--text-muted)] truncate">{{ replyTo.content }}</p>
+        <p class="text-sm text-[var(--text-muted)] truncate">
+          {{ replyTo.content }}
+        </p>
       </div>
       <button
-        @click="emit('cancelReply')"
         class="p-1 rounded-full hover:bg-white/10 text-[var(--text-muted)]"
+        @click="emit('cancelReply')"
       >
-        <Icon name="heroicons:x-mark" class="w-5 h-5" />
+        <Icon
+          name="heroicons:x-mark"
+          class="w-5 h-5"
+        />
       </button>
     </div>
 
@@ -80,12 +88,15 @@ function handleFileSelect(e: Event) {
     <div class="flex items-center gap-1">
       <!-- Image upload -->
       <button
-        @click="fileInput?.click()"
         :disabled="disabled"
         class="p-2 rounded-full hover:bg-white/10 active:bg-white/20 disabled:opacity-50 text-[var(--text-muted)] transition-colors"
         title="Изображение"
+        @click="fileInput?.click()"
       >
-        <Icon name="heroicons:paper-clip" class="w-5 h-5" />
+        <Icon
+          name="heroicons:paper-clip"
+          class="w-5 h-5"
+        />
       </button>
       <input
         ref="fileInput"
@@ -93,17 +104,17 @@ function handleFileSelect(e: Event) {
         accept="image/*"
         class="hidden"
         @change="handleFileSelect"
-      />
+      >
 
       <!-- Text input (pill style, Enter to send) -->
       <input
         v-model="text"
-        @keydown="handleKeydown"
-        @input="emit('typing')"
         :disabled="disabled"
         placeholder="Сообщение..."
         class="flex-1 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-primary/50 disabled:opacity-50 transition-colors"
-      />
+        @keydown="handleKeydown"
+        @input="emit('typing')"
+      >
     </div>
   </div>
 </template>

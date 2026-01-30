@@ -11,7 +11,7 @@ const navigation = [
   { name: 'Услуги', href: '/services', icon: 'heroicons:squares-2x2' },
   { name: 'Соседи', href: '/community', icon: 'heroicons:user-group' },
   { name: 'Счета', href: '/invoices', icon: 'heroicons:document-text' },
-  { name: 'Ещё', href: '/more', icon: 'heroicons:ellipsis-horizontal' }
+  { name: 'Ещё', href: '/more', icon: 'heroicons:ellipsis-horizontal' },
 ]
 
 function isActive(href: string) {
@@ -34,7 +34,7 @@ function handleNavClick() {
       borderColor: 'var(--glass-border)',
       paddingBottom: 'var(--twa-safe-bottom, 0px)',
       paddingLeft: 'var(--twa-safe-left, 0px)',
-      paddingRight: 'var(--twa-safe-right, 0px)'
+      paddingRight: 'var(--twa-safe-right, 0px)',
     }"
   >
     <div class="flex items-center justify-around h-16">
@@ -47,11 +47,14 @@ function handleNavClick() {
         :style="{
           color: isActive(item.href)
             ? 'var(--tg-button-color, var(--primary))'
-            : 'var(--tg-hint-color, var(--text-muted))'
+            : 'var(--tg-hint-color, var(--text-muted))',
         }"
         @click="handleNavClick"
       >
-        <Icon :name="item.icon" class="w-6 h-6" />
+        <Icon
+          :name="item.icon"
+          class="w-6 h-6"
+        />
         <span class="text-xs font-medium">{{ item.name }}</span>
       </NuxtLink>
     </div>

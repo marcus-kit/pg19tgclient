@@ -27,17 +27,17 @@ export const useNews = () => {
         transform: (response) => {
           // Ограничение на клиенте (API возвращает все)
           return {
-            news: response.news.slice(0, limit)
+            news: response.news.slice(0, limit),
           }
-        }
-      }
+        },
+      },
     )
 
     return {
       news: computed(() => data.value?.news || []),
       error,
       pending,
-      refresh
+      refresh,
     }
   }
 
@@ -48,19 +48,19 @@ export const useNews = () => {
     const { data, error, pending } = await useFetch<{ news: NewsDetail }>(
       `/api/news/${id}`,
       {
-        key: `news-detail-${id}`
-      }
+        key: `news-detail-${id}`,
+      },
     )
 
     return {
       news: computed(() => data.value?.news || null),
       error,
-      pending
+      pending,
     }
   }
 
   return {
     fetchNews,
-    fetchNewsById
+    fetchNewsById,
   }
 }

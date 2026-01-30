@@ -112,15 +112,18 @@ export function useCommunityMessages(options: UseCommunityMessagesOptions) {
       if (before) {
         // Подгружаем историю — добавляем в начало
         messages.value = [...response.messages, ...messages.value]
-      } else {
+      }
+      else {
         messages.value = response.messages
       }
 
       hasMoreMessages.value = response.hasMore
-    } catch (e: unknown) {
+    }
+    catch (e: unknown) {
       const err = e as { data?: { message?: string } }
       error.value = err.data?.message || 'Ошибка загрузки сообщений'
-    } finally {
+    }
+    finally {
       isLoadingMessages.value = false
     }
   }
@@ -144,7 +147,8 @@ export function useCommunityMessages(options: UseCommunityMessagesOptions) {
         query: { roomId: currentRoom.value.id, pinned: 'true' },
       })
       pinnedMessages.value = response.messages
-    } catch {
+    }
+    catch {
       // Игнорируем ошибки закреплённых
     }
   }
@@ -182,11 +186,13 @@ export function useCommunityMessages(options: UseCommunityMessagesOptions) {
       deletedAt: null,
       deletedBy: null,
       replyToId: messageOptions?.replyToId ? String(messageOptions.replyToId) : null,
-      replyTo: replyToMessage ? {
-        id: replyToMessage.id,
-        content: replyToMessage.content,
-        user: replyToMessage.user,
-      } : null,
+      replyTo: replyToMessage
+        ? {
+            id: replyToMessage.id,
+            content: replyToMessage.content,
+            user: replyToMessage.user,
+          }
+        : null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       status: 'sending',
@@ -233,20 +239,24 @@ export function useCommunityMessages(options: UseCommunityMessagesOptions) {
         // Добавляем реальное сообщение, сохраняя replyTo из optimistic
         messages.value.push({
           ...response.message,
-          replyTo: replyToMessage ? {
-            id: replyToMessage.id,
-            content: replyToMessage.content,
-            user: replyToMessage.user,
-          } : null,
+          replyTo: replyToMessage
+            ? {
+                id: replyToMessage.id,
+                content: replyToMessage.content,
+                user: replyToMessage.user,
+              }
+            : null,
           status: 'sent',
         })
-      } else {
+      }
+      else {
         // Обновляем статус если уже было добавлено
         messages.value[existingIdx] = { ...messages.value[existingIdx], status: 'sent' }
       }
 
       return response.message
-    } catch (e: unknown) {
+    }
+    catch (e: unknown) {
       // 5. Помечаем как failed
       const idx = messages.value.findIndex(m => m.id === tempId)
       if (idx !== -1) {
@@ -256,7 +266,8 @@ export function useCommunityMessages(options: UseCommunityMessagesOptions) {
       const err = e as { data?: { message?: string } }
       error.value = err.data?.message || 'Ошибка отправки'
       return null
-    } finally {
+    }
+    finally {
       isSending.value = false
     }
   }
@@ -279,11 +290,11 @@ export function useCommunityMessages(options: UseCommunityMessagesOptions) {
   }
 
   /** Загрузить изображение */
-  async function uploadImage(file: File): Promise<{ url: string; width: number; height: number }> {
+  async function uploadImage(file: File): Promise<{ url: string, width: number, height: number }> {
     const formData = new FormData()
     formData.append('file', file)
 
-    const response = await $fetch<{ url: string; width: number; height: number }>(
+    const response = await $fetch<{ url: string, width: number, height: number }>(
       '/api/community/upload/image',
       { method: 'POST', body: formData },
     )
@@ -293,7 +304,7 @@ export function useCommunityMessages(options: UseCommunityMessagesOptions) {
 
   /** Закрепить/открепить сообщение (для модераторов) */
   async function togglePin(messageId: number) {
-    const response = await $fetch<{ success: boolean; isPinned: boolean }>(
+    const response = await $fetch<{ success: boolean, isPinned: boolean }>(
       `/api/community/messages/${messageId}/pin`,
       { method: 'POST' },
     )
@@ -342,7 +353,8 @@ export function useCommunityMessages(options: UseCommunityMessagesOptions) {
         return msg
       }
       return msg || null
-    } catch {
+    }
+    catch {
       return null
     }
   }
@@ -371,7 +383,8 @@ export function useCommunityMessages(options: UseCommunityMessagesOptions) {
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
         )
       }
-    } catch {
+    }
+    catch {
       // Игнорируем ошибки загрузки пропущенных сообщений
     }
   }
@@ -405,7 +418,7 @@ export function useCommunityMessages(options: UseCommunityMessagesOptions) {
   }
 
   /** Обработка UPDATE события postgres_changes */
-  function handleMessageUpdate(updated: { id: number; is_deleted: boolean; is_pinned: boolean; content: string }) {
+  function handleMessageUpdate(updated: { id: number, is_deleted: boolean, is_pinned: boolean, content: string }) {
     const idx = messages.value.findIndex(m => m.id === updated.id)
     if (idx !== -1) {
       messages.value[idx] = {

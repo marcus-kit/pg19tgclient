@@ -8,7 +8,7 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<{
   close: []
-  mute: [{ userId: number; duration: number; reason: string }]
+  mute: [{ userId: number, duration: number, reason: string }]
 }>()
 
 const isSubmitting = ref(false)
@@ -19,7 +19,7 @@ const durations = [
   { value: 15, label: '15 минут' },
   { value: 60, label: '1 час' },
   { value: 1440, label: '24 часа' },
-  { value: 10080, label: '7 дней' }
+  { value: 10080, label: '7 дней' },
 ]
 
 async function handleSubmit() {
@@ -27,7 +27,7 @@ async function handleSubmit() {
   emit('mute', {
     userId: props.userId,
     duration: selectedDuration.value,
-    reason: reason.value.trim()
+    reason: reason.value.trim(),
   })
 }
 
@@ -65,10 +65,13 @@ onMounted(() => {
             Замутить пользователя
           </h3>
           <button
-            @click="emit('close')"
             class="p-1 rounded-lg hover:bg-white/10 text-[var(--text-muted)] transition-colors"
+            @click="emit('close')"
           >
-            <Icon name="heroicons:x-mark" class="w-5 h-5" />
+            <Icon
+              name="heroicons:x-mark"
+              class="w-5 h-5"
+            />
           </button>
         </div>
 
@@ -85,11 +88,11 @@ onMounted(() => {
             <button
               v-for="d in durations"
               :key="d.value"
-              @click="selectedDuration = d.value"
               class="px-3 py-2 text-sm rounded-lg border transition-colors"
               :class="selectedDuration === d.value
                 ? 'bg-primary/20 border-primary text-primary'
                 : 'border-[var(--glass-border)] text-[var(--text-muted)] hover:bg-white/5'"
+              @click="selectedDuration = d.value"
             >
               {{ d.label }}
             </button>
@@ -111,19 +114,27 @@ onMounted(() => {
         <!-- Actions -->
         <div class="flex items-center gap-3">
           <button
-            @click="emit('close')"
             class="flex-1 px-4 py-2 text-sm rounded-lg border border-[var(--glass-border)] text-[var(--text-muted)] hover:bg-white/5 transition-colors"
             :disabled="isSubmitting"
+            @click="emit('close')"
           >
             Отмена
           </button>
           <button
-            @click="handleSubmit"
             class="flex-1 px-4 py-2 text-sm rounded-lg bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 transition-colors flex items-center justify-center gap-2"
             :disabled="isSubmitting"
+            @click="handleSubmit"
           >
-            <Icon v-if="isSubmitting" name="heroicons:arrow-path" class="w-4 h-4 animate-spin" />
-            <Icon v-else name="heroicons:speaker-x-mark" class="w-4 h-4" />
+            <Icon
+              v-if="isSubmitting"
+              name="heroicons:arrow-path"
+              class="w-4 h-4 animate-spin"
+            />
+            <Icon
+              v-else
+              name="heroicons:speaker-x-mark"
+              class="w-4 h-4"
+            />
             Замутить
           </button>
         </div>

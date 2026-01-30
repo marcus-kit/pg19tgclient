@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
   if (!file || !(file instanceof File)) {
     throw createError({
       statusCode: 400,
-      message: 'Файл не загружен'
+      message: 'Файл не загружен',
     })
   }
 
@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
   if (!file.type.startsWith('image/')) {
     throw createError({
       statusCode: 400,
-      message: 'Только изображения разрешены'
+      message: 'Только изображения разрешены',
     })
   }
 
@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
   if (file.size > 5 * 1024 * 1024) {
     throw createError({
       statusCode: 400,
-      message: 'Размер файла не должен превышать 5 МБ'
+      message: 'Размер файла не должен превышать 5 МБ',
     })
   }
 
@@ -46,14 +46,14 @@ export default defineEventHandler(async (event) => {
     .from('avatars')
     .upload(filename, buffer, {
       contentType: file.type,
-      upsert: true
+      upsert: true,
     })
 
   if (uploadError) {
     console.error('Error uploading avatar:', uploadError)
     throw createError({
       statusCode: 500,
-      message: 'Ошибка при загрузке файла'
+      message: 'Ошибка при загрузке файла',
     })
   }
 
@@ -74,12 +74,12 @@ export default defineEventHandler(async (event) => {
     console.error('Error updating user avatar:', updateError)
     throw createError({
       statusCode: 500,
-      message: 'Ошибка при сохранении аватара'
+      message: 'Ошибка при сохранении аватара',
     })
   }
 
   return {
     success: true,
-    avatar: avatarUrl
+    avatar: avatarUrl,
   }
 })

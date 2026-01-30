@@ -54,7 +54,7 @@ export const ticketStatusLabels: Record<TicketStatus, string> = {
   open: 'В работе',
   pending: 'Ожидает ответа',
   resolved: 'Решён',
-  closed: 'Закрыт'
+  closed: 'Закрыт',
 }
 
 export const ticketStatusColors: Record<TicketStatus, string> = {
@@ -62,7 +62,7 @@ export const ticketStatusColors: Record<TicketStatus, string> = {
   open: 'info',
   pending: 'warning',
   resolved: 'success',
-  closed: 'neutral'
+  closed: 'neutral',
 }
 
 export const ticketCategoryLabels: Record<TicketCategory, string> = {
@@ -71,7 +71,7 @@ export const ticketCategoryLabels: Record<TicketCategory, string> = {
   connection: 'Подключение',
   tariff: 'Смена тарифа',
   equipment: 'Оборудование',
-  other: 'Другое'
+  other: 'Другое',
 }
 
 export const ticketCategoryIcons: Record<TicketCategory, string> = {
@@ -80,12 +80,12 @@ export const ticketCategoryIcons: Record<TicketCategory, string> = {
   connection: 'i-heroicons-wifi',
   tariff: 'i-heroicons-arrow-path',
   equipment: 'i-heroicons-tv',
-  other: 'i-heroicons-question-mark-circle'
+  other: 'i-heroicons-question-mark-circle',
 }
 
 export const ticketPriorityLabels: Record<TicketPriority, string> = {
   low: 'Низкий',
   normal: 'Обычный',
   high: 'Высокий',
-  urgent: 'Срочный'
+  urgent: 'Срочный',
 }

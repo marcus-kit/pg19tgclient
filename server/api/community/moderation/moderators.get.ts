@@ -37,14 +37,14 @@ export default defineEventHandler(async (event): Promise<GetModeratorsResponse> 
     throw createError({ statusCode: 500, message: 'Ошибка загрузки модераторов' })
   }
 
-  const moderators = (members || []).map(m => {
+  const moderators = (members || []).map((m) => {
     const user = m.user as any
     const displayName = user?.nickname || user?.first_name || 'Пользователь'
     return {
       userId: m.user_id,
       displayName,
       avatar: user?.avatar || null,
-      role: m.role as 'moderator' | 'admin'
+      role: m.role as 'moderator' | 'admin',
     }
   })
 

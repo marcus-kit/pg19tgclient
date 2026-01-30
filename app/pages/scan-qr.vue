@@ -9,7 +9,7 @@
  * 4. Подтверждает вход → веб-сайт авторизуется
  */
 definePageMeta({
-  layout: 'twa'
+  layout: 'twa',
 })
 
 const { status, deviceInfo, error, isAvailable, startScan, confirmLogin, reset } = useQrLogin()
@@ -48,7 +48,9 @@ watch(() => status.value, (newStatus) => {
   <div class="space-y-6">
     <!-- Header -->
     <div>
-      <h1 class="text-2xl font-bold text-[var(--tg-text-color,#fff)]">Вход на сайт</h1>
+      <h1 class="text-2xl font-bold text-[var(--tg-text-color,#fff)]">
+        Вход на сайт
+      </h1>
       <p class="text-[var(--tg-hint-color,#8b8b8b)] mt-1">
         Авторизация через QR-код
       </p>
@@ -64,7 +66,7 @@ watch(() => status.value, (newStatus) => {
           class="w-20 h-20 mx-auto rounded-2xl flex items-center justify-center mb-4"
           :style="{
             backgroundColor: 'var(--tg-button-color, var(--primary))',
-            opacity: 0.15
+            opacity: 0.15,
           }"
         >
           <Icon
@@ -83,20 +85,26 @@ watch(() => status.value, (newStatus) => {
 
         <button
           v-if="isAvailable"
-          @click="startScan"
           class="w-full py-3 px-6 rounded-xl font-medium transition-colors"
           :style="{
             backgroundColor: 'var(--tg-button-color, var(--primary))',
-            color: 'var(--tg-button-text-color, #fff)'
+            color: 'var(--tg-button-text-color, #fff)',
           }"
+          @click="startScan"
         >
           <span class="flex items-center justify-center gap-2">
-            <Icon name="heroicons:camera" class="w-5 h-5" />
+            <Icon
+              name="heroicons:camera"
+              class="w-5 h-5"
+            />
             Сканировать QR-код
           </span>
         </button>
 
-        <p v-else class="text-red-500 text-sm">
+        <p
+          v-else
+          class="text-red-500 text-sm"
+        >
           QR сканер недоступен в вашей версии Telegram
         </p>
       </div>
@@ -106,7 +114,9 @@ watch(() => status.value, (newStatus) => {
         class="p-4 rounded-xl"
         :style="{ backgroundColor: 'var(--tg-secondary-bg-color, var(--glass-bg))' }"
       >
-        <p class="text-sm font-medium text-[var(--tg-text-color,#fff)] mb-3">Как это работает:</p>
+        <p class="text-sm font-medium text-[var(--tg-text-color,#fff)] mb-3">
+          Как это работает:
+        </p>
         <ol class="space-y-2 text-sm text-[var(--tg-hint-color,#8b8b8b)]">
           <li class="flex gap-2">
             <span class="font-medium text-[var(--tg-button-color, var(--primary))]">1.</span>
@@ -155,11 +165,14 @@ watch(() => status.value, (newStatus) => {
           class="p-4 rounded-xl border"
           :style="{
             backgroundColor: 'rgba(34, 197, 94, 0.1)',
-            borderColor: 'rgba(34, 197, 94, 0.2)'
+            borderColor: 'rgba(34, 197, 94, 0.2)',
           }"
         >
           <div class="flex items-center gap-2 text-green-500 mb-2">
-            <Icon name="heroicons:check-circle" class="w-5 h-5" />
+            <Icon
+              name="heroicons:check-circle"
+              class="w-5 h-5"
+            />
             <span class="font-medium">QR-код отсканирован</span>
           </div>
           <p class="text-sm text-[var(--tg-hint-color,#8b8b8b)]">
@@ -190,10 +203,13 @@ watch(() => status.value, (newStatus) => {
         <div
           class="p-3 rounded-lg flex items-start gap-2"
           :style="{
-            backgroundColor: 'rgba(251, 191, 36, 0.1)'
+            backgroundColor: 'rgba(251, 191, 36, 0.1)',
           }"
         >
-          <Icon name="heroicons:exclamation-triangle" class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+          <Icon
+            name="heroicons:exclamation-triangle"
+            class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5"
+          />
           <p class="text-sm text-amber-500">
             Убедитесь, что это ваше устройство. Не подтверждайте вход, если не узнаёте браузер или IP.
           </p>
@@ -202,23 +218,23 @@ watch(() => status.value, (newStatus) => {
         <!-- Кнопки -->
         <div class="flex gap-3">
           <button
-            @click="reset"
             class="flex-1 py-3 px-4 rounded-xl font-medium transition-colors border"
             :style="{
               backgroundColor: 'transparent',
               borderColor: 'var(--tg-hint-color, #8b8b8b)',
-              color: 'var(--tg-text-color, #fff)'
+              color: 'var(--tg-text-color, #fff)',
             }"
+            @click="reset"
           >
             Отмена
           </button>
           <button
-            @click="confirmLogin"
             class="flex-1 py-3 px-4 rounded-xl font-medium transition-colors"
             :style="{
               backgroundColor: 'var(--tg-button-color, var(--primary))',
-              color: 'var(--tg-button-text-color, #fff)'
+              color: 'var(--tg-button-text-color, #fff)',
             }"
+            @click="confirmLogin"
           >
             Подтвердить вход
           </button>
@@ -255,9 +271,14 @@ watch(() => status.value, (newStatus) => {
           class="w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4"
           style="background: rgba(34, 197, 94, 0.2)"
         >
-          <Icon name="heroicons:check-circle" class="w-10 h-10 text-green-500" />
+          <Icon
+            name="heroicons:check-circle"
+            class="w-10 h-10 text-green-500"
+          />
         </div>
-        <p class="text-lg font-medium text-[var(--tg-text-color,#fff)]">Вход выполнен!</p>
+        <p class="text-lg font-medium text-[var(--tg-text-color,#fff)]">
+          Вход выполнен!
+        </p>
         <p class="text-[var(--tg-hint-color,#8b8b8b)] mt-1">
           Теперь вы авторизованы на веб-сайте
         </p>
@@ -274,18 +295,25 @@ watch(() => status.value, (newStatus) => {
           class="w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-4"
           style="background: rgba(239, 68, 68, 0.2)"
         >
-          <Icon name="heroicons:x-circle" class="w-10 h-10 text-red-500" />
+          <Icon
+            name="heroicons:x-circle"
+            class="w-10 h-10 text-red-500"
+          />
         </div>
-        <p class="text-lg font-medium text-[var(--tg-text-color,#fff)]">Ошибка</p>
-        <p class="text-[var(--tg-hint-color,#8b8b8b)] mt-1">{{ error }}</p>
+        <p class="text-lg font-medium text-[var(--tg-text-color,#fff)]">
+          Ошибка
+        </p>
+        <p class="text-[var(--tg-hint-color,#8b8b8b)] mt-1">
+          {{ error }}
+        </p>
 
         <button
-          @click="reset"
           class="mt-6 py-3 px-6 rounded-xl font-medium transition-colors"
           :style="{
             backgroundColor: 'var(--tg-button-color, var(--primary))',
-            color: 'var(--tg-button-text-color, #fff)'
+            color: 'var(--tg-button-text-color, #fff)',
           }"
+          @click="reset"
         >
           Попробовать снова
         </button>

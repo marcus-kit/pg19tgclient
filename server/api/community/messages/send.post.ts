@@ -62,7 +62,7 @@ export default defineEventHandler(async (event) => {
       const resetIn = Math.ceil(communityImageLimiter.resetIn(rateLimitKey) / 1000)
       throw createError({
         statusCode: 429,
-        message: `Слишком много изображений. Подождите ${resetIn} сек.`
+        message: `Слишком много изображений. Подождите ${resetIn} сек.`,
       })
     }
   }
@@ -71,7 +71,7 @@ export default defineEventHandler(async (event) => {
     const resetIn = Math.ceil(communityMessageLimiter.resetIn(rateLimitKey) / 1000)
     throw createError({
       statusCode: 429,
-      message: `Слишком много сообщений. Подождите ${resetIn} сек.`
+      message: `Слишком много сообщений. Подождите ${resetIn} сек.`,
     })
   }
 
@@ -85,7 +85,7 @@ export default defineEventHandler(async (event) => {
     p_image_url: body.imageUrl || null,
     p_image_width: body.imageWidth || null,
     p_image_height: body.imageHeight || null,
-    p_reply_to_id: body.replyToId || null
+    p_reply_to_id: body.replyToId || null,
   })
 
   if (error) {
@@ -97,13 +97,13 @@ export default defineEventHandler(async (event) => {
 
   // Обработка ошибок из RPC
   if (response.error) {
-    const errorMap: Record<string, { status: number; message: string }> = {
+    const errorMap: Record<string, { status: number, message: string }> = {
       room_not_found: { status: 404, message: response.message || 'Комната не найдена' },
       room_inactive: { status: 400, message: response.message || 'Комната неактивна' },
       account_not_found: { status: 400, message: response.message || 'Аккаунт не найден' },
       access_denied: { status: 403, message: response.message || 'Нет доступа к этой комнате' },
       banned: { status: 403, message: response.message || 'Вы заблокированы в этом чате' },
-      muted: { status: 403, message: formatMuteMessage(response.muted_until) }
+      muted: { status: 403, message: formatMuteMessage(response.muted_until) },
     }
 
     const err = errorMap[response.error] || { status: 400, message: response.message || 'Ошибка' }
@@ -132,12 +132,14 @@ export default defineEventHandler(async (event) => {
     replyToId: msg.reply_to_id,
     createdAt: msg.created_at,
     updatedAt: msg.updated_at,
-    user: msg.user ? {
-      id: msg.user.id,
-      firstName: msg.user.first_name,
-      lastName: msg.user.last_name,
-      avatar: msg.user.avatar
-    } : undefined
+    user: msg.user
+      ? {
+          id: msg.user.id,
+          firstName: msg.user.first_name,
+          lastName: msg.user.last_name,
+          avatar: msg.user.avatar,
+        }
+      : undefined,
   }
 
   // Broadcast для мгновенной доставки (остаётся в API layer)
@@ -146,10 +148,11 @@ export default defineEventHandler(async (event) => {
     await channel.send({
       type: 'broadcast',
       event: 'new_message',
-      payload: result
+      payload: result,
     })
     await supabase.removeChannel(channel)
-  } catch (e) {
+  }
+  catch (e) {
     // Не критично — postgres_changes доставит
     console.warn('Failed to broadcast message:', e)
   }
@@ -157,7 +160,7 @@ export default defineEventHandler(async (event) => {
   // Добавляем в очередь отложенных уведомлений (fire-and-forget)
   // Уведомление будет отправлено через 1 минуту
   // Если за это время придут ещё сообщения - они объединятся в batch
-  queueNotification(supabase, body.roomId, sessionUser.id, result).catch(e => {
+  queueNotification(supabase, body.roomId, sessionUser.id, result).catch((e) => {
     console.warn('[Notifications] Failed to queue notification:', e)
   })
 
@@ -171,7 +174,7 @@ async function queueNotification(
   supabase: ReturnType<typeof useSupabaseServer>,
   roomId: string,
   senderId: string,
-  message: CommunityMessage
+  message: CommunityMessage,
 ): Promise<void> {
   const senderName = message.user
     ? `${message.user.firstName} ${message.user.lastName || ''}`.trim()
@@ -190,7 +193,7 @@ async function queueNotification(
     p_sender_id: senderId,
     p_sender_name: senderName,
     p_message_preview: preview,
-    p_content_type: message.contentType || 'text'
+    p_content_type: message.contentType || 'text',
   })
 
   if (error) {
@@ -213,7 +216,7 @@ function formatMuteMessage(mutedUntil?: string): string {
     day: 'numeric',
     month: 'short',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   })
   return `Вы не можете писать до ${formatted}`
 }

@@ -7,7 +7,7 @@ const showPasswordModal = ref(false)
 const passwordForm = ref({
   current: '',
   new: '',
-  confirm: ''
+  confirm: '',
 })
 
 function formatDate(dateString: string) {
@@ -25,7 +25,7 @@ function formatDate(dateString: string) {
 
   return date.toLocaleDateString('ru-RU', {
     day: 'numeric',
-    month: 'short'
+    month: 'short',
   })
 }
 
@@ -77,22 +77,38 @@ function terminateAllSessions() {
 <template>
   <UCard>
     <div class="flex items-center justify-between mb-5">
-      <h2 class="text-lg font-semibold text-[var(--text-primary)]">Безопасность</h2>
+      <h2 class="text-lg font-semibold text-[var(--text-primary)]">
+        Безопасность
+      </h2>
     </div>
 
     <!-- Password Section -->
-    <div class="mb-6 pb-6" style="border-bottom: 1px solid var(--glass-border);">
+    <div
+      class="mb-6 pb-6"
+      style="border-bottom: 1px solid var(--glass-border);"
+    >
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
           <div class="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10">
-            <Icon name="heroicons:key" class="w-5 h-5 text-primary" />
+            <Icon
+              name="heroicons:key"
+              class="w-5 h-5 text-primary"
+            />
           </div>
           <div>
-            <p class="text-[var(--text-primary)] font-medium">Пароль</p>
-            <p class="text-sm text-[var(--text-muted)]">Последнее изменение: 3 месяца назад</p>
+            <p class="text-[var(--text-primary)] font-medium">
+              Пароль
+            </p>
+            <p class="text-sm text-[var(--text-muted)]">
+              Последнее изменение: 3 месяца назад
+            </p>
           </div>
         </div>
-        <UButton size="sm" variant="secondary" @click="showPasswordModal = true">
+        <UButton
+          size="sm"
+          variant="secondary"
+          @click="showPasswordModal = true"
+        >
           Изменить
         </UButton>
       </div>
@@ -101,7 +117,9 @@ function terminateAllSessions() {
     <!-- Active Sessions -->
     <div>
       <div class="flex items-center justify-between mb-4">
-        <p class="text-sm text-[var(--text-muted)]">Активные сессии</p>
+        <p class="text-sm text-[var(--text-muted)]">
+          Активные сессии
+        </p>
         <button
           v-if="authStore.sessions.length > 1"
           class="text-xs text-red-400 hover:text-red-300 transition-colors"
@@ -117,16 +135,19 @@ function terminateAllSessions() {
           :key="session.id"
           :class="[
             'p-3 rounded-xl',
-            session.current ? 'bg-primary/10 border border-primary/30' : ''
+            session.current ? 'bg-primary/10 border border-primary/30' : '',
           ]"
           :style="!session.current ? 'background: var(--glass-bg);' : ''"
         >
           <div class="flex items-start justify-between">
             <div class="flex items-center gap-3">
-              <div :class="[
-                'p-2 rounded-xl',
-                session.current ? 'bg-gradient-to-br from-primary/20 to-secondary/10' : ''
-              ]" :style="!session.current ? 'background: var(--glass-bg);' : ''">
+              <div
+                :class="[
+                  'p-2 rounded-xl',
+                  session.current ? 'bg-gradient-to-br from-primary/20 to-secondary/10' : '',
+                ]"
+                :style="!session.current ? 'background: var(--glass-bg);' : ''"
+              >
                 <Icon
                   :name="getDeviceIcon(session.device)"
                   :class="['w-5 h-5', session.current ? 'text-primary' : 'text-[var(--text-muted)]']"
@@ -134,19 +155,29 @@ function terminateAllSessions() {
               </div>
               <div>
                 <div class="flex items-center gap-2">
-                  <p class="text-[var(--text-primary)] font-medium text-sm">{{ session.device }}</p>
-                  <UBadge v-if="session.current" variant="success" size="sm">
+                  <p class="text-[var(--text-primary)] font-medium text-sm">
+                    {{ session.device }}
+                  </p>
+                  <UBadge
+                    v-if="session.current"
+                    variant="success"
+                    size="sm"
+                  >
                     Текущая
                   </UBadge>
                 </div>
-                <p class="text-xs text-[var(--text-muted)]">{{ session.browser }}</p>
+                <p class="text-xs text-[var(--text-muted)]">
+                  {{ session.browser }}
+                </p>
                 <p class="text-xs text-[var(--text-muted)] mt-1">
                   {{ session.location }} · {{ session.ip }}
                 </p>
               </div>
             </div>
             <div class="text-right">
-              <p class="text-xs text-[var(--text-muted)] mb-2">{{ formatDate(session.lastActive) }}</p>
+              <p class="text-xs text-[var(--text-muted)] mb-2">
+                {{ formatDate(session.lastActive) }}
+              </p>
               <button
                 v-if="!session.current"
                 class="text-xs text-red-400 hover:text-red-300 transition-colors"
@@ -173,18 +204,29 @@ function terminateAllSessions() {
           class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
           @click.self="showPasswordModal = false"
         >
-          <div class="w-full max-w-md rounded-2xl p-6" style="background: var(--bg-surface); border: 1px solid var(--glass-border);">
+          <div
+            class="w-full max-w-md rounded-2xl p-6"
+            style="background: var(--bg-surface); border: 1px solid var(--glass-border);"
+          >
             <div class="flex items-center justify-between mb-6">
-              <h3 class="text-lg font-semibold text-[var(--text-primary)]">Изменить пароль</h3>
+              <h3 class="text-lg font-semibold text-[var(--text-primary)]">
+                Изменить пароль
+              </h3>
               <button
                 class="p-1 rounded-lg hover:bg-[var(--glass-bg)] transition-colors"
                 @click="showPasswordModal = false"
               >
-                <Icon name="heroicons:x-mark" class="w-5 h-5 text-[var(--text-muted)]" />
+                <Icon
+                  name="heroicons:x-mark"
+                  class="w-5 h-5 text-[var(--text-muted)]"
+                />
               </button>
             </div>
 
-            <form class="space-y-4" @submit.prevent="handlePasswordChange">
+            <form
+              class="space-y-4"
+              @submit.prevent="handlePasswordChange"
+            >
               <div>
                 <label class="block text-sm text-[var(--text-muted)] mb-2">Текущий пароль</label>
                 <input
@@ -194,7 +236,7 @@ function terminateAllSessions() {
                   style="background: var(--glass-bg); border: 1px solid var(--glass-border);"
                   placeholder="Введите текущий пароль"
                   required
-                />
+                >
               </div>
 
               <div>
@@ -206,7 +248,7 @@ function terminateAllSessions() {
                   style="background: var(--glass-bg); border: 1px solid var(--glass-border);"
                   placeholder="Минимум 8 символов"
                   required
-                />
+                >
               </div>
 
               <div>
@@ -218,7 +260,7 @@ function terminateAllSessions() {
                   style="background: var(--glass-bg); border: 1px solid var(--glass-border);"
                   placeholder="Повторите новый пароль"
                   required
-                />
+                >
               </div>
 
               <div class="flex gap-3 pt-2">
@@ -230,7 +272,11 @@ function terminateAllSessions() {
                 >
                   Отмена
                 </UButton>
-                <UButton type="submit" variant="primary" class="flex-1">
+                <UButton
+                  type="submit"
+                  variant="primary"
+                  class="flex-1"
+                >
                   Сохранить
                 </UButton>
               </div>

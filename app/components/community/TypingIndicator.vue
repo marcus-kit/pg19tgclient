@@ -23,7 +23,7 @@ const getAvatarColor = (name: string): string => {
   const colors = [
     '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4',
     '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F',
-    '#BB8FCE', '#85C1E9', '#F8B500', '#00CED1'
+    '#BB8FCE', '#85C1E9', '#F8B500', '#00CED1',
   ]
   let hash = 0
   for (let i = 0; i < name.length; i++) {
@@ -37,7 +37,7 @@ const typingUsersList = computed(() => {
     id,
     ...data,
     initials: getInitials(data.name),
-    color: getAvatarColor(data.name)
+    color: getAvatarColor(data.name),
   }))
 })
 
@@ -73,8 +73,11 @@ const extraCount = computed(() => {
             :src="user.avatar"
             :alt="user.name"
             class="w-full h-full rounded-full object-cover"
-          />
-          <span v-else class="text-[10px] font-medium text-white">
+          >
+          <span
+            v-else
+            class="text-[10px] font-medium text-white"
+          >
             {{ user.initials }}
           </span>
         </div>

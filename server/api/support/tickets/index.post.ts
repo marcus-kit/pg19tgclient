@@ -49,7 +49,7 @@ export default defineEventHandler(async (event) => {
       description: body.description.trim(),
       category: body.category || 'other',
       status: 'new',
-      priority: 'normal'
+      priority: 'normal',
     })
     .select()
     .single()
@@ -76,7 +76,7 @@ export default defineEventHandler(async (event) => {
     closedAt: data.closed_at,
     createdAt: data.created_at,
     updatedAt: data.updated_at,
-    commentsCount: 0
+    commentsCount: 0,
   }
 
   return { ticket }

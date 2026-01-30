@@ -9,15 +9,15 @@ export const useServices = () => {
       '/api/services',
       {
         key: 'services-list',
-        lazy: true
-      }
+        lazy: true,
+      },
     )
 
     return {
       services: computed(() => data.value?.services || []),
       error,
       pending,
-      refresh
+      refresh,
     }
   }
 
@@ -29,20 +29,20 @@ export const useServices = () => {
       '/api/account/subscriptions',
       {
         key: 'account-subscriptions',
-        lazy: true
-      }
+        lazy: true,
+      },
     )
 
     return {
       subscriptions: computed(() => data.value?.subscriptions || []),
       error,
       pending,
-      refresh
+      refresh,
     }
   }
 
   return {
     fetchServices,
-    fetchSubscriptions
+    fetchSubscriptions,
   }
 }

@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
     console.error('Error fetching notifications:', error)
     throw createError({
       statusCode: 500,
-      message: 'Ошибка при загрузке настроек'
+      message: 'Ошибка при загрузке настроек',
     })
   }
 
@@ -30,11 +30,11 @@ export default defineEventHandler(async (event) => {
     news: true,
     promo: false,
     payments: true,
-    maintenance: true
+    maintenance: true,
   }
 
   return {
     ...defaults,
-    ...(data?.notifications_settings || {})
+    ...(data?.notifications_settings || {}),
   }
 })

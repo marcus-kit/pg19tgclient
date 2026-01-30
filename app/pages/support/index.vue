@@ -4,7 +4,7 @@ import { ticketStatusLabels, ticketStatusColors, ticketCategoryLabels } from '~/
 import type { FaqItem } from '~/server/api/faq.get'
 
 definePageMeta({
-  layout: 'twa'
+  layout: 'twa',
 })
 
 const router = useRouter()
@@ -18,12 +18,12 @@ const { faq, pending: faqPending } = fetchFaq()
 const activeTab = ref<'tickets' | 'faq'>('tickets')
 
 // Статусы для UI
-const statusConfig: Record<string, { label: string; variant: 'info' | 'warning' | 'success' | 'neutral'; color: string }> = {
+const statusConfig: Record<string, { label: string, variant: 'info' | 'warning' | 'success' | 'neutral', color: string }> = {
   new: { label: 'Новая', variant: 'info', color: 'text-blue-400' },
   open: { label: 'В работе', variant: 'warning', color: 'text-yellow-400' },
   pending: { label: 'Ожидает ответа', variant: 'warning', color: 'text-orange-400' },
   resolved: { label: 'Решена', variant: 'success', color: 'text-accent' },
-  closed: { label: 'Закрыта', variant: 'neutral', color: 'text-[var(--text-muted)]' }
+  closed: { label: 'Закрыта', variant: 'neutral', color: 'text-[var(--text-muted)]' },
 }
 
 const expandedFaq = ref<number | null>(null)
@@ -49,7 +49,7 @@ function formatRelativeDate(dateString: string) {
     day: 'numeric',
     month: 'short',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   })
 }
 
@@ -64,7 +64,7 @@ const submitting = ref(false)
 const newTicket = ref({
   category: '' as TicketCategory | '',
   subject: '',
-  description: ''
+  description: '',
 })
 
 const categories = [
@@ -73,7 +73,7 @@ const categories = [
   { value: 'tariff', label: 'Смена тарифа' },
   { value: 'connection', label: 'Подключение' },
   { value: 'equipment', label: 'Оборудование' },
-  { value: 'other', label: 'Другое' }
+  { value: 'other', label: 'Другое' },
 ]
 
 function openTicket(ticketId: string) {
@@ -88,7 +88,7 @@ async function submitTicket() {
     const { ticket, error } = await createTicket({
       subject: newTicket.value.subject,
       description: newTicket.value.description,
-      category: (newTicket.value.category || 'other') as TicketCategory
+      category: (newTicket.value.category || 'other') as TicketCategory,
     })
 
     if (error) {
@@ -104,7 +104,8 @@ async function submitTicket() {
     if (ticket) {
       router.push(`/support/${ticket.id}`)
     }
-  } finally {
+  }
+  finally {
     submitting.value = false
   }
 }
@@ -115,11 +116,18 @@ async function submitTicket() {
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-bold text-[var(--text-primary)]">Поддержка</h1>
-        <p class="text-[var(--text-muted)] mt-1">Задайте вопрос или найдите ответ</p>
+        <h1 class="text-2xl font-bold text-[var(--text-primary)]">
+          Поддержка
+        </h1>
+        <p class="text-[var(--text-muted)] mt-1">
+          Задайте вопрос или найдите ответ
+        </p>
       </div>
       <UButton @click="showNewTicketModal = true">
-        <Icon name="heroicons:plus" class="w-5 h-5 mr-2" />
+        <Icon
+          name="heroicons:plus"
+          class="w-5 h-5 mr-2"
+        />
         Создать заявку
       </UButton>
     </div>
@@ -127,65 +135,97 @@ async function submitTicket() {
     <!-- Tabs -->
     <div class="flex gap-2">
       <button
-        @click="activeTab = 'tickets'"
         class="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
         :class="activeTab === 'tickets'
           ? 'bg-primary text-white'
           : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'"
         :style="activeTab !== 'tickets' ? 'background: var(--glass-bg);' : ''"
+        @click="activeTab = 'tickets'"
       >
-        <Icon name="heroicons:ticket" class="w-4 h-4 mr-2 inline-block" />
+        <Icon
+          name="heroicons:ticket"
+          class="w-4 h-4 mr-2 inline-block"
+        />
         Мои заявки
-        <span v-if="activeTicketsCount" class="ml-2 px-1.5 py-0.5 text-xs rounded-full bg-white/20">
+        <span
+          v-if="activeTicketsCount"
+          class="ml-2 px-1.5 py-0.5 text-xs rounded-full bg-white/20"
+        >
           {{ activeTicketsCount }}
         </span>
       </button>
       <button
-        @click="activeTab = 'faq'"
         class="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
         :class="activeTab === 'faq'
           ? 'bg-primary text-white'
           : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'"
         :style="activeTab !== 'faq' ? 'background: var(--glass-bg);' : ''"
+        @click="activeTab = 'faq'"
       >
-        <Icon name="heroicons:question-mark-circle" class="w-4 h-4 mr-2 inline-block" />
+        <Icon
+          name="heroicons:question-mark-circle"
+          class="w-4 h-4 mr-2 inline-block"
+        />
         Частые вопросы
       </button>
     </div>
 
     <!-- Tickets Tab -->
-    <div v-if="activeTab === 'tickets'" class="space-y-4">
+    <div
+      v-if="activeTab === 'tickets'"
+      class="space-y-4"
+    >
       <!-- Loading -->
-      <div v-if="ticketsPending" class="space-y-3">
-        <UCard v-for="i in 3" :key="i" class="animate-pulse">
+      <div
+        v-if="ticketsPending"
+        class="space-y-3"
+      >
+        <UCard
+          v-for="i in 3"
+          :key="i"
+          class="animate-pulse"
+        >
           <div class="flex items-center gap-4">
-            <div class="w-12 h-12 rounded-xl bg-[var(--glass-bg)]"></div>
+            <div class="w-12 h-12 rounded-xl bg-[var(--glass-bg)]" />
             <div class="flex-1 space-y-2">
-              <div class="h-4 bg-[var(--glass-bg)] rounded w-1/4"></div>
-              <div class="h-4 bg-[var(--glass-bg)] rounded w-2/3"></div>
+              <div class="h-4 bg-[var(--glass-bg)] rounded w-1/4" />
+              <div class="h-4 bg-[var(--glass-bg)] rounded w-2/3" />
             </div>
           </div>
         </UCard>
       </div>
 
       <!-- Error -->
-      <UCard v-else-if="ticketsError" class="border-red-500/30">
+      <UCard
+        v-else-if="ticketsError"
+        class="border-red-500/30"
+      >
         <div class="text-center py-4">
-          <Icon name="heroicons:exclamation-triangle" class="w-12 h-12 text-red-400 mx-auto mb-4" />
-          <p class="text-red-400 mb-4">Ошибка загрузки заявок</p>
-          <UButton @click="refreshTickets">Повторить</UButton>
+          <Icon
+            name="heroicons:exclamation-triangle"
+            class="w-12 h-12 text-red-400 mx-auto mb-4"
+          />
+          <p class="text-red-400 mb-4">
+            Ошибка загрузки заявок
+          </p>
+          <UButton @click="refreshTickets">
+            Повторить
+          </UButton>
         </div>
       </UCard>
 
       <!-- Tickets List -->
-      <div v-else-if="tickets.length" class="space-y-3">
+      <div
+        v-else-if="tickets.length"
+        class="space-y-3"
+      >
         <div
           v-for="ticket in tickets"
           :key="ticket.id"
           class="glass-card rounded-2xl p-6 cursor-pointer hover:bg-white/5 transition-colors"
           @click="openTicket(ticket.id)"
         >
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="flex items-start gap-4">
               <div class="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10">
                 <Icon
@@ -197,38 +237,68 @@ async function submitTicket() {
               <div>
                 <div class="flex items-center gap-2 mb-1">
                   <span class="text-xs text-[var(--text-muted)]">{{ ticket.number }}</span>
-                  <UBadge :variant="statusConfig[ticket.status]?.variant || 'neutral'" size="sm">
+                  <UBadge
+                    :variant="statusConfig[ticket.status]?.variant || 'neutral'"
+                    size="sm"
+                  >
                     {{ statusConfig[ticket.status]?.label || ticket.status }}
                   </UBadge>
                 </div>
-                <p class="font-medium text-[var(--text-primary)]">{{ ticket.subject }}</p>
+                <p class="font-medium text-[var(--text-primary)]">
+                  {{ ticket.subject }}
+                </p>
                 <div class="flex items-center gap-3 mt-2 text-xs text-[var(--text-muted)]">
                   <span class="flex items-center gap-1">
-                    <Icon name="heroicons:clock" class="w-3.5 h-3.5" />
+                    <Icon
+                      name="heroicons:clock"
+                      class="w-3.5 h-3.5"
+                    />
                     {{ formatRelativeDate(ticket.updatedAt) }}
                   </span>
-                  <span v-if="ticket.commentsCount" class="flex items-center gap-1">
-                    <Icon name="heroicons:chat-bubble-left" class="w-3.5 h-3.5" />
+                  <span
+                    v-if="ticket.commentsCount"
+                    class="flex items-center gap-1"
+                  >
+                    <Icon
+                      name="heroicons:chat-bubble-left"
+                      class="w-3.5 h-3.5"
+                    />
                     {{ ticket.commentsCount }} сообщ.
                   </span>
                 </div>
               </div>
             </div>
-            <Icon name="heroicons:chevron-right" class="w-5 h-5 text-[var(--text-muted)] hidden sm:block" />
-            </div>
+            <Icon
+              name="heroicons:chevron-right"
+              class="w-5 h-5 text-[var(--text-muted)] hidden sm:block"
+            />
+          </div>
         </div>
       </div>
 
       <!-- Empty State -->
-      <UCard v-else class="p-8">
+      <UCard
+        v-else
+        class="p-8"
+      >
         <div class="text-center">
           <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-secondary/10 flex items-center justify-center mx-auto mb-4">
-            <Icon name="heroicons:inbox" class="w-8 h-8 text-primary" />
+            <Icon
+              name="heroicons:inbox"
+              class="w-8 h-8 text-primary"
+            />
           </div>
-          <h3 class="text-lg font-semibold text-[var(--text-primary)] mb-2">Заявок пока нет</h3>
-          <p class="text-[var(--text-muted)] mb-4">Создайте заявку, если у вас есть вопрос или проблема</p>
+          <h3 class="text-lg font-semibold text-[var(--text-primary)] mb-2">
+            Заявок пока нет
+          </h3>
+          <p class="text-[var(--text-muted)] mb-4">
+            Создайте заявку, если у вас есть вопрос или проблема
+          </p>
           <UButton @click="showNewTicketModal = true">
-            <Icon name="heroicons:plus" class="w-5 h-5 mr-2" />
+            <Icon
+              name="heroicons:plus"
+              class="w-5 h-5 mr-2"
+            />
             Создать заявку
           </UButton>
         </div>
@@ -236,11 +306,21 @@ async function submitTicket() {
     </div>
 
     <!-- FAQ Tab -->
-    <div v-if="activeTab === 'faq'" class="space-y-3">
+    <div
+      v-if="activeTab === 'faq'"
+      class="space-y-3"
+    >
       <!-- Loading -->
-      <div v-if="faqPending" class="space-y-3">
-        <UCard v-for="i in 5" :key="i" class="animate-pulse p-5">
-          <div class="h-5 bg-[var(--glass-bg)] rounded w-3/4"></div>
+      <div
+        v-if="faqPending"
+        class="space-y-3"
+      >
+        <UCard
+          v-for="i in 5"
+          :key="i"
+          class="animate-pulse p-5"
+        >
+          <div class="h-5 bg-[var(--glass-bg)] rounded w-3/4" />
         </UCard>
       </div>
 
@@ -254,7 +334,9 @@ async function submitTicket() {
         >
           <div class="p-5">
             <div class="flex items-center justify-between gap-4">
-              <h3 class="font-medium text-[var(--text-primary)]">{{ item.question }}</h3>
+              <h3 class="font-medium text-[var(--text-primary)]">
+                {{ item.question }}
+              </h3>
               <Icon
                 name="heroicons:chevron-down"
                 class="w-5 h-5 text-[var(--text-muted)] transition-transform flex-shrink-0"
@@ -266,7 +348,9 @@ async function submitTicket() {
               class="mt-3 pt-3"
               style="border-top: 1px solid var(--glass-border);"
             >
-              <p class="text-[var(--text-secondary)]">{{ item.answer }}</p>
+              <p class="text-[var(--text-secondary)]">
+                {{ item.answer }}
+              </p>
             </div>
           </div>
         </UCard>
@@ -275,12 +359,22 @@ async function submitTicket() {
         <UCard class="p-6 mt-6">
           <div class="text-center">
             <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-secondary/10 flex items-center justify-center mx-auto mb-4">
-              <Icon name="heroicons:chat-bubble-left-right" class="w-8 h-8 text-primary" />
+              <Icon
+                name="heroicons:chat-bubble-left-right"
+                class="w-8 h-8 text-primary"
+              />
             </div>
-            <h3 class="text-lg font-semibold text-[var(--text-primary)] mb-2">Не нашли ответ?</h3>
-            <p class="text-[var(--text-muted)] mb-4">Создайте заявку, и мы ответим в течение 15 минут</p>
+            <h3 class="text-lg font-semibold text-[var(--text-primary)] mb-2">
+              Не нашли ответ?
+            </h3>
+            <p class="text-[var(--text-muted)] mb-4">
+              Создайте заявку, и мы ответим в течение 15 минут
+            </p>
             <UButton @click="showNewTicketModal = true; activeTab = 'tickets'">
-              <Icon name="heroicons:pencil-square" class="w-5 h-5 mr-2" />
+              <Icon
+                name="heroicons:pencil-square"
+                class="w-5 h-5 mr-2"
+              />
               Создать заявку
             </UButton>
           </div>
@@ -302,18 +396,29 @@ async function submitTicket() {
           style="background-color: var(--modal-backdrop);"
           @click.self="showNewTicketModal = false"
         >
-          <div class="w-full max-w-lg rounded-2xl p-6" style="background: var(--bg-surface); border: 1px solid var(--glass-border);">
+          <div
+            class="w-full max-w-lg rounded-2xl p-6"
+            style="background: var(--bg-surface); border: 1px solid var(--glass-border);"
+          >
             <div class="flex items-center justify-between mb-6">
-              <h3 class="text-lg font-semibold text-[var(--text-primary)]">Новая заявка</h3>
+              <h3 class="text-lg font-semibold text-[var(--text-primary)]">
+                Новая заявка
+              </h3>
               <button
                 class="p-1 rounded-lg hover:bg-[var(--glass-bg)] transition-colors"
                 @click="showNewTicketModal = false"
               >
-                <Icon name="heroicons:x-mark" class="w-5 h-5 text-[var(--text-muted)]" />
+                <Icon
+                  name="heroicons:x-mark"
+                  class="w-5 h-5 text-[var(--text-muted)]"
+                />
               </button>
             </div>
 
-            <form class="space-y-4" @submit.prevent="submitTicket">
+            <form
+              class="space-y-4"
+              @submit.prevent="submitTicket"
+            >
               <USelect
                 v-model="newTicket.category"
                 :options="categories"
@@ -330,7 +435,7 @@ async function submitTicket() {
                   style="background: var(--glass-bg); border: 1px solid var(--glass-border);"
                   placeholder="Кратко опишите проблему"
                   required
-                />
+                >
               </div>
 
               <div>
@@ -354,9 +459,22 @@ async function submitTicket() {
                 >
                   Отмена
                 </UButton>
-                <UButton type="submit" variant="primary" class="flex-1" :disabled="submitting">
-                  <Icon v-if="submitting" name="heroicons:arrow-path" class="w-4 h-4 mr-2 animate-spin" />
-                  <Icon v-else name="heroicons:paper-airplane" class="w-4 h-4 mr-2" />
+                <UButton
+                  type="submit"
+                  variant="primary"
+                  class="flex-1"
+                  :disabled="submitting"
+                >
+                  <Icon
+                    v-if="submitting"
+                    name="heroicons:arrow-path"
+                    class="w-4 h-4 mr-2 animate-spin"
+                  />
+                  <Icon
+                    v-else
+                    name="heroicons:paper-airplane"
+                    class="w-4 h-4 mr-2"
+                  />
                   {{ submitting ? 'Отправка...' : 'Отправить' }}
                 </UButton>
               </div>

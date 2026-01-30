@@ -33,7 +33,7 @@ export default defineEventHandler(async (event) => {
     p_room_id: body.roomId,
     p_target_user_id: body.userId,
     p_new_role: body.role,
-    p_actor_user_id: sessionUser.id
+    p_actor_user_id: sessionUser.id,
   })
 
   if (error) {

@@ -34,7 +34,7 @@ interface QrLoginState {
 /**
  * Парсит User-Agent для отображения браузера и ОС
  */
-function parseUserAgent(ua: string | null): { browser: string; os: string } {
+function parseUserAgent(ua: string | null): { browser: string, os: string } {
   if (!ua) return { browser: 'Неизвестно', os: 'Неизвестно' }
 
   let browser = 'Браузер'
@@ -70,7 +70,7 @@ export function useQrLogin() {
     status: 'idle',
     token: null,
     deviceInfo: null,
-    error: null
+    error: null,
   })
 
   /**
@@ -154,7 +154,7 @@ export function useQrLogin() {
           account_id: account.id,
           telegram_id: telegramId,
           telegram_username: tgUser?.username || null,
-          scanned_at: new Date().toISOString()
+          scanned_at: new Date().toISOString(),
         })
         .eq('token', token)
 
@@ -168,8 +168,8 @@ export function useQrLogin() {
         event: 'scanned',
         payload: {
           telegramId: tgUser?.id,
-          telegramUsername: tgUser?.username
-        }
+          telegramUsername: tgUser?.username,
+        },
       })
 
       // Парсим device info из записи
@@ -177,11 +177,12 @@ export function useQrLogin() {
       state.deviceInfo = {
         ip: request.ip_address || 'Неизвестно',
         browser,
-        os
+        os,
       }
 
       state.status = 'scanned'
-    } catch (e: any) {
+    }
+    catch (e: any) {
       state.error = e.message || 'Ошибка сканирования'
       state.status = 'error'
       haptic.notificationOccurred('error')
@@ -205,7 +206,7 @@ export function useQrLogin() {
         .from('qr_auth_requests')
         .update({
           status: 'confirmed',
-          confirmed_at: new Date().toISOString()
+          confirmed_at: new Date().toISOString(),
         })
         .eq('token', state.token)
         .eq('status', 'scanned')
@@ -221,13 +222,14 @@ export function useQrLogin() {
         event: 'confirmed',
         payload: {
           telegramId: tgUser?.id,
-          telegramUsername: tgUser?.username
-        }
+          telegramUsername: tgUser?.username,
+        },
       })
 
       state.status = 'success'
       haptic.notificationOccurred('success')
-    } catch (e: any) {
+    }
+    catch (e: any) {
       state.error = e.message || 'Ошибка подтверждения'
       state.status = 'error'
       haptic.notificationOccurred('error')
@@ -264,6 +266,6 @@ export function useQrLogin() {
     startScan,
     confirmLogin,
     cancel,
-    reset
+    reset,
   }
 }

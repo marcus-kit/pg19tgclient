@@ -10,7 +10,7 @@ const editData = ref({
   lastName: '',
   firstName: '',
   middleName: '',
-  birthDate: ''
+  birthDate: '',
 })
 
 function startEdit() {
@@ -18,7 +18,7 @@ function startEdit() {
     lastName: authStore.user?.lastName || '',
     firstName: authStore.user?.firstName || '',
     middleName: authStore.user?.middleName || '',
-    birthDate: authStore.user?.birthDate || ''
+    birthDate: authStore.user?.birthDate || '',
   }
   isEditing.value = true
 }
@@ -33,7 +33,7 @@ async function saveChanges() {
     lastName: editData.value.lastName,
     firstName: editData.value.firstName,
     middleName: editData.value.middleName,
-    birthDate: editData.value.birthDate || null
+    birthDate: editData.value.birthDate || null,
   })
   isSaving.value = false
   if (success) {
@@ -46,7 +46,7 @@ const formattedBirthDate = computed(() => {
   return new Date(authStore.user.birthDate).toLocaleDateString('ru-RU', {
     day: 'numeric',
     month: 'long',
-    year: 'numeric'
+    year: 'numeric',
   })
 })
 
@@ -102,9 +102,9 @@ async function saveNickname() {
   nicknameError.value = ''
 
   try {
-    const response = await $fetch<{ success: boolean; nickname: string | null }>('/api/user/profile/nickname', {
+    const response = await $fetch<{ success: boolean, nickname: string | null }>('/api/user/profile/nickname', {
       method: 'PATCH',
-      body: { nickname }
+      body: { nickname },
     })
 
     if (response.success && authStore.user) {
@@ -112,10 +112,12 @@ async function saveNickname() {
       authStore.persist()
       isEditingNickname.value = false
     }
-  } catch (e: unknown) {
+  }
+  catch (e: unknown) {
     const err = e as { data?: { message?: string } }
     nicknameError.value = err.data?.message || 'Ошибка сохранения'
-  } finally {
+  }
+  finally {
     isSavingNickname.value = false
   }
 }
@@ -124,7 +126,9 @@ async function saveNickname() {
 <template>
   <UCard class="!p-4">
     <div class="flex items-center justify-between mb-3">
-      <h2 class="text-base font-semibold text-[var(--text-primary)]">Персональные данные</h2>
+      <h2 class="text-base font-semibold text-[var(--text-primary)]">
+        Персональные данные
+      </h2>
       <div v-if="!isEditing">
         <button
           class="text-sm text-primary hover:text-primary/80 transition-colors"
@@ -133,76 +137,123 @@ async function saveNickname() {
           Редактировать
         </button>
       </div>
-      <div v-else class="flex items-center gap-2">
+      <div
+        v-else
+        class="flex items-center gap-2"
+      >
         <button
           class="text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
-          @click="cancelEdit"
           :disabled="isSaving"
+          @click="cancelEdit"
         >
           Отмена
         </button>
         <button
           class="text-sm text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
-          @click="saveChanges"
           :disabled="isSaving"
+          @click="saveChanges"
         >
-          <Icon v-if="isSaving" name="heroicons:arrow-path" class="w-3 h-3 animate-spin" />
+          <Icon
+            v-if="isSaving"
+            name="heroicons:arrow-path"
+            class="w-3 h-3 animate-spin"
+          />
           {{ isSaving ? 'Сохранение...' : 'Сохранить' }}
         </button>
       </div>
     </div>
 
     <!-- View Mode -->
-    <div v-if="!isEditing" class="grid grid-cols-2 gap-x-4 gap-y-2">
-      <div class="flex items-center gap-2 py-1.5" style="border-bottom: 1px solid var(--glass-border);">
+    <div
+      v-if="!isEditing"
+      class="grid grid-cols-2 gap-x-4 gap-y-2"
+    >
+      <div
+        class="flex items-center gap-2 py-1.5"
+        style="border-bottom: 1px solid var(--glass-border);"
+      >
         <div class="p-1.5 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/10">
-          <Icon name="heroicons:user" class="w-4 h-4 text-primary" />
+          <Icon
+            name="heroicons:user"
+            class="w-4 h-4 text-primary"
+          />
         </div>
         <div>
-          <p class="text-xs text-[var(--text-muted)]">Фамилия</p>
-          <p class="text-sm text-[var(--text-primary)]">{{ authStore.user?.lastName || '—' }}</p>
+          <p class="text-xs text-[var(--text-muted)]">
+            Фамилия
+          </p>
+          <p class="text-sm text-[var(--text-primary)]">
+            {{ authStore.user?.lastName || '—' }}
+          </p>
         </div>
       </div>
 
-      <div class="flex items-center gap-2 py-1.5" style="border-bottom: 1px solid var(--glass-border);">
+      <div
+        class="flex items-center gap-2 py-1.5"
+        style="border-bottom: 1px solid var(--glass-border);"
+      >
         <div class="p-1.5 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/10">
-          <Icon name="heroicons:user" class="w-4 h-4 text-primary" />
+          <Icon
+            name="heroicons:user"
+            class="w-4 h-4 text-primary"
+          />
         </div>
         <div>
-          <p class="text-xs text-[var(--text-muted)]">Имя</p>
-          <p class="text-sm text-[var(--text-primary)]">{{ authStore.user?.firstName || '—' }}</p>
+          <p class="text-xs text-[var(--text-muted)]">
+            Имя
+          </p>
+          <p class="text-sm text-[var(--text-primary)]">
+            {{ authStore.user?.firstName || '—' }}
+          </p>
         </div>
       </div>
 
       <div class="flex items-center gap-2 py-1.5">
         <div class="p-1.5 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/10">
-          <Icon name="heroicons:user" class="w-4 h-4 text-primary" />
+          <Icon
+            name="heroicons:user"
+            class="w-4 h-4 text-primary"
+          />
         </div>
         <div>
-          <p class="text-xs text-[var(--text-muted)]">Отчество</p>
-          <p class="text-sm text-[var(--text-primary)]">{{ authStore.user?.middleName || '—' }}</p>
+          <p class="text-xs text-[var(--text-muted)]">
+            Отчество
+          </p>
+          <p class="text-sm text-[var(--text-primary)]">
+            {{ authStore.user?.middleName || '—' }}
+          </p>
         </div>
       </div>
 
       <div class="flex items-center gap-2 py-1.5">
         <div class="p-1.5 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/10">
-          <Icon name="heroicons:cake" class="w-4 h-4 text-primary" />
+          <Icon
+            name="heroicons:cake"
+            class="w-4 h-4 text-primary"
+          />
         </div>
         <div>
-          <p class="text-xs text-[var(--text-muted)]">Дата рождения</p>
+          <p class="text-xs text-[var(--text-muted)]">
+            Дата рождения
+          </p>
           <p class="text-sm text-[var(--text-primary)]">
             <template v-if="formattedBirthDate">
               {{ formattedBirthDate }}
               <span class="text-[var(--text-muted)] text-xs">({{ age }} {{ ageLabel }})</span>
             </template>
-            <template v-else>—</template>
+            <template v-else>
+              —
+            </template>
           </p>
         </div>
       </div>
     </div>
 
     <!-- Edit Mode (personal data) -->
-    <div v-else class="grid grid-cols-2 gap-x-4 gap-y-3">
+    <div
+      v-else
+      class="grid grid-cols-2 gap-x-4 gap-y-3"
+    >
       <div>
         <label class="text-xs text-[var(--text-muted)] mb-1 block">Фамилия</label>
         <input
@@ -211,7 +262,7 @@ async function saveNickname() {
           readonly
           class="w-full px-3 py-1.5 text-sm rounded-lg border border-[var(--glass-border)] bg-[var(--glass-bg)] text-[var(--text-muted)] cursor-not-allowed"
           title="Для изменения обратитесь в поддержку"
-        />
+        >
       </div>
 
       <div>
@@ -222,7 +273,7 @@ async function saveNickname() {
           readonly
           class="w-full px-3 py-1.5 text-sm rounded-lg border border-[var(--glass-border)] bg-[var(--glass-bg)] text-[var(--text-muted)] cursor-not-allowed"
           title="Для изменения обратитесь в поддержку"
-        />
+        >
       </div>
 
       <div>
@@ -233,7 +284,7 @@ async function saveNickname() {
           readonly
           class="w-full px-3 py-1.5 text-sm rounded-lg border border-[var(--glass-border)] bg-[var(--glass-bg)] text-[var(--text-muted)] cursor-not-allowed"
           title="Для изменения обратитесь в поддержку"
-        />
+        >
       </div>
 
       <div>
@@ -242,26 +293,40 @@ async function saveNickname() {
           v-model="editData.birthDate"
           type="date"
           class="w-full px-3 py-1.5 text-sm rounded-lg border border-[var(--glass-border)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-primary/50"
-        />
+        >
       </div>
 
       <!-- Hint about readonly fields -->
       <div class="col-span-2 text-xs text-[var(--text-muted)] flex items-center gap-1 mt-1">
-        <Icon name="heroicons:information-circle" class="w-3.5 h-3.5" />
+        <Icon
+          name="heroicons:information-circle"
+          class="w-3.5 h-3.5"
+        />
         ФИО можно изменить только через поддержку
       </div>
     </div>
 
     <!-- Nickname Section (always visible) -->
-    <div class="mt-4 pt-4" style="border-top: 1px solid var(--glass-border);">
+    <div
+      class="mt-4 pt-4"
+      style="border-top: 1px solid var(--glass-border);"
+    >
       <div class="flex items-center justify-between mb-2">
         <div class="flex items-center gap-2">
           <div class="p-1.5 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/10">
-            <Icon name="heroicons:at-symbol" class="w-4 h-4 text-primary" />
+            <Icon
+              name="heroicons:at-symbol"
+              class="w-4 h-4 text-primary"
+            />
           </div>
           <div>
-            <p class="text-xs text-[var(--text-muted)]">Никнейм в чате</p>
-            <p v-if="!isEditingNickname" class="text-sm text-[var(--text-primary)]">
+            <p class="text-xs text-[var(--text-muted)]">
+              Никнейм в чате
+            </p>
+            <p
+              v-if="!isEditingNickname"
+              class="text-sm text-[var(--text-primary)]"
+            >
               {{ authStore.user?.nickname || 'Не задан' }}
             </p>
           </div>
@@ -276,7 +341,10 @@ async function saveNickname() {
       </div>
 
       <!-- Nickname Edit Form -->
-      <div v-if="isEditingNickname" class="mt-2 space-y-2">
+      <div
+        v-if="isEditingNickname"
+        class="mt-2 space-y-2"
+      >
         <input
           v-model="nicknameInput"
           type="text"
@@ -284,25 +352,34 @@ async function saveNickname() {
           class="w-full px-3 py-1.5 text-sm rounded-lg border border-[var(--glass-border)] bg-[var(--bg-surface)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-primary/50"
           placeholder="Введите никнейм (2-30 символов)"
           @keyup.enter="saveNickname"
-        />
-        <p v-if="nicknameError" class="text-xs text-red-500">{{ nicknameError }}</p>
+        >
+        <p
+          v-if="nicknameError"
+          class="text-xs text-red-500"
+        >
+          {{ nicknameError }}
+        </p>
         <p class="text-xs text-[var(--text-muted)]">
           Уникальное имя для отображения в чате вместо реального имени
         </p>
         <div class="flex items-center gap-2">
           <button
             class="text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
-            @click="cancelEditNickname"
             :disabled="isSavingNickname"
+            @click="cancelEditNickname"
           >
             Отмена
           </button>
           <button
             class="text-xs text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
-            @click="saveNickname"
             :disabled="isSavingNickname"
+            @click="saveNickname"
           >
-            <Icon v-if="isSavingNickname" name="heroicons:arrow-path" class="w-3 h-3 animate-spin" />
+            <Icon
+              v-if="isSavingNickname"
+              name="heroicons:arrow-path"
+              class="w-3 h-3 animate-spin"
+            />
             {{ isSavingNickname ? 'Сохранение...' : 'Сохранить' }}
           </button>
         </div>

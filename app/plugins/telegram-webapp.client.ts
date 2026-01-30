@@ -40,27 +40,27 @@ export default defineNuxtPlugin(() => {
     const setSafeAreaVars = () => {
       document.documentElement.style.setProperty(
         '--twa-safe-top',
-        `${WebApp.safeAreaInset?.top || 0}px`
+        `${WebApp.safeAreaInset?.top || 0}px`,
       )
       document.documentElement.style.setProperty(
         '--twa-safe-bottom',
-        `${WebApp.safeAreaInset?.bottom || 0}px`
+        `${WebApp.safeAreaInset?.bottom || 0}px`,
       )
       document.documentElement.style.setProperty(
         '--twa-safe-left',
-        `${WebApp.safeAreaInset?.left || 0}px`
+        `${WebApp.safeAreaInset?.left || 0}px`,
       )
       document.documentElement.style.setProperty(
         '--twa-safe-right',
-        `${WebApp.safeAreaInset?.right || 0}px`
+        `${WebApp.safeAreaInset?.right || 0}px`,
       )
       document.documentElement.style.setProperty(
         '--twa-content-safe-top',
-        `${WebApp.contentSafeAreaInset?.top || 0}px`
+        `${WebApp.contentSafeAreaInset?.top || 0}px`,
       )
       document.documentElement.style.setProperty(
         '--twa-content-safe-bottom',
-        `${WebApp.contentSafeAreaInset?.bottom || 0}px`
+        `${WebApp.contentSafeAreaInset?.bottom || 0}px`,
       )
     }
     setSafeAreaVars()
@@ -89,7 +89,8 @@ export default defineNuxtPlugin(() => {
       if (WebApp.colorScheme === 'dark') {
         document.documentElement.classList.add('dark')
         document.documentElement.classList.remove('light')
-      } else {
+      }
+      else {
         document.documentElement.classList.add('light')
         document.documentElement.classList.remove('dark')
       }
@@ -126,11 +127,11 @@ export default defineNuxtPlugin(() => {
     WebApp.onEvent('contentSafeAreaChanged', () => {
       document.documentElement.style.setProperty(
         '--twa-content-safe-top',
-        `${WebApp.contentSafeAreaInset?.top || 0}px`
+        `${WebApp.contentSafeAreaInset?.top || 0}px`,
       )
       document.documentElement.style.setProperty(
         '--twa-content-safe-bottom',
-        `${WebApp.contentSafeAreaInset?.bottom || 0}px`
+        `${WebApp.contentSafeAreaInset?.bottom || 0}px`,
       )
     })
 
@@ -138,9 +139,10 @@ export default defineNuxtPlugin(() => {
       version: WebApp.version,
       platform: WebApp.platform,
       isFullscreen: WebApp.isFullscreen,
-      safeArea: WebApp.safeAreaInset
+      safeArea: WebApp.safeAreaInset,
     })
-  } catch (error) {
+  }
+  catch (error) {
     console.error('[TWA] Initialization failed:', error)
   }
 })
@@ -163,8 +165,8 @@ declare global {
     isExpanded: boolean
     viewportHeight: number
     viewportStableHeight: number
-    safeAreaInset?: { top: number; bottom: number; left: number; right: number }
-    contentSafeAreaInset?: { top: number; bottom: number; left: number; right: number }
+    safeAreaInset?: { top: number, bottom: number, left: number, right: number }
+    contentSafeAreaInset?: { top: number, bottom: number, left: number, right: number }
     BackButton: TelegramBackButton
     MainButton: TelegramMainButton
     HapticFeedback: TelegramHapticFeedback

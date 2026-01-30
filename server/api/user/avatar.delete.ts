@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
     console.error('Error clearing user avatar:', updateError)
     throw createError({
       statusCode: 500,
-      message: 'Ошибка при удалении аватара'
+      message: 'Ошибка при удалении аватара',
     })
   }
 

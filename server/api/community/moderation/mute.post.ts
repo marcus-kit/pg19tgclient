@@ -71,7 +71,7 @@ export default defineEventHandler(async (event) => {
       user_id: body.userId,
       muted_by: sessionUser.id,
       reason: body.reason || null,
-      expires_at: expiresAt
+      expires_at: expiresAt,
     }, { onConflict: 'room_id,user_id' })
 
   if (error) {

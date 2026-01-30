@@ -2,7 +2,7 @@
 import { useAuthStore } from '~/stores/auth'
 
 definePageMeta({
-  layout: 'twa'
+  layout: 'twa',
 })
 
 const authStore = useAuthStore()
@@ -14,7 +14,7 @@ const tabs = [
   { id: 'personal' as const, label: 'Персональные данные', icon: 'heroicons:identification' },
   { id: 'contract' as const, label: 'Договор', icon: 'heroicons:document-text' },
   { id: 'notifications' as const, label: 'Уведомления', icon: 'heroicons:bell' },
-  { id: 'security' as const, label: 'Безопасность', icon: 'heroicons:shield-check' }
+  { id: 'security' as const, label: 'Безопасность', icon: 'heroicons:shield-check' },
 ]
 
 // Profile completion calculation
@@ -27,23 +27,23 @@ const profileFields = computed(() => [
   { name: 'Телефон', filled: !!authStore.user?.phone, points: 15 },
   { name: 'Email', filled: !!authStore.user?.email, points: 15 },
   { name: 'Telegram', filled: !!authStore.user?.telegramId, points: 10 },
-  { name: 'VK ID', filled: !!authStore.user?.vkId, points: 15 }
+  { name: 'VK ID', filled: !!authStore.user?.vkId, points: 15 },
 ])
 
 const completedPoints = computed(() =>
-  profileFields.value.filter(f => f.filled).reduce((sum, f) => sum + f.points, 0)
+  profileFields.value.filter(f => f.filled).reduce((sum, f) => sum + f.points, 0),
 )
 
 const totalPoints = computed(() =>
-  profileFields.value.reduce((sum, f) => sum + f.points, 0)
+  profileFields.value.reduce((sum, f) => sum + f.points, 0),
 )
 
 const completionPercent = computed(() =>
-  Math.round((completedPoints.value / totalPoints.value) * 100)
+  Math.round((completedPoints.value / totalPoints.value) * 100),
 )
 
 const missingFields = computed(() =>
-  profileFields.value.filter(f => !f.filled)
+  profileFields.value.filter(f => !f.filled),
 )
 
 const levelInfo = computed(() => {
@@ -59,8 +59,12 @@ const levelInfo = computed(() => {
   <div class="space-y-6">
     <!-- Page Header -->
     <div>
-      <h1 class="text-2xl font-bold text-[var(--text-primary)]">Профиль</h1>
-      <p class="text-[var(--text-muted)] mt-1">Управление личными данными</p>
+      <h1 class="text-2xl font-bold text-[var(--text-primary)]">
+        Профиль
+      </h1>
+      <p class="text-[var(--text-muted)] mt-1">
+        Управление личными данными
+      </p>
     </div>
 
     <!-- Tabs (moved above completion card) -->
@@ -68,27 +72,36 @@ const levelInfo = computed(() => {
       <button
         v-for="tab in tabs"
         :key="tab.id"
-        @click="activeTab = tab.id"
         class="px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-2"
         :class="activeTab === tab.id
           ? 'bg-primary text-white'
           : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'"
         :style="activeTab !== tab.id ? 'background: var(--glass-bg);' : ''"
+        @click="activeTab = tab.id"
       >
-        <Icon :name="tab.icon" class="w-4 h-4" />
+        <Icon
+          :name="tab.icon"
+          class="w-4 h-4"
+        />
         {{ tab.label }}
       </button>
     </div>
 
     <!-- Profile Tab -->
-    <div v-if="activeTab === 'profile'" class="space-y-6">
+    <div
+      v-if="activeTab === 'profile'"
+      class="space-y-6"
+    >
       <!-- Profile Completion Card -->
       <UCard class="p-0 overflow-hidden">
         <div class="px-5 py-4">
           <div class="flex items-center gap-4">
             <!-- Level Icon -->
             <div :class="['w-10 h-10 rounded-xl bg-gradient-to-br flex items-center justify-center flex-shrink-0', levelInfo.color]">
-              <Icon :name="levelInfo.icon" class="w-5 h-5 text-white" />
+              <Icon
+                :name="levelInfo.icon"
+                class="w-5 h-5 text-white"
+              />
             </div>
 
             <!-- Progress Section -->
@@ -107,7 +120,10 @@ const levelInfo = computed(() => {
             </div>
 
             <!-- Missing Fields (compact) -->
-            <div v-if="missingFields.length > 0" class="hidden sm:flex items-center gap-2 flex-shrink-0">
+            <div
+              v-if="missingFields.length > 0"
+              class="hidden sm:flex items-center gap-2 flex-shrink-0"
+            >
               <span class="text-xs text-[var(--text-muted)]">Заполните:</span>
               <div class="flex gap-1">
                 <span
@@ -117,13 +133,22 @@ const levelInfo = computed(() => {
                 >
                   {{ field.name }}
                 </span>
-                <span v-if="missingFields.length > 3" class="px-2 py-0.5 text-xs rounded-full text-[var(--text-muted)] bg-gray-100 dark:bg-white/5">
+                <span
+                  v-if="missingFields.length > 3"
+                  class="px-2 py-0.5 text-xs rounded-full text-[var(--text-muted)] bg-gray-100 dark:bg-white/5"
+                >
                   +{{ missingFields.length - 3 }}
                 </span>
               </div>
             </div>
-            <div v-else class="hidden sm:flex items-center gap-1 text-accent flex-shrink-0">
-              <Icon name="heroicons:check-circle" class="w-4 h-4" />
+            <div
+              v-else
+              class="hidden sm:flex items-center gap-1 text-accent flex-shrink-0"
+            >
+              <Icon
+                name="heroicons:check-circle"
+                class="w-4 h-4"
+              />
               <span class="text-xs font-medium">Заполнен</span>
             </div>
           </div>
@@ -141,7 +166,10 @@ const levelInfo = computed(() => {
     </div>
 
     <!-- Personal Data Tab -->
-    <div v-if="activeTab === 'personal'" class="space-y-6">
+    <div
+      v-if="activeTab === 'personal'"
+      class="space-y-6"
+    >
       <!-- Personal Info (ФИО, дата рождения) -->
       <ProfilePersonalInfo />
 
@@ -153,18 +181,27 @@ const levelInfo = computed(() => {
     </div>
 
     <!-- Contract Tab -->
-    <div v-if="activeTab === 'contract'" class="space-y-6">
+    <div
+      v-if="activeTab === 'contract'"
+      class="space-y-6"
+    >
       <ProfileContractInfo />
       <ProfileAddressInfo />
     </div>
 
     <!-- Notifications Tab -->
-    <div v-if="activeTab === 'notifications'" class="space-y-6">
+    <div
+      v-if="activeTab === 'notifications'"
+      class="space-y-6"
+    >
       <ProfileNotifications />
     </div>
 
     <!-- Security Tab -->
-    <div v-if="activeTab === 'security'" class="space-y-6">
+    <div
+      v-if="activeTab === 'security'"
+      class="space-y-6"
+    >
       <ProfileSecurity />
     </div>
   </div>

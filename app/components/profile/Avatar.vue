@@ -17,7 +17,7 @@ const avatarGradient = computed(() => {
     'from-blue-500 to-purple-600',
     'from-emerald-500 to-teal-600',
     'from-orange-500 to-red-600',
-    'from-pink-500 to-rose-600'
+    'from-pink-500 to-rose-600',
   ]
   const index = (authStore.user?.id || 0) % gradients.length
   return gradients[index]
@@ -54,18 +54,20 @@ async function handleFileChange(event: Event) {
     const formData = new FormData()
     formData.append('file', file)
 
-    const response = await $fetch<{ success: boolean; avatar: string }>('/api/user/avatar', {
+    const response = await $fetch<{ success: boolean, avatar: string }>('/api/user/avatar', {
       method: 'POST',
-      body: formData
+      body: formData,
     })
 
     if (response.success && response.avatar) {
       authStore.updateAvatar(response.avatar)
     }
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Error uploading avatar:', error)
     alert('Ошибка при загрузке аватара')
-  } finally {
+  }
+  finally {
     isUploading.value = false
   }
 }
@@ -74,15 +76,17 @@ async function removeAvatar() {
   isUploading.value = true
   try {
     const response = await $fetch<{ success: boolean }>('/api/user/avatar', {
-      method: 'DELETE'
+      method: 'DELETE',
     })
     if (response.success) {
       authStore.updateAvatar(null)
     }
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Error removing avatar:', error)
     alert('Ошибка при удалении аватара')
-  } finally {
+  }
+  finally {
     isUploading.value = false
   }
 }
@@ -91,7 +95,9 @@ async function removeAvatar() {
 <template>
   <UCard class="!p-4">
     <div class="flex items-center justify-between mb-3">
-      <h2 class="text-base font-semibold text-[var(--text-primary)]">Фото профиля</h2>
+      <h2 class="text-base font-semibold text-[var(--text-primary)]">
+        Фото профиля
+      </h2>
       <button
         v-if="authStore.user?.avatar"
         class="text-sm text-red-400 hover:text-red-300 transition-colors"
@@ -114,7 +120,7 @@ async function removeAvatar() {
             :src="authStore.user.avatar"
             :alt="authStore.fullName"
             class="w-full h-full object-cover"
-          />
+          >
           <div
             v-else
             :class="['w-full h-full bg-gradient-to-br flex items-center justify-center', avatarGradient]"
@@ -138,12 +144,14 @@ async function removeAvatar() {
           accept="image/*"
           class="hidden"
           @change="handleFileChange"
-        />
+        >
       </div>
 
       <!-- Info -->
       <div class="flex-1">
-        <p class="text-[var(--text-primary)] font-medium text-sm">{{ authStore.fullName }}</p>
+        <p class="text-[var(--text-primary)] font-medium text-sm">
+          {{ authStore.fullName }}
+        </p>
         <p class="text-xs text-[var(--text-muted)] mt-0.5">
           Нажмите на фото для загрузки · JPG, PNG до 5 МБ
         </p>

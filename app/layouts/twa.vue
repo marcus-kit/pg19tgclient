@@ -23,31 +23,35 @@ const safeBackButton = {
   show: () => {
     try {
       if (backButton?.show) backButton.show()
-    } catch (e) {
+    }
+    catch (e) {
       console.warn('[TWA Layout] BackButton.show() failed:', e)
     }
   },
   hide: () => {
     try {
       if (backButton?.hide) backButton.hide()
-    } catch (e) {
+    }
+    catch (e) {
       console.warn('[TWA Layout] BackButton.hide() failed:', e)
     }
   },
   onClick: (fn: () => void) => {
     try {
       if (backButton?.onClick) backButton.onClick(fn)
-    } catch (e) {
+    }
+    catch (e) {
       console.warn('[TWA Layout] BackButton.onClick() failed:', e)
     }
   },
   offClick: (fn: () => void) => {
     try {
       if (backButton?.offClick) backButton.offClick(fn)
-    } catch (e) {
+    }
+    catch (e) {
       console.warn('[TWA Layout] BackButton.offClick() failed:', e)
     }
-  }
+  },
 }
 
 // Управление BackButton
@@ -57,11 +61,12 @@ watch(
     if (canGoBack.value) {
       safeBackButton.show()
       safeBackButton.onClick(handleBackClick)
-    } else {
+    }
+    else {
       safeBackButton.hide()
     }
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 // Очистка при размонтировании
@@ -79,7 +84,7 @@ onUnmounted(() => {
       color: 'var(--tg-text-color, var(--text-primary))',
       paddingBottom: 'calc(64px + var(--twa-safe-bottom, 0px))',
       paddingLeft: 'var(--twa-safe-left, 0px)',
-      paddingRight: 'var(--twa-safe-right, 0px)'
+      paddingRight: 'var(--twa-safe-right, 0px)',
     }"
   >
     <!-- Header -->
@@ -89,7 +94,7 @@ onUnmounted(() => {
     <main
       class="flex-1"
       :style="{
-        paddingTop: 'calc(56px + var(--twa-safe-top, 0px))'
+        paddingTop: 'calc(56px + var(--twa-safe-top, 0px))',
       }"
     >
       <div class="container mx-auto px-4 py-4">

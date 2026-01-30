@@ -9,7 +9,7 @@ const nextPaymentDate = computed(() => {
   const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0)
   return lastDay.toLocaleDateString('ru-RU', {
     day: 'numeric',
-    month: 'long'
+    month: 'long',
   })
 })
 
@@ -20,14 +20,14 @@ const statusConfig = computed(() => {
       text: 'Заблокирован',
       color: 'bg-red-500',
       icon: 'heroicons:x-circle',
-      iconColor: 'text-red-400'
+      iconColor: 'text-red-400',
     }
   }
   return {
     text: 'Активен',
     color: 'bg-accent',
     icon: 'heroicons:check-circle',
-    iconColor: 'text-accent'
+    iconColor: 'text-accent',
   }
 })
 </script>
@@ -36,17 +36,19 @@ const statusConfig = computed(() => {
   <UCard hover>
     <div class="flex items-start justify-between mb-4">
       <div>
-        <p class="text-sm text-[var(--text-muted)] mb-1">Статус услуги</p>
+        <p class="text-sm text-[var(--text-muted)] mb-1">
+          Статус услуги
+        </p>
         <div class="flex items-center gap-3 mt-2">
           <span class="relative flex h-3 w-3">
             <span
               class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
               :class="statusConfig.color"
-            ></span>
+            />
             <span
               class="relative inline-flex rounded-full h-3 w-3"
               :class="statusConfig.color"
-            ></span>
+            />
           </span>
           <span class="text-xl font-semibold text-[var(--text-primary)]">
             {{ statusConfig.text }}
@@ -57,19 +59,29 @@ const statusConfig = computed(() => {
         class="w-12 h-12 rounded-xl flex items-center justify-center"
         :class="authStore.isBlocked ? 'bg-red-500/20' : 'bg-accent/20'"
       >
-        <Icon :name="statusConfig.icon" class="w-6 h-6" :class="statusConfig.iconColor" />
+        <Icon
+          :name="statusConfig.icon"
+          class="w-6 h-6"
+          :class="statusConfig.iconColor"
+        />
       </div>
     </div>
 
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2 text-[var(--text-muted)]">
-        <Icon name="heroicons:calendar" class="w-4 h-4" />
+        <Icon
+          name="heroicons:calendar"
+          class="w-4 h-4"
+        />
         <span class="text-sm">
           Следующая оплата: <span class="text-[var(--text-primary)] font-medium">{{ nextPaymentDate }}</span>
         </span>
       </div>
       <NuxtLink to="/invoices">
-        <UButton size="sm" variant="secondary">
+        <UButton
+          size="sm"
+          variant="secondary"
+        >
           Оплатить сейчас
         </UButton>
       </NuxtLink>

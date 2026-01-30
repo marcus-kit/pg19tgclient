@@ -1,8 +1,8 @@
 <script setup lang="ts">
 useHead({
   htmlAttrs: {
-    lang: 'ru'
-  }
+    lang: 'ru',
+  },
 })
 </script>
 

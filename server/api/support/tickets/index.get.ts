@@ -57,7 +57,7 @@ export default defineEventHandler(async (event) => {
   // Получаем количество комментариев для каждого тикета
   const ticketIds = (data || []).map(t => t.id)
 
-  let commentsCounts: Record<string, number> = {}
+  const commentsCounts: Record<string, number> = {}
   if (ticketIds.length > 0) {
     const { data: commentsData } = await supabase
       .from('ticket_comments')
@@ -89,7 +89,7 @@ export default defineEventHandler(async (event) => {
     closedAt: row.closed_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
-    commentsCount: commentsCounts[String(row.id)] || 0
+    commentsCount: commentsCounts[String(row.id)] || 0,
   }))
 
   return { tickets }

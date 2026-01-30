@@ -1,4 +1,5 @@
-import { H3Event, getCookie, setCookie, deleteCookie, createError } from 'h3'
+import type { H3Event } from 'h3'
+import { getCookie, setCookie, deleteCookie, createError } from 'h3'
 import crypto from 'crypto'
 
 const SESSION_COOKIE_NAME = 'pg19_session'
@@ -25,7 +26,7 @@ export function setSessionCookie(event: H3Event, token: string): void {
     secure: true,
     sameSite: 'none', // Для Telegram Web App
     maxAge: SESSION_MAX_AGE,
-    path: '/'
+    path: '/',
   })
 }
 
@@ -34,7 +35,7 @@ export function setSessionCookie(event: H3Event, token: string): void {
  */
 export function clearSessionCookie(event: H3Event): void {
   deleteCookie(event, SESSION_COOKIE_NAME, {
-    path: '/'
+    path: '/',
   })
 }
 
@@ -74,7 +75,7 @@ export async function getUserFromSession(event: H3Event): Promise<SessionUser | 
 
   return {
     id: session.user_id,
-    accountId: session.account_id
+    accountId: session.account_id,
   }
 }
 
@@ -87,7 +88,7 @@ export async function requireUser(event: H3Event): Promise<SessionUser> {
   if (!user) {
     throw createError({
       statusCode: 401,
-      message: 'Требуется авторизация'
+      message: 'Требуется авторизация',
     })
   }
 
@@ -103,7 +104,7 @@ export async function createUserSession(
   accountId: string,
   method: 'telegram' | 'contract',
   identifier: string,
-  metadata?: Record<string, unknown>
+  metadata?: Record<string, unknown>,
 ): Promise<string> {
   const supabase = useSupabaseServer(event)
   const token = generateSessionToken()
@@ -120,14 +121,14 @@ export async function createUserSession(
     account_id: accountId,
     verified_at: new Date().toISOString(),
     expires_at: sessionExpiry.toISOString(),
-    metadata: metadata || {}
+    metadata: metadata || {},
   })
 
   if (error) {
     console.error('Failed to create session:', error)
     throw createError({
       statusCode: 500,
-      message: 'Ошибка создания сессии'
+      message: 'Ошибка создания сессии',
     })
   }
 

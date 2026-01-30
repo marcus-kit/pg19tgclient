@@ -138,7 +138,8 @@ export function useCommunityTyping(options: UseCommunityTypingOptions) {
       for (const [targetUserId, data] of typingUsers.value) {
         if (now - data.timestamp > TYPING_TIMEOUT) {
           typingUsers.value.delete(targetUserId)
-        } else {
+        }
+        else {
           hasActive = true
         }
       }
@@ -151,7 +152,8 @@ export function useCommunityTyping(options: UseCommunityTypingOptions) {
           typingCleanupInterval = null
           typingEmptyCycles = 0
         }
-      } else {
+      }
+      else {
         typingEmptyCycles = 0 // Сброс при активности
       }
     }, TYPING_CLEANUP_INTERVAL)

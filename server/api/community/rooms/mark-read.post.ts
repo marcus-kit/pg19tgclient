@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
   // Вызываем функцию обновления last_read_at
   const { error } = await supabase.rpc('update_community_last_read', {
     p_room_id: body.roomId,
-    p_user_id: sessionUser.id
+    p_user_id: sessionUser.id,
   })
 
   if (error) {

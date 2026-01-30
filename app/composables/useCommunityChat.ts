@@ -182,7 +182,7 @@ export function useCommunityChat() {
           filter: `room_id=eq.${currentRoom.id}`,
         },
         async (payload) => {
-          const newMessage = payload.new as { id: number; user_id: string }
+          const newMessage = payload.new as { id: number, user_id: string }
 
           // Если уже получили через Broadcast — игнорируем
           if (messagesModule.wasReceivedViaBroadcast(newMessage.id)) return
@@ -210,7 +210,7 @@ export function useCommunityChat() {
           filter: `room_id=eq.${currentRoom.id}`,
         },
         (payload) => {
-          const updated = payload.new as { id: number; is_deleted: boolean; is_pinned: boolean; content: string }
+          const updated = payload.new as { id: number, is_deleted: boolean, is_pinned: boolean, content: string }
           messagesModule.handleMessageUpdate(updated)
         },
       )
@@ -261,7 +261,8 @@ export function useCommunityChat() {
       const audio = new Audio('/sounds/notification.mp3')
       audio.volume = 0.3
       audio.play().catch(() => {})
-    } catch {
+    }
+    catch {
       // Игнорируем ошибки
     }
   }

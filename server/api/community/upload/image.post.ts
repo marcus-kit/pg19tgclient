@@ -46,7 +46,7 @@ export default defineEventHandler(async (event) => {
     .from('community-images')
     .upload(uniqueName, file, {
       contentType: mimeType,
-      upsert: false
+      upsert: false,
     })
 
   if (error) {
@@ -61,7 +61,7 @@ export default defineEventHandler(async (event) => {
 
   return {
     url: publicUrl,
-    width: 0,  // TODO: получить размеры через sharp если нужно
-    height: 0
+    width: 0, // TODO: получить размеры через sharp если нужно
+    height: 0,
   }
 })

@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   if (!sessionId) {
     throw createError({
       statusCode: 400,
-      message: 'sessionId обязателен'
+      message: 'sessionId обязателен',
     })
   }
 
@@ -24,21 +24,21 @@ export default defineEventHandler(async (event) => {
   if (fetchError || !session) {
     throw createError({
       statusCode: 404,
-      message: 'Сессия не найдена'
+      message: 'Сессия не найдена',
     })
   }
 
   if (session.user_id !== userId) {
     throw createError({
       statusCode: 403,
-      message: 'Нет доступа к этой сессии'
+      message: 'Нет доступа к этой сессии',
     })
   }
 
   if (session.is_current) {
     throw createError({
       statusCode: 400,
-      message: 'Нельзя завершить текущую сессию'
+      message: 'Нельзя завершить текущую сессию',
     })
   }
 
@@ -52,7 +52,7 @@ export default defineEventHandler(async (event) => {
     console.error('Error terminating session:', error)
     throw createError({
       statusCode: 500,
-      message: 'Ошибка при завершении сессии'
+      message: 'Ошибка при завершении сессии',
     })
   }
 

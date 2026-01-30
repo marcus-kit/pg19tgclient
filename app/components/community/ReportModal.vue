@@ -9,7 +9,7 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<{
   close: []
-  report: [{ messageId: number; reason: CommunityReportReason; details: string }]
+  report: [{ messageId: number, reason: CommunityReportReason, details: string }]
 }>()
 
 const isSubmitting = ref(false)
@@ -17,11 +17,11 @@ const selectedReason = ref<CommunityReportReason | null>(null)
 const details = ref('')
 const error = ref('')
 
-const reasons: { value: CommunityReportReason; label: string; icon: string }[] = [
+const reasons: { value: CommunityReportReason, label: string, icon: string }[] = [
   { value: 'spam', label: 'Спам', icon: 'heroicons:envelope' },
   { value: 'abuse', label: 'Оскорбления', icon: 'heroicons:exclamation-triangle' },
   { value: 'fraud', label: 'Мошенничество', icon: 'heroicons:shield-exclamation' },
-  { value: 'other', label: 'Другое', icon: 'heroicons:question-mark-circle' }
+  { value: 'other', label: 'Другое', icon: 'heroicons:question-mark-circle' },
 ]
 
 async function handleSubmit() {
@@ -36,7 +36,7 @@ async function handleSubmit() {
   emit('report', {
     messageId: props.messageId,
     reason: selectedReason.value,
-    details: details.value.trim()
+    details: details.value.trim(),
   })
 }
 
@@ -74,10 +74,13 @@ onMounted(() => {
             Пожаловаться
           </h3>
           <button
-            @click="emit('close')"
             class="p-1 rounded-lg hover:bg-white/10 text-[var(--text-muted)] transition-colors"
+            @click="emit('close')"
           >
-            <Icon name="heroicons:x-mark" class="w-5 h-5" />
+            <Icon
+              name="heroicons:x-mark"
+              class="w-5 h-5"
+            />
           </button>
         </div>
 
@@ -91,11 +94,11 @@ onMounted(() => {
           <button
             v-for="r in reasons"
             :key="r.value"
-            @click="selectedReason = r.value"
             class="w-full flex items-center gap-3 px-4 py-3 rounded-lg border transition-colors text-left"
             :class="selectedReason === r.value
               ? 'bg-primary/20 border-primary'
               : 'border-[var(--glass-border)] hover:bg-white/5'"
+            @click="selectedReason = r.value"
           >
             <Icon
               :name="r.icon"
@@ -124,24 +127,37 @@ onMounted(() => {
         </div>
 
         <!-- Error -->
-        <p v-if="error" class="text-xs text-red-400 mb-4">{{ error }}</p>
+        <p
+          v-if="error"
+          class="text-xs text-red-400 mb-4"
+        >
+          {{ error }}
+        </p>
 
         <!-- Actions -->
         <div class="flex items-center gap-3">
           <button
-            @click="emit('close')"
             class="flex-1 px-4 py-2 text-sm rounded-lg border border-[var(--glass-border)] text-[var(--text-muted)] hover:bg-white/5 transition-colors"
             :disabled="isSubmitting"
+            @click="emit('close')"
           >
             Отмена
           </button>
           <button
-            @click="handleSubmit"
             class="flex-1 px-4 py-2 text-sm rounded-lg bg-orange-500/20 text-orange-400 hover:bg-orange-500/30 transition-colors flex items-center justify-center gap-2"
             :disabled="isSubmitting || !selectedReason"
+            @click="handleSubmit"
           >
-            <Icon v-if="isSubmitting" name="heroicons:arrow-path" class="w-4 h-4 animate-spin" />
-            <Icon v-else name="heroicons:flag" class="w-4 h-4" />
+            <Icon
+              v-if="isSubmitting"
+              name="heroicons:arrow-path"
+              class="w-4 h-4 animate-spin"
+            />
+            <Icon
+              v-else
+              name="heroicons:flag"
+              class="w-4 h-4"
+            />
             Отправить
           </button>
         </div>

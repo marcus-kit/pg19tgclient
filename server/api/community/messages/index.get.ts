@@ -59,22 +59,22 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, message: 'Комната не найдена' })
   }
 
-  const { data: account } = await supabase
-    .from('accounts')
-    .select('address_city, address_district, address_building')
-    .eq('id', sessionUser.accountId)
-    .single()
+   const { data: contract } = await supabase
+     .from('contracts_view')
+     .select('address_city, address_district, address_building')
+     .eq('id', sessionUser.accountId)
+     .single()
 
-  // Проверка доступа по географии
-  if (account?.address_city !== room.city) {
-    throw createError({ statusCode: 403, message: 'Нет доступа к этой комнате' })
-  }
-  if (room.district && account?.address_district !== room.district) {
-    throw createError({ statusCode: 403, message: 'Нет доступа к этой комнате' })
-  }
-  if (room.building && account?.address_building !== room.building) {
-    throw createError({ statusCode: 403, message: 'Нет доступа к этой комнате' })
-  }
+   // Проверка доступа по географии
+   if (contract?.address_city !== room.city) {
+     throw createError({ statusCode: 403, message: 'Нет доступа к этой комнате' })
+   }
+   if (room.district && contract?.address_district !== room.district) {
+     throw createError({ statusCode: 403, message: 'Нет доступа к этой комнате' })
+   }
+   if (room.building && contract?.address_building !== room.building) {
+     throw createError({ statusCode: 403, message: 'Нет доступа к этой комнате' })
+   }
 
   // Строим запрос
   let messagesQuery = supabase
@@ -88,15 +88,18 @@ export default defineEventHandler(async (event) => {
   // Фильтры
   if (ids && ids.length > 0) {
     messagesQuery = messagesQuery.in('id', ids)
-  } else if (pinned) {
+  }
+  else if (pinned) {
     messagesQuery = messagesQuery.eq('is_pinned', true)
-  } else if (after) {
+  }
+  else if (after) {
     // Загрузить сообщения ПОСЛЕ указанного ID (для reconnect)
     messagesQuery = messagesQuery
       .gt('id', after)
       .order('created_at', { ascending: true })
       .limit(limit + 1)
-  } else {
+  }
+  else {
     if (before) {
       messagesQuery = messagesQuery.lt('id', before)
     }
@@ -123,7 +126,7 @@ export default defineEventHandler(async (event) => {
     .filter(m => m.reply_to_id)
     .map(m => m.reply_to_id as string)
 
-  let replyToMap = new Map<string, CommunityMessage>()
+  const replyToMap = new Map<string, CommunityMessage>()
   if (replyToIds.length > 0) {
     const { data: replyMessages } = await supabase
       .from('community_messages')
@@ -151,18 +154,20 @@ export default defineEventHandler(async (event) => {
         replyToId: reply.reply_to_id,
         createdAt: reply.created_at,
         updatedAt: reply.updated_at,
-        user: user ? {
-          id: user.id,
-          firstName: user.first_name,
-          lastName: user.last_name
-        } : undefined
+        user: user
+          ? {
+              id: user.id,
+              firstName: user.first_name,
+              lastName: user.last_name,
+            }
+          : undefined,
       })
     }
   }
 
   // Маппинг в camelCase
   const messages: CommunityMessage[] = messagesToReturn
-    .map(msg => {
+    .map((msg) => {
       const user = msg.user as any
       return {
         id: msg.id,
@@ -180,13 +185,15 @@ export default defineEventHandler(async (event) => {
         replyToId: msg.reply_to_id,
         createdAt: msg.created_at,
         updatedAt: msg.updated_at,
-        user: user ? {
-          id: user.id,
-          firstName: user.first_name,
-          lastName: user.last_name,
-          avatar: user.avatar
-        } : undefined,
-        replyTo: msg.reply_to_id ? replyToMap.get(msg.reply_to_id) || null : null
+        user: user
+          ? {
+              id: user.id,
+              firstName: user.first_name,
+              lastName: user.last_name,
+              avatar: user.avatar,
+            }
+          : undefined,
+        replyTo: msg.reply_to_id ? replyToMap.get(msg.reply_to_id) || null : null,
       }
     })
     // Сортируем по возрастанию для отображения

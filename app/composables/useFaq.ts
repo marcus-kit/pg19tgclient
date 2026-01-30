@@ -9,19 +9,19 @@ export const useFaq = () => {
       '/api/faq',
       {
         key: 'faq-list',
-        lazy: true
-      }
+        lazy: true,
+      },
     )
 
     return {
       faq: computed(() => data.value?.faq || []),
       error,
       pending,
-      refresh
+      refresh,
     }
   }
 
   return {
-    fetchFaq
+    fetchFaq,
   }
 }

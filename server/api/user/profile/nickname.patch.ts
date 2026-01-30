@@ -31,7 +31,7 @@ export default defineEventHandler(async (event): Promise<UpdateNicknameResponse>
     // Проверка уникальности через функцию
     const { data: isAvailable, error: checkError } = await supabase.rpc('check_nickname_available', {
       p_nickname: nickname,
-      p_user_id: sessionUser.id
+      p_user_id: sessionUser.id,
     })
 
     if (checkError) {

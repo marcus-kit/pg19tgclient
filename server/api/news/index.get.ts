@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
     console.error('Failed to fetch news:', error)
     throw createError({
       statusCode: 500,
-      message: 'Ошибка при загрузке новостей'
+      message: 'Ошибка при загрузке новостей',
     })
   }
 
@@ -45,7 +45,7 @@ export default defineEventHandler(async (event) => {
     expiresAt: item.expires_at,
     isPinned: item.is_pinned,
     createdAt: item.date_created,
-    updatedAt: item.date_updated
+    updatedAt: item.date_updated,
   }))
 
   return { news }

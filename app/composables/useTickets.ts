@@ -17,15 +17,15 @@ export const useTickets = () => {
       {
         query,
         key: `tickets-${JSON.stringify(query)}`,
-        lazy: true
-      }
+        lazy: true,
+      },
     )
 
     return {
       tickets: computed(() => data.value?.tickets || []),
       error,
       pending,
-      refresh
+      refresh,
     }
   }
 
@@ -37,15 +37,15 @@ export const useTickets = () => {
       `/api/support/tickets/${id}`,
       {
         key: `ticket-${id}`,
-        lazy: true
-      }
+        lazy: true,
+      },
     )
 
     return {
       ticket: computed(() => data.value?.ticket || null),
       error,
       pending,
-      refresh
+      refresh,
     }
   }
 
@@ -61,13 +61,13 @@ export const useTickets = () => {
       '/api/support/tickets',
       {
         method: 'POST',
-        body: payload
-      }
+        body: payload,
+      },
     )
 
     return {
       ticket: data.value?.ticket || null,
-      error: error.value
+      error: error.value,
     }
   }
 
@@ -79,13 +79,13 @@ export const useTickets = () => {
       `/api/support/tickets/${ticketId}/comment`,
       {
         method: 'POST',
-        body: { content }
-      }
+        body: { content },
+      },
     )
 
     return {
       comment: data.value?.comment || null,
-      error: error.value
+      error: error.value,
     }
   }
 
@@ -97,13 +97,13 @@ export const useTickets = () => {
       `/api/support/tickets/${ticketId}/close`,
       {
         method: 'POST',
-        body: { status }
-      }
+        body: { status },
+      },
     )
 
     return {
       success: data.value?.success || false,
-      error: error.value
+      error: error.value,
     }
   }
 
@@ -112,6 +112,6 @@ export const useTickets = () => {
     fetchTicket,
     createTicket,
     addComment,
-    closeTicket
+    closeTicket,
   }
 }

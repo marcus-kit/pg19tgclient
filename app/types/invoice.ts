@@ -29,7 +29,7 @@ export const invoiceStatusLabels: Record<InvoiceStatus, string> = {
   issued: 'Выставлен',
   paid: 'Оплачен',
   overdue: 'Просрочен',
-  cancelled: 'Отменён'
+  cancelled: 'Отменён',
 }
 
 export const invoiceStatusColors: Record<InvoiceStatus, string> = {
@@ -37,5 +37,5 @@ export const invoiceStatusColors: Record<InvoiceStatus, string> = {
   issued: 'primary',
   paid: 'success',
   overdue: 'error',
-  cancelled: 'neutral'
+  cancelled: 'neutral',
 }

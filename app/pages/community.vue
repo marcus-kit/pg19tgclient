@@ -2,7 +2,7 @@
 import type { CommunityRoom, CommunityMessage, CommunityReportReason, CommunityRoomLevel } from '~/types/community'
 
 definePageMeta({
-  layout: 'twa'
+  layout: 'twa',
 })
 
 const authStore = useAuthStore()
@@ -32,7 +32,7 @@ const {
   isUserModerator,
   muteUser,
   reportMessage,
-  broadcastTyping
+  broadcastTyping,
 } = useCommunityChat()
 
 // Загружаем комнаты при монтировании
@@ -66,7 +66,7 @@ const contextMenu = ref({
   show: false,
   x: 0,
   y: 0,
-  message: null as CommunityMessage | null
+  message: null as CommunityMessage | null,
 })
 
 // Обработчики
@@ -146,7 +146,7 @@ function levelIcon(level: CommunityRoomLevel) {
 const levelOrder: Record<CommunityRoomLevel, number> = {
   city: 0,
   district: 1,
-  building: 2
+  building: 2,
 }
 
 const sortedRooms = computed(() => {
@@ -169,12 +169,13 @@ function handleMuteClick(userId: number) {
   showMuteModal.value = true
 }
 
-async function handleMuteSubmit(data: { userId: number; duration: number; reason: string }) {
+async function handleMuteSubmit(data: { userId: number, duration: number, reason: string }) {
   try {
     await muteUser(data.userId, data.duration, data.reason || undefined)
     showMuteModal.value = false
     muteTargetUserId.value = null
-  } catch {
+  }
+  catch {
     // Ошибка обрабатывается в composable
   }
 }
@@ -190,12 +191,13 @@ function handleReportClick(messageId: number) {
   showReportModal.value = true
 }
 
-async function handleReportSubmit(data: { messageId: number; reason: CommunityReportReason; details: string }) {
+async function handleReportSubmit(data: { messageId: number, reason: CommunityReportReason, details: string }) {
   try {
     await reportMessage(data.messageId, data.reason, data.details || undefined)
     showReportModal.value = false
     reportTargetMessageId.value = null
-  } catch {
+  }
+  catch {
     // Ошибка обрабатывается в composable
   }
 }
@@ -209,7 +211,7 @@ const mutedUntilFormatted = computed(() => {
     day: 'numeric',
     month: 'short',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   })
 })
 
@@ -232,8 +234,13 @@ function handleScroll(e: Event) {
       <!-- Title row with members and online count -->
       <div class="flex items-center justify-between px-3 py-1">
         <div class="flex items-center gap-2">
-          <h2 class="font-bold text-[var(--text-primary)]">Сообщество</h2>
-          <span v-if="currentRoom" class="text-xs text-[var(--text-muted)]">
+          <h2 class="font-bold text-[var(--text-primary)]">
+            Сообщество
+          </h2>
+          <span
+            v-if="currentRoom"
+            class="text-xs text-[var(--text-muted)]"
+          >
             {{ currentRoom.membersCount }} участников
           </span>
         </div>
@@ -244,35 +251,52 @@ function handleScroll(e: Event) {
       </div>
 
       <!-- Loading -->
-      <div v-if="isLoadingRooms" class="flex items-center justify-center py-2">
-        <Icon name="heroicons:arrow-path" class="w-5 h-5 text-primary animate-spin" />
+      <div
+        v-if="isLoadingRooms"
+        class="flex items-center justify-center py-2"
+      >
+        <Icon
+          name="heroicons:arrow-path"
+          class="w-5 h-5 text-primary animate-spin"
+        />
       </div>
 
       <!-- Empty -->
-      <div v-else-if="sortedRooms.length === 0" class="text-center py-2 px-3">
-        <p class="text-[var(--text-muted)] text-sm">Нет доступных чатов. Укажите адрес в профиле.</p>
+      <div
+        v-else-if="sortedRooms.length === 0"
+        class="text-center py-2 px-3"
+      >
+        <p class="text-[var(--text-muted)] text-sm">
+          Нет доступных чатов. Укажите адрес в профиле.
+        </p>
       </div>
 
       <!-- Channel tabs -->
-      <div v-else class="flex gap-1 px-2 pb-1.5 overflow-x-auto">
+      <div
+        v-else
+        class="flex gap-1 px-2 pb-1.5 overflow-x-auto"
+      >
         <button
           v-for="room in sortedRooms"
           :key="room.id"
-          @click="handleRoomSelect(room)"
           :class="[
             'flex items-center gap-1.5 px-3 py-1 rounded-lg text-sm whitespace-nowrap transition-colors',
             currentRoom?.id === room.id
               ? 'bg-primary text-white'
-              : 'bg-white/5 hover:bg-white/10 text-[var(--text-secondary)]'
+              : 'bg-white/5 hover:bg-white/10 text-[var(--text-secondary)]',
           ]"
+          @click="handleRoomSelect(room)"
         >
-          <Icon :name="levelIcon(room.level)" class="w-4 h-4 flex-shrink-0" />
+          <Icon
+            :name="levelIcon(room.level)"
+            class="w-4 h-4 flex-shrink-0"
+          />
           <span>{{ room.name }}</span>
           <span
             v-if="room.unreadCount"
             :class="[
               'text-[10px] min-w-[16px] h-[16px] px-1 rounded-full flex items-center justify-center',
-              currentRoom?.id === room.id ? 'bg-white/20 text-white' : 'bg-primary text-white'
+              currentRoom?.id === room.id ? 'bg-white/20 text-white' : 'bg-primary text-white',
             ]"
           >
             {{ room.unreadCount > 99 ? '99+' : room.unreadCount }}
@@ -297,8 +321,14 @@ function handleScroll(e: Event) {
           @scroll="handleScroll"
         >
           <!-- Loading indicator for history -->
-          <div v-if="isLoadingMessages && messages.length > 0" class="text-center py-2">
-            <Icon name="heroicons:arrow-path" class="w-4 h-4 text-primary animate-spin mx-auto" />
+          <div
+            v-if="isLoadingMessages && messages.length > 0"
+            class="text-center py-2"
+          >
+            <Icon
+              name="heroicons:arrow-path"
+              class="w-4 h-4 text-primary animate-spin mx-auto"
+            />
           </div>
 
           <!-- Messages list (Telegram bubble style with date grouping) -->
@@ -315,8 +345,13 @@ function handleScroll(e: Event) {
       </template>
 
       <!-- No room selected -->
-      <div v-else class="flex-1 flex items-center justify-center h-full">
-        <p class="text-[var(--text-muted)]">Выберите канал выше</p>
+      <div
+        v-else
+        class="flex-1 flex items-center justify-center h-full"
+      >
+        <p class="text-[var(--text-muted)]">
+          Выберите канал выше
+        </p>
       </div>
     </main>
 
@@ -334,7 +369,10 @@ function handleScroll(e: Event) {
         v-if="isMuted"
         class="px-4 py-2 bg-yellow-500/20 text-yellow-400 text-sm flex items-center gap-2"
       >
-        <Icon name="heroicons:speaker-x-mark" class="w-4 h-4" />
+        <Icon
+          name="heroicons:speaker-x-mark"
+          class="w-4 h-4"
+        />
         <span>Вы не можете писать до {{ mutedUntilFormatted }}</span>
       </div>
 

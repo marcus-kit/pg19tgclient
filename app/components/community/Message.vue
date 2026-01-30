@@ -149,7 +149,7 @@ function onTouchEnd() {
       groupPosition === 'start' && 'mt-2',
       groupPosition === 'middle' && 'mt-0.5',
       groupPosition === 'end' && 'mt-0.5',
-      groupPosition === 'single' && 'mt-2'
+      groupPosition === 'single' && 'mt-2',
     ]"
     :style="swipeStyle"
     @touchstart.passive="onTouchStart"
@@ -163,7 +163,10 @@ function onTouchEnd() {
       class="tg-swipe-reply-icon"
       :style="{ opacity: swipeIconOpacity }"
     >
-      <Icon name="heroicons:arrow-uturn-left" class="w-4 h-4 text-white" />
+      <Icon
+        name="heroicons:arrow-uturn-left"
+        class="w-4 h-4 text-white"
+      />
     </div>
 
     <!-- Bubble -->
@@ -175,12 +178,15 @@ function onTouchEnd() {
         message.status === 'failed' && 'opacity-80',
         message.isDeleted && 'opacity-60',
         // Group position classes for rounded corners
-        groupPosition && `tg-message-group-${groupPosition}`
+        groupPosition && `tg-message-group-${groupPosition}`,
       ]"
       @contextmenu.prevent="handleContextMenu"
     >
       <!-- Sender name (only for others' first message in group) -->
-      <div v-if="showSenderName" class="tg-sender-name flex items-center gap-1.5">
+      <div
+        v-if="showSenderName"
+        class="tg-sender-name flex items-center gap-1.5"
+      >
         <span>{{ displayName }}</span>
         <span
           v-if="isUserModerator"
@@ -204,7 +210,10 @@ function onTouchEnd() {
 
       <!-- Content -->
       <div class="break-words">
-        <span v-if="message.isDeleted" class="italic opacity-60">
+        <span
+          v-if="message.isDeleted"
+          class="italic opacity-60"
+        >
           Сообщение удалено
         </span>
         <template v-else>
@@ -221,12 +230,18 @@ function onTouchEnd() {
                 :height="message.imageHeight || undefined"
                 class="rounded-lg max-w-full max-h-[300px] object-cover"
                 loading="lazy"
-              />
+              >
             </a>
-            <span v-if="message.content" class="whitespace-pre-wrap">{{ message.content }}</span>
+            <span
+              v-if="message.content"
+              class="whitespace-pre-wrap"
+            >{{ message.content }}</span>
           </template>
           <!-- Text only -->
-          <span v-else class="whitespace-pre-wrap">{{ message.content }}</span>
+          <span
+            v-else
+            class="whitespace-pre-wrap"
+          >{{ message.content }}</span>
         </template>
 
         <!-- Time and status (inline at end of text) -->
@@ -261,11 +276,11 @@ function onTouchEnd() {
       <!-- Failed retry button -->
       <button
         v-if="message.status === 'failed'"
-        @click.stop="emit('retry', String(message.id))"
         :class="[
           'absolute -bottom-5 text-xs underline text-red-400',
-          isOwn ? 'right-0' : 'left-0'
+          isOwn ? 'right-0' : 'left-0',
         ]"
+        @click.stop="emit('retry', String(message.id))"
       >
         Повторить
       </button>

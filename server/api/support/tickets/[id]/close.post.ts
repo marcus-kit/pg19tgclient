@@ -48,12 +48,13 @@ export default defineEventHandler(async (event) => {
   const now = new Date().toISOString()
   const updateData: Record<string, unknown> = {
     status,
-    updated_at: now
+    updated_at: now,
   }
 
   if (status === 'resolved') {
     updateData.resolved_at = now
-  } else {
+  }
+  else {
     updateData.closed_at = now
   }
 
@@ -81,7 +82,7 @@ export default defineEventHandler(async (event) => {
       author_name: null,
       content: systemComment,
       is_internal: false,
-      is_solution: false
+      is_solution: false,
     })
 
   if (commentError) {

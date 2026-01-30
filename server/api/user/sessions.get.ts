@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
     console.error('Error fetching sessions:', error)
     throw createError({
       statusCode: 500,
-      message: 'Ошибка при загрузке сессий'
+      message: 'Ошибка при загрузке сессий',
     })
   }
 
@@ -40,6 +40,6 @@ export default defineEventHandler(async (event) => {
     ip: s.ip_address || '***',
     location: s.location || 'Неизвестно',
     lastActive: s.last_active_at || s.created_at,
-    current: s.is_current
+    current: s.is_current,
   }))
 })

@@ -3,7 +3,7 @@ import type { TicketDetail, TicketComment } from '~/types/ticket'
 import { ticketStatusLabels, ticketStatusColors, ticketCategoryLabels, ticketCategoryIcons } from '~/types/ticket'
 
 definePageMeta({
-  layout: 'twa'
+  layout: 'twa',
 })
 
 const route = useRoute()
@@ -23,12 +23,12 @@ const closeStatus = ref<'resolved' | 'closed'>('resolved')
 const closing = ref(false)
 
 // Статусы для UI
-const statusConfig: Record<string, { label: string; variant: 'info' | 'warning' | 'success' | 'neutral'; color: string }> = {
+const statusConfig: Record<string, { label: string, variant: 'info' | 'warning' | 'success' | 'neutral', color: string }> = {
   new: { label: 'Новый', variant: 'info', color: 'text-blue-400' },
   open: { label: 'В работе', variant: 'warning', color: 'text-yellow-400' },
   pending: { label: 'Ожидает ответа', variant: 'warning', color: 'text-orange-400' },
   resolved: { label: 'Решён', variant: 'success', color: 'text-accent' },
-  closed: { label: 'Закрыт', variant: 'neutral', color: 'text-[var(--text-muted)]' }
+  closed: { label: 'Закрыт', variant: 'neutral', color: 'text-[var(--text-muted)]' },
 }
 
 function formatDate(dateString: string) {
@@ -38,7 +38,7 @@ function formatDate(dateString: string) {
     month: 'long',
     year: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   })
 }
 
@@ -59,7 +59,7 @@ function formatRelativeDate(dateString: string) {
     day: 'numeric',
     month: 'short',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   })
 }
 
@@ -78,7 +78,8 @@ async function submitReply() {
     // Очищаем форму и обновляем тикет
     replyContent.value = ''
     await refresh()
-  } finally {
+  }
+  finally {
     submitting.value = false
   }
 }
@@ -118,7 +119,8 @@ async function handleClose() {
       showCloseModal.value = false
       await refresh()
     }
-  } finally {
+  }
+  finally {
     closing.value = false
   }
 }
@@ -134,7 +136,7 @@ onMounted(() => {
 })
 
 useHead({
-  title: computed(() => ticket.value ? `${ticket.value.number} — Поддержка` : 'Загрузка...')
+  title: computed(() => ticket.value ? `${ticket.value.number} — Поддержка` : 'Загрузка...'),
 })
 </script>
 
@@ -142,31 +144,49 @@ useHead({
   <div class="space-y-6">
     <!-- Back button -->
     <button
-      @click="router.push('/support')"
       class="flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+      @click="router.push('/support')"
     >
-      <Icon name="heroicons:arrow-left" class="w-5 h-5" />
+      <Icon
+        name="heroicons:arrow-left"
+        class="w-5 h-5"
+      />
       Назад к заявкам
     </button>
 
     <!-- Loading -->
-    <div v-if="pending" class="space-y-4">
+    <div
+      v-if="pending"
+      class="space-y-4"
+    >
       <UCard class="animate-pulse">
         <div class="space-y-4">
-          <div class="h-6 bg-[var(--glass-bg)] rounded w-1/4"></div>
-          <div class="h-4 bg-[var(--glass-bg)] rounded w-3/4"></div>
-          <div class="h-4 bg-[var(--glass-bg)] rounded w-1/2"></div>
+          <div class="h-6 bg-[var(--glass-bg)] rounded w-1/4" />
+          <div class="h-4 bg-[var(--glass-bg)] rounded w-3/4" />
+          <div class="h-4 bg-[var(--glass-bg)] rounded w-1/2" />
         </div>
       </UCard>
     </div>
 
     <!-- Error -->
-    <UCard v-else-if="error" class="border-red-500/30">
+    <UCard
+      v-else-if="error"
+      class="border-red-500/30"
+    >
       <div class="text-center py-8">
-        <Icon name="heroicons:exclamation-triangle" class="w-16 h-16 text-red-400 mx-auto mb-4" />
-        <h3 class="text-lg font-semibold text-[var(--text-primary)] mb-2">Заявка не найдена</h3>
-        <p class="text-[var(--text-muted)] mb-4">Возможно, она была удалена или у вас нет доступа</p>
-        <UButton @click="router.push('/support')">Вернуться к заявкам</UButton>
+        <Icon
+          name="heroicons:exclamation-triangle"
+          class="w-16 h-16 text-red-400 mx-auto mb-4"
+        />
+        <h3 class="text-lg font-semibold text-[var(--text-primary)] mb-2">
+          Заявка не найдена
+        </h3>
+        <p class="text-[var(--text-muted)] mb-4">
+          Возможно, она была удалена или у вас нет доступа
+        </p>
+        <UButton @click="router.push('/support')">
+          Вернуться к заявкам
+        </UButton>
       </div>
     </UCard>
 
@@ -185,14 +205,22 @@ useHead({
             <div>
               <div class="flex items-center gap-2 mb-1 flex-wrap">
                 <span class="text-sm text-[var(--text-muted)]">{{ ticket.number }}</span>
-                <UBadge :variant="statusConfig[ticket.status]?.variant || 'neutral'" size="sm">
+                <UBadge
+                  :variant="statusConfig[ticket.status]?.variant || 'neutral'"
+                  size="sm"
+                >
                   {{ statusConfig[ticket.status]?.label || ticket.status }}
                 </UBadge>
-                <UBadge variant="neutral" size="sm">
+                <UBadge
+                  variant="neutral"
+                  size="sm"
+                >
                   {{ ticketCategoryLabels[ticket.category] || ticket.category }}
                 </UBadge>
               </div>
-              <h1 class="text-xl font-semibold text-[var(--text-primary)]">{{ ticket.subject }}</h1>
+              <h1 class="text-xl font-semibold text-[var(--text-primary)]">
+                {{ ticket.subject }}
+              </h1>
               <p class="text-sm text-[var(--text-muted)] mt-1">
                 Создана {{ formatDate(ticket.createdAt) }}
               </p>
@@ -200,13 +228,19 @@ useHead({
           </div>
 
           <!-- Кнопки закрытия -->
-          <div v-if="canClose" class="flex gap-2 flex-shrink-0">
+          <div
+            v-if="canClose"
+            class="flex gap-2 flex-shrink-0"
+          >
             <UButton
               variant="success"
               size="sm"
               @click="openCloseModal('resolved')"
             >
-              <Icon name="heroicons:check" class="w-4 h-4 mr-1" />
+              <Icon
+                name="heroicons:check"
+                class="w-4 h-4 mr-1"
+              />
               Решено
             </UButton>
             <UButton
@@ -214,15 +248,23 @@ useHead({
               size="sm"
               @click="openCloseModal('closed')"
             >
-              <Icon name="heroicons:x-mark" class="w-4 h-4 mr-1" />
+              <Icon
+                name="heroicons:x-mark"
+                class="w-4 h-4 mr-1"
+              />
               Закрыть
             </UButton>
           </div>
         </div>
 
         <!-- Description -->
-        <div class="mt-6 pt-6" style="border-top: 1px solid var(--glass-border);">
-          <p class="text-[var(--text-secondary)] whitespace-pre-wrap">{{ ticket.description }}</p>
+        <div
+          class="mt-6 pt-6"
+          style="border-top: 1px solid var(--glass-border);"
+        >
+          <p class="text-[var(--text-secondary)] whitespace-pre-wrap">
+            {{ ticket.description }}
+          </p>
         </div>
       </UCard>
 
@@ -235,7 +277,10 @@ useHead({
           </span>
         </h2>
 
-        <div id="messages-container" class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+        <div
+          id="messages-container"
+          class="space-y-4 max-h-[500px] overflow-y-auto pr-2"
+        >
           <div
             v-for="comment in ticket.comments"
             :key="comment.id"
@@ -275,11 +320,20 @@ useHead({
                   ? 'bg-[var(--glass-bg)] text-[var(--text-muted)] text-center max-w-full text-sm'
                   : 'bg-[var(--glass-bg)] rounded-tl-md'"
             >
-              <div v-if="comment.authorType !== 'system'" class="flex items-center gap-2 mb-1">
-                <span class="text-xs font-medium" :class="comment.authorType === 'user' ? 'text-white/80' : 'text-[var(--text-muted)]'">
+              <div
+                v-if="comment.authorType !== 'system'"
+                class="flex items-center gap-2 mb-1"
+              >
+                <span
+                  class="text-xs font-medium"
+                  :class="comment.authorType === 'user' ? 'text-white/80' : 'text-[var(--text-muted)]'"
+                >
                   {{ comment.authorType === 'admin' ? (comment.authorName || 'Поддержка') : 'Вы' }}
                 </span>
-                <span class="text-xs" :class="comment.authorType === 'user' ? 'text-white/60' : 'text-[var(--text-muted)]'">
+                <span
+                  class="text-xs"
+                  :class="comment.authorType === 'user' ? 'text-white/60' : 'text-[var(--text-muted)]'"
+                >
                   {{ formatRelativeDate(comment.createdAt) }}
                 </span>
               </div>
@@ -291,9 +345,16 @@ useHead({
               </p>
 
               <!-- Solution badge -->
-              <div v-if="comment.isSolution" class="mt-2 pt-2" style="border-top: 1px solid var(--glass-border);">
+              <div
+                v-if="comment.isSolution"
+                class="mt-2 pt-2"
+                style="border-top: 1px solid var(--glass-border);"
+              >
                 <span class="inline-flex items-center gap-1 text-xs text-accent">
-                  <Icon name="heroicons:check-badge" class="w-4 h-4" />
+                  <Icon
+                    name="heroicons:check-badge"
+                    class="w-4 h-4"
+                  />
                   Решение
                 </span>
               </div>
@@ -303,16 +364,31 @@ useHead({
       </UCard>
 
       <!-- No messages yet -->
-      <UCard v-else class="text-center py-8">
-        <Icon name="heroicons:chat-bubble-left-right" class="w-12 h-12 text-[var(--text-muted)] mx-auto mb-4" />
-        <p class="text-[var(--text-muted)]">Пока нет ответов от поддержки</p>
-        <p class="text-sm text-[var(--text-muted)] mt-1">Мы ответим в ближайшее время</p>
+      <UCard
+        v-else
+        class="text-center py-8"
+      >
+        <Icon
+          name="heroicons:chat-bubble-left-right"
+          class="w-12 h-12 text-[var(--text-muted)] mx-auto mb-4"
+        />
+        <p class="text-[var(--text-muted)]">
+          Пока нет ответов от поддержки
+        </p>
+        <p class="text-sm text-[var(--text-muted)] mt-1">
+          Мы ответим в ближайшее время
+        </p>
       </UCard>
 
       <!-- Reply Form -->
       <UCard v-if="canReply">
-        <h3 class="text-lg font-semibold text-[var(--text-primary)] mb-4">Добавить сообщение</h3>
-        <form @submit.prevent="submitReply" class="space-y-4">
+        <h3 class="text-lg font-semibold text-[var(--text-primary)] mb-4">
+          Добавить сообщение
+        </h3>
+        <form
+          class="space-y-4"
+          @submit.prevent="submitReply"
+        >
           <textarea
             v-model="replyContent"
             rows="4"
@@ -322,9 +398,20 @@ useHead({
             required
           />
           <div class="flex justify-end">
-            <UButton type="submit" :disabled="submitting || !replyContent.trim()">
-              <Icon v-if="submitting" name="heroicons:arrow-path" class="w-4 h-4 mr-2 animate-spin" />
-              <Icon v-else name="heroicons:paper-airplane" class="w-4 h-4 mr-2" />
+            <UButton
+              type="submit"
+              :disabled="submitting || !replyContent.trim()"
+            >
+              <Icon
+                v-if="submitting"
+                name="heroicons:arrow-path"
+                class="w-4 h-4 mr-2 animate-spin"
+              />
+              <Icon
+                v-else
+                name="heroicons:paper-airplane"
+                class="w-4 h-4 mr-2"
+              />
               {{ submitting ? 'Отправка...' : 'Отправить' }}
             </UButton>
           </div>
@@ -332,16 +419,28 @@ useHead({
       </UCard>
 
       <!-- Closed ticket notice -->
-      <UCard v-else class="text-center py-6">
-        <Icon name="heroicons:lock-closed" class="w-8 h-8 text-[var(--text-muted)] mx-auto mb-2" />
+      <UCard
+        v-else
+        class="text-center py-6"
+      >
+        <Icon
+          name="heroicons:lock-closed"
+          class="w-8 h-8 text-[var(--text-muted)] mx-auto mb-2"
+        />
         <p class="text-[var(--text-muted)]">
           {{ ticket.status === 'resolved' ? 'Заявка решена' : 'Заявка закрыта' }}
         </p>
         <p class="text-sm text-[var(--text-muted)] mt-1">
           Создайте новую заявку, если у вас есть вопросы
         </p>
-        <UButton class="mt-4" @click="router.push('/support')">
-          <Icon name="heroicons:plus" class="w-4 h-4 mr-2" />
+        <UButton
+          class="mt-4"
+          @click="router.push('/support')"
+        >
+          <Icon
+            name="heroicons:plus"
+            class="w-4 h-4 mr-2"
+          />
           Создать новую заявку
         </UButton>
       </UCard>
@@ -361,7 +460,10 @@ useHead({
           style="background-color: var(--modal-backdrop);"
           @click.self="showCloseModal = false"
         >
-          <div class="w-full max-w-md rounded-2xl p-6" style="background: var(--bg-surface); border: 1px solid var(--glass-border);">
+          <div
+            class="w-full max-w-md rounded-2xl p-6"
+            style="background: var(--bg-surface); border: 1px solid var(--glass-border);"
+          >
             <div class="text-center mb-6">
               <div
                 class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
@@ -388,18 +490,22 @@ useHead({
               <UButton
                 variant="secondary"
                 class="flex-1"
-                @click="showCloseModal = false"
                 :disabled="closing"
+                @click="showCloseModal = false"
               >
                 Отмена
               </UButton>
               <UButton
                 :variant="closeStatus === 'resolved' ? 'success' : 'primary'"
                 class="flex-1"
-                @click="handleClose"
                 :disabled="closing"
+                @click="handleClose"
               >
-                <Icon v-if="closing" name="heroicons:arrow-path" class="w-4 h-4 mr-2 animate-spin" />
+                <Icon
+                  v-if="closing"
+                  name="heroicons:arrow-path"
+                  class="w-4 h-4 mr-2 animate-spin"
+                />
                 {{ closing ? 'Закрытие...' : (closeStatus === 'resolved' ? 'Решено' : 'Закрыть') }}
               </UButton>
             </div>

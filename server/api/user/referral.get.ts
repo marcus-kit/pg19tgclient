@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
     console.error('Error fetching referral code:', codeError)
     throw createError({
       statusCode: 500,
-      message: 'Ошибка при загрузке реферальной программы'
+      message: 'Ошибка при загрузке реферальной программы',
     })
   }
 
@@ -58,11 +58,12 @@ export default defineEventHandler(async (event) => {
       console.error('Error creating referral code:', insertError)
       throw createError({
         statusCode: 500,
-        message: 'Ошибка при создании реферального кода'
+        message: 'Ошибка при создании реферального кода',
       })
     }
     referralCode = newCode
-  } else {
+  }
+  else {
     referralCode = codeData
   }
 
@@ -96,7 +97,7 @@ export default defineEventHandler(async (event) => {
     inviteeBonus: referralCode.invitee_bonus / 100,
     stats: {
       totalInvited: referralCode.total_invited,
-      totalBonus: referralCode.total_bonus / 100
+      totalBonus: referralCode.total_bonus / 100,
     },
     invited: ((referrals || []) as unknown as ReferralRow[]).map(r => ({
       id: r.id,
@@ -105,7 +106,7 @@ export default defineEventHandler(async (event) => {
       status: r.status,
       bonus: r.inviter_bonus ? r.inviter_bonus / 100 : null,
       registeredAt: r.registered_at,
-      activatedAt: r.activated_at
-    }))
+      activatedAt: r.activated_at,
+    })),
   }
 })

@@ -84,7 +84,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
       account: any
     }>('/api/auth/telegram-webapp', {
       method: 'POST',
-      body: { initData }
+      body: { initData },
     }).then((response) => {
       if (response.success) {
         authStore.setAuthData(response.user, response.account)
@@ -104,13 +104,14 @@ export default defineNuxtRouteMiddleware(async (to) => {
       account: any
     }>('/api/auth/telegram-webapp', {
       method: 'POST',
-      body: { initData }
+      body: { initData },
     })
 
     if (response.success) {
       await authStore.setAuthData(response.user, response.account)
     }
-  } catch (e: any) {
+  }
+  catch (e: any) {
     console.error('[TWA Auth] Authentication failed:', e.data?.message || e.message)
 
     // Если аккаунт не привязан к Telegram - показываем страницу привязки

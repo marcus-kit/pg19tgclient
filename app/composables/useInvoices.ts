@@ -18,19 +18,19 @@ export const useInvoices = () => {
       {
         query,
         key: `invoices-${JSON.stringify(query)}`,
-        lazy: true
-      }
+        lazy: true,
+      },
     )
 
     return {
       invoices: computed(() => data.value?.invoices || []),
       error,
       pending,
-      refresh
+      refresh,
     }
   }
 
   return {
-    fetchInvoices
+    fetchInvoices,
   }
 }

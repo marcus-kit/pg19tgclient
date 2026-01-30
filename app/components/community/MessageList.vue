@@ -23,7 +23,8 @@ const highlightedMessageId = ref<string | null>(null)
 function setMessageRef(id: string, el: HTMLElement | null) {
   if (el) {
     messageRefs.value.set(id, el)
-  } else {
+  }
+  else {
     messageRefs.value.delete(id)
   }
 }
@@ -85,7 +86,7 @@ const groupedMessages = computed<MessageGroup[]>(() => {
 
     return msgDate.toLocaleDateString('ru-RU', {
       day: 'numeric',
-      month: 'long'
+      month: 'long',
     })
   }
 
@@ -99,7 +100,7 @@ const groupedMessages = computed<MessageGroup[]>(() => {
       currentDateGroup = {
         dateLabel,
         date: msgDate,
-        messages: []
+        messages: [],
       }
       groups.push(currentDateGroup)
     }
@@ -107,7 +108,7 @@ const groupedMessages = computed<MessageGroup[]>(() => {
     // Add message with default position
     currentDateGroup.messages.push({
       ...msg,
-      groupPosition: 'single'
+      groupPosition: 'single',
     })
   }
 
@@ -132,11 +133,14 @@ const groupedMessages = computed<MessageGroup[]>(() => {
 
       if (groupWithPrev && groupWithNext) {
         current.groupPosition = 'middle'
-      } else if (groupWithPrev && !groupWithNext) {
+      }
+      else if (groupWithPrev && !groupWithNext) {
         current.groupPosition = 'end'
-      } else if (!groupWithPrev && groupWithNext) {
+      }
+      else if (!groupWithPrev && groupWithNext) {
         current.groupPosition = 'start'
-      } else {
+      }
+      else {
         current.groupPosition = 'single'
       }
     }
@@ -148,7 +152,10 @@ const groupedMessages = computed<MessageGroup[]>(() => {
 
 <template>
   <div class="flex flex-col py-2">
-    <template v-for="group in groupedMessages" :key="group.dateLabel">
+    <template
+      v-for="group in groupedMessages"
+      :key="group.dateLabel"
+    >
       <!-- Date separator (Telegram style) -->
       <div class="tg-date-separator">
         <span class="tg-date-label">{{ group.dateLabel }}</span>
@@ -176,9 +183,16 @@ const groupedMessages = computed<MessageGroup[]>(() => {
     </template>
 
     <!-- Empty state -->
-    <div v-if="!messages.length" class="text-center py-12">
-      <p class="text-[var(--text-muted)]">Нет сообщений</p>
-      <p class="text-sm text-[var(--text-muted)] mt-1">Напишите первое!</p>
+    <div
+      v-if="!messages.length"
+      class="text-center py-12"
+    >
+      <p class="text-[var(--text-muted)]">
+        Нет сообщений
+      </p>
+      <p class="text-sm text-[var(--text-muted)] mt-1">
+        Напишите первое!
+      </p>
     </div>
   </div>
 </template>

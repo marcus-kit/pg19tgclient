@@ -5,7 +5,7 @@ import {
   miniApp,
   qrScanner,
   retrieveLaunchParams,
-  type LaunchParams
+  type LaunchParams,
 } from '@telegram-apps/sdk'
 
 /**
@@ -33,7 +33,8 @@ function initSdk() {
     }
 
     initialized = true
-  } catch (e) {
+  }
+  catch (e) {
     console.warn('[useTwa] SDK initialization failed:', e)
     // Не в Telegram окружении
   }
@@ -45,7 +46,7 @@ export function useTwa() {
 
   // Реактивное значение для isVisible (синхронизируется при show/hide)
   const isBackButtonVisible = ref(
-    initialized && backButton.isMounted() ? backButton.isVisible() : false
+    initialized && backButton.isMounted() ? backButton.isVisible() : false,
   )
 
   // Computed значения
@@ -69,7 +70,7 @@ export function useTwa() {
       if (hapticFeedback.notificationOccurred.isAvailable()) {
         hapticFeedback.notificationOccurred(type)
       }
-    }
+    },
   }
 
   // Обёртка для backButton
@@ -97,7 +98,7 @@ export function useTwa() {
         backButton.off('click', fn)
       }
     },
-    isVisible: isBackButtonVisible
+    isVisible: isBackButtonVisible,
   }
 
   // Обёртка для miniApp
@@ -113,7 +114,7 @@ export function useTwa() {
       }
     },
     initData: launchParams?.initDataRaw,
-    initDataUnsafe: launchParams?.initData
+    initDataUnsafe: launchParams?.initData,
   }
 
   // Обёртка для QR сканера (SDK v3 API)
@@ -138,7 +139,7 @@ export function useTwa() {
         capture: (qr) => {
           console.log('[QrScanner] Captured:', qr)
           return validate(qr)
-        }
+        },
       })
 
       if (!result) {
@@ -154,7 +155,7 @@ export function useTwa() {
       }
     },
 
-    isAvailable: () => qrScanner.open.isAvailable()
+    isAvailable: () => qrScanner.open.isAvailable(),
   }
 
   return {
@@ -175,7 +176,7 @@ export function useTwa() {
       backButton,
       hapticFeedback,
       miniApp,
-      qrScanner
-    }
+      qrScanner,
+    },
   }
 }

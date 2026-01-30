@@ -16,7 +16,7 @@ const authStore = useAuthStore()
       paddingTop: 'var(--twa-safe-top, 0px)',
       paddingLeft: 'var(--twa-safe-left, 0px)',
       paddingRight: 'var(--twa-safe-right, 0px)',
-      height: 'calc(56px + var(--twa-safe-top, 0px))'
+      height: 'calc(56px + var(--twa-safe-top, 0px))',
     }"
   >
     <div class="h-full px-4 flex items-center justify-center gap-3">
@@ -25,16 +25,20 @@ const authStore = useAuthStore()
         src="/logo.png"
         alt="ПЖ19"
         class="h-8 w-auto"
-      />
+      >
 
       <!-- Avatar -->
-      <NuxtLink v-if="authStore.isAuthenticated" to="/profile" class="shrink-0">
+      <NuxtLink
+        v-if="authStore.isAuthenticated"
+        to="/profile"
+        class="shrink-0"
+      >
         <div
           v-if="authStore.user?.avatar"
           class="w-9 h-9 rounded-full bg-cover bg-center border-2"
           :style="{
             backgroundImage: `url(${authStore.user.avatar})`,
-            borderColor: 'var(--tg-button-color, var(--primary))'
+            borderColor: 'var(--tg-button-color, var(--primary))',
           }"
         />
         <div
@@ -42,7 +46,7 @@ const authStore = useAuthStore()
           class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-medium"
           :style="{
             backgroundColor: 'var(--tg-button-color, var(--primary))',
-            color: 'var(--tg-button-text-color, #fff)'
+            color: 'var(--tg-button-text-color, #fff)',
           }"
         >
           {{ authStore.user?.firstName?.charAt(0) || 'U' }}

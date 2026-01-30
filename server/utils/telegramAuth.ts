@@ -37,12 +37,15 @@ export function parseInitData(initData: string): ParsedInitData {
     if (key === 'user' || key === 'chat' || key === 'receiver') {
       try {
         result[key] = JSON.parse(value)
-      } catch {
+      }
+      catch {
         result[key] = value
       }
-    } else if (key === 'auth_date') {
+    }
+    else if (key === 'auth_date') {
       result[key] = parseInt(value, 10)
-    } else {
+    }
+    else {
       result[key] = value
     }
   }
@@ -61,7 +64,7 @@ export function parseInitData(initData: string): ParsedInitData {
 export function validateInitData(
   initData: string,
   botToken: string,
-  expiresIn: number = 86400
+  expiresIn: number = 86400,
 ): boolean {
   if (!initData || !botToken) {
     throw new Error('Missing initData or botToken')
@@ -120,11 +123,12 @@ export function validateInitData(
 export function isInitDataValid(
   initData: string,
   botToken: string,
-  expiresIn: number = 86400
+  expiresIn: number = 86400,
 ): boolean {
   try {
     return validateInitData(initData, botToken, expiresIn)
-  } catch {
+  }
+  catch {
     return false
   }
 }

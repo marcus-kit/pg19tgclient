@@ -40,12 +40,12 @@ const limiters = new Map<string, Map<string, RateLimitEntry>>()
 
 export function createRateLimiter(
   name: string,
-  options: RateLimitOptions = {}
+  options: RateLimitOptions = {},
 ): RateLimiter {
   const {
     windowMs = 60000,
     maxRequests = 5,
-    cleanupIntervalMs = 60000
+    cleanupIntervalMs = 60000,
   } = options
 
   // Получаем или создаём store для этого лимитера
@@ -126,17 +126,17 @@ export function createRateLimiter(
 
     clear(): void {
       store.clear()
-    }
+    },
   }
 }
 
 // Pre-configured limiters для community chat
 export const communityMessageLimiter = createRateLimiter('community:messages', {
   windowMs: 60000, // 1 минута
-  maxRequests: 10  // 10 сообщений в минуту
+  maxRequests: 10, // 10 сообщений в минуту
 })
 
 export const communityImageLimiter = createRateLimiter('community:images', {
   windowMs: 300000, // 5 минут
-  maxRequests: 5    // 5 изображений за 5 минут
+  maxRequests: 5, // 5 изображений за 5 минут
 })

@@ -46,11 +46,11 @@ export interface Subscription {
 export const subscriptionStatusLabels: Record<SubscriptionStatus, string> = {
   active: 'Активна',
   paused: 'Приостановлена',
-  cancelled: 'Отменена'
+  cancelled: 'Отменена',
 }
 
 export const subscriptionStatusColors: Record<SubscriptionStatus, string> = {
   active: 'success',
   paused: 'warning',
-  cancelled: 'neutral'
+  cancelled: 'neutral',
 }

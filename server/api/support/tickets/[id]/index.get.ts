@@ -54,7 +54,7 @@ export default defineEventHandler(async (event) => {
     isSolution: c.is_solution,
     attachments: c.attachments || [],
     createdAt: c.created_at,
-    editedAt: c.edited_at
+    editedAt: c.edited_at,
   }))
 
   // Маппинг тикета
@@ -75,7 +75,7 @@ export default defineEventHandler(async (event) => {
     closedAt: ticket.closed_at,
     createdAt: ticket.created_at,
     updatedAt: ticket.updated_at,
-    comments: mappedComments
+    comments: mappedComments,
   }
 
   return { ticket: result }

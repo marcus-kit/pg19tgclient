@@ -93,8 +93,8 @@ const defaultNotifications: NotificationSettings = {
     payments: true,
     maintenance: true,
     promotions: false,
-    news: false
-  }
+    news: false,
+  },
 }
 
 export const useAuthStore = defineStore('auth', {
@@ -111,12 +111,12 @@ export const useAuthStore = defineStore('auth', {
         payments: true,
         maintenance: true,
         promotions: false,
-        news: false
-      }
+        news: false,
+      },
     },
     sessions: [],
     achievements: [],
-    referralProgram: null
+    referralProgram: null,
   }),
 
   getters: {
@@ -156,7 +156,7 @@ export const useAuthStore = defineStore('auth', {
 
     hasAdminAccess: (state): boolean => {
       return state.user?.role === 'admin' || state.user?.role === 'moderator'
-    }
+    },
   },
 
   actions: {
@@ -175,7 +175,7 @@ export const useAuthStore = defineStore('auth', {
         avatar: user.avatar || null,
         birthDate: user.birthDate || null,
         nickname: user.nickname || null,
-        role: user.role || 'user'
+        role: user.role || 'user',
       }
       this.account = {
         contractNumber: account.contractNumber || 0,
@@ -183,7 +183,7 @@ export const useAuthStore = defineStore('auth', {
         status: account.status || 'active',
         tariff: account.tariff || '',
         address: account.address || '',
-        startDate: account.startDate || ''
+        startDate: account.startDate || '',
       }
       this.persist()
 
@@ -191,7 +191,7 @@ export const useAuthStore = defineStore('auth', {
         this.loadNotifications(),
         this.loadAchievements(),
         this.loadSessions(),
-        this.loadReferralProgram()
+        this.loadReferralProgram(),
       ])
     },
 
@@ -208,11 +208,12 @@ export const useAuthStore = defineStore('auth', {
             payments: data.payments ?? true,
             maintenance: data.maintenance ?? true,
             promotions: data.promo ?? false,
-            news: data.news ?? true
-          }
+            news: data.news ?? true,
+          },
         }
         this.persist()
-      } catch (error) {
+      }
+      catch (error) {
         console.error('Failed to load notifications:', error)
         this.notifications = { ...defaultNotifications }
       }
@@ -222,11 +223,12 @@ export const useAuthStore = defineStore('auth', {
       if (!this.user?.id) return
       try {
         const data = await $fetch<Achievement[]>('/api/user/achievements', {
-          query: { userId: this.user.id }
+          query: { userId: this.user.id },
         })
         this.achievements = data
         this.persist()
-      } catch (error) {
+      }
+      catch (error) {
         console.error('Failed to load achievements:', error)
         this.achievements = []
       }
@@ -236,11 +238,12 @@ export const useAuthStore = defineStore('auth', {
       if (!this.user?.id) return
       try {
         const data = await $fetch<LoginSession[]>('/api/user/sessions', {
-          query: { userId: this.user.id }
+          query: { userId: this.user.id },
         })
         this.sessions = data
         this.persist()
-      } catch (error) {
+      }
+      catch (error) {
         console.error('Failed to load sessions:', error)
         this.sessions = []
       }
@@ -250,11 +253,12 @@ export const useAuthStore = defineStore('auth', {
       if (!this.user?.id) return
       try {
         const data = await $fetch<ReferralProgram>('/api/user/referral', {
-          query: { userId: this.user.id }
+          query: { userId: this.user.id },
         })
         this.referralProgram = data
         this.persist()
-      } catch (error) {
+      }
+      catch (error) {
         console.error('Failed to load referral program:', error)
         this.referralProgram = null
       }
@@ -273,8 +277,8 @@ export const useAuthStore = defineStore('auth', {
           payments: true,
           maintenance: true,
           promotions: false,
-          news: false
-        }
+          news: false,
+        },
       }
       this.sessions = []
       this.achievements = []
@@ -289,9 +293,10 @@ export const useAuthStore = defineStore('auth', {
         this.notifications = {
           ...this.notifications,
           ...settings,
-          types: { ...this.notifications.types, ...settings.types }
+          types: { ...this.notifications.types, ...settings.types },
         }
-      } else {
+      }
+      else {
         this.notifications = { ...this.notifications, ...settings }
       }
       this.persist()
@@ -310,9 +315,10 @@ export const useAuthStore = defineStore('auth', {
 
           await $fetch('/api/user/notifications', {
             method: 'PUT',
-            body: { settings: apiSettings }
+            body: { settings: apiSettings },
           })
-        } catch (error) {
+        }
+        catch (error) {
           console.error('Failed to sync notification settings:', error)
         }
       }
@@ -337,24 +343,25 @@ export const useAuthStore = defineStore('auth', {
       if (!this.user?.id) return false
 
       try {
-        const response = await $fetch<{ success: boolean; user: User }>('/api/user/update', {
+        const response = await $fetch<{ success: boolean, user: User }>('/api/user/update', {
           method: 'POST',
           body: {
             userId: this.user.id,
-            data
-          }
+            data,
+          },
         })
 
         if (response.success && response.user) {
           this.user = {
             ...this.user,
-            ...response.user
+            ...response.user,
           }
           this.persist()
           return true
         }
         return false
-      } catch (error) {
+      }
+      catch (error) {
         console.error('Failed to update user data:', error)
         return false
       }
@@ -374,7 +381,7 @@ export const useAuthStore = defineStore('auth', {
           notifications: this.notifications,
           sessions: this.sessions,
           achievements: this.achievements,
-          referralProgram: this.referralProgram
+          referralProgram: this.referralProgram,
         }))
       }
     },
@@ -399,11 +406,12 @@ export const useAuthStore = defineStore('auth', {
               this.loadSessions()
               this.loadReferralProgram()
             }
-          } catch {
+          }
+          catch {
             this.logout()
           }
         }
       }
-    }
-  }
+    },
+  },
 })

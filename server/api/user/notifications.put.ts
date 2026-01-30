@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
   if (!body.settings || typeof body.settings !== 'object') {
     throw createError({
       statusCode: 400,
-      message: 'settings обязателен'
+      message: 'settings обязателен',
     })
   }
 
@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
   // Мержим с новыми
   const merged = {
     ...(current?.notifications_settings || {}),
-    ...body.settings
+    ...body.settings,
   }
 
   const { error } = await supabase
@@ -49,7 +49,7 @@ export default defineEventHandler(async (event) => {
     console.error('Error updating notifications:', error)
     throw createError({
       statusCode: 500,
-      message: 'Ошибка при сохранении настроек'
+      message: 'Ошибка при сохранении настроек',
     })
   }
 

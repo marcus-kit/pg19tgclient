@@ -58,11 +58,13 @@ export function useCommunityRooms(options: UseCommunityRoomsOptions) {
 
       // Подписываемся на изменения в комнатах (для обновления счётчиков)
       await subscribeToRoomsUpdates()
-    } catch (e: unknown) {
+    }
+    catch (e: unknown) {
       const err = e as { data?: { message?: string } }
       error.value = err.data?.message || 'Ошибка загрузки комнат'
       throw e
-    } finally {
+    }
+    finally {
       isLoadingRooms.value = false
     }
   }
@@ -85,7 +87,7 @@ export function useCommunityRooms(options: UseCommunityRoomsOptions) {
           table: 'community_rooms',
         },
         (payload) => {
-          const updated = payload.new as { id: number; members_count: number; messages_count: number }
+          const updated = payload.new as { id: number, members_count: number, messages_count: number }
           const idx = rooms.value.findIndex(r => r.id === updated.id)
           if (idx !== -1) {
             rooms.value[idx] = {
@@ -111,7 +113,8 @@ export function useCommunityRooms(options: UseCommunityRoomsOptions) {
   async function joinRoom(roomId: number) {
     try {
       await $fetch(`/api/community/rooms/${roomId}/join`, { method: 'POST' })
-    } catch {
+    }
+    catch {
       // Игнорируем ошибки — не критично
     }
   }
@@ -125,7 +128,8 @@ export function useCommunityRooms(options: UseCommunityRoomsOptions) {
         method: 'POST',
         body: { roomId: currentRoom.value.id },
       })
-    } catch {
+    }
+    catch {
       // Игнорируем ошибки
     }
   }

@@ -27,7 +27,7 @@ export default defineEventHandler(async (event) => {
     console.error('Error fetching services:', error)
     throw createError({
       statusCode: 500,
-      message: 'Ошибка при загрузке услуг'
+      message: 'Ошибка при загрузке услуг',
     })
   }
 
@@ -42,6 +42,6 @@ export default defineEventHandler(async (event) => {
     heroTitle: s.hero_title,
     heroSubtitle: s.hero_subtitle,
     features: s.features || [],
-    equipment: s.equipment || []
+    equipment: s.equipment || [],
   }))
 })

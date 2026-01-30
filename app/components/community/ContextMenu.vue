@@ -78,47 +78,62 @@ function handleDelete() {
         @click.stop
       >
         <button
-          @click="handleReply"
           class="w-full px-3 py-1.5 text-left hover:bg-white/10 flex items-center gap-2 text-[var(--text-primary)]"
+          @click="handleReply"
         >
-          <Icon name="heroicons:arrow-uturn-left" class="w-4 h-4" />
+          <Icon
+            name="heroicons:arrow-uturn-left"
+            class="w-4 h-4"
+          />
           Ответить
         </button>
 
         <button
           v-if="!isOwn"
-          @click="handleReport"
           class="w-full px-3 py-1.5 text-left hover:bg-white/10 flex items-center gap-2 text-[var(--text-primary)]"
+          @click="handleReport"
         >
-          <Icon name="heroicons:flag" class="w-4 h-4" />
+          <Icon
+            name="heroicons:flag"
+            class="w-4 h-4"
+          />
           Пожаловаться
         </button>
 
         <template v-if="showModeration">
-          <hr class="border-white/10 my-1" />
+          <hr class="border-white/10 my-1">
 
           <button
-            @click="handlePin"
             class="w-full px-3 py-1.5 text-left hover:bg-white/10 flex items-center gap-2 text-[var(--text-primary)]"
+            @click="handlePin"
           >
-            <Icon :name="isPinned ? 'heroicons:bookmark-slash' : 'heroicons:bookmark'" class="w-4 h-4" />
+            <Icon
+              :name="isPinned ? 'heroicons:bookmark-slash' : 'heroicons:bookmark'"
+              class="w-4 h-4"
+            />
             {{ isPinned ? 'Открепить' : 'Закрепить' }}
           </button>
 
           <button
             v-if="!isOwn"
-            @click="handleMute"
             class="w-full px-3 py-1.5 text-left hover:bg-white/10 flex items-center gap-2 text-[var(--text-primary)]"
+            @click="handleMute"
           >
-            <Icon name="heroicons:speaker-x-mark" class="w-4 h-4" />
+            <Icon
+              name="heroicons:speaker-x-mark"
+              class="w-4 h-4"
+            />
             Замутить
           </button>
 
           <button
-            @click="handleDelete"
             class="w-full px-3 py-1.5 text-left hover:bg-white/10 flex items-center gap-2 text-red-400"
+            @click="handleDelete"
           >
-            <Icon name="heroicons:trash" class="w-4 h-4" />
+            <Icon
+              name="heroicons:trash"
+              class="w-4 h-4"
+            />
             Удалить
           </button>
         </template>

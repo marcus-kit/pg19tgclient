@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
     console.error('Error fetching achievements:', error)
     throw createError({
       statusCode: 500,
-      message: 'Ошибка при загрузке достижений'
+      message: 'Ошибка при загрузке достижений',
     })
   }
 
@@ -40,6 +40,6 @@ export default defineEventHandler(async (event) => {
     progress: a.progress,
     maxProgress: a.max_progress,
     unlocked: a.unlocked_at !== null,
-    unlockedAt: a.unlocked_at
+    unlockedAt: a.unlocked_at,
   }))
 })

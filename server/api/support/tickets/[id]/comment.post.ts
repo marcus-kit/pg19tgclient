@@ -64,7 +64,7 @@ export default defineEventHandler(async (event) => {
       author_name: authorName,
       content: body.content.trim(),
       is_internal: false,
-      is_solution: false
+      is_solution: false,
     })
     .select()
     .single()
@@ -93,7 +93,7 @@ export default defineEventHandler(async (event) => {
     isSolution: comment.is_solution,
     attachments: comment.attachments || [],
     createdAt: comment.created_at,
-    editedAt: comment.edited_at
+    editedAt: comment.edited_at,
   }
 
   return { comment: result }

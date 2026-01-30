@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
   if (!body.userId) {
     throw createError({
       statusCode: 400,
-      message: 'userId обязателен'
+      message: 'userId обязателен',
     })
   }
 
@@ -58,7 +58,7 @@ export default defineEventHandler(async (event) => {
   if (Object.keys(dbData).length === 0) {
     throw createError({
       statusCode: 400,
-      message: 'Нет данных для обновления'
+      message: 'Нет данных для обновления',
     })
   }
 
@@ -87,7 +87,7 @@ export default defineEventHandler(async (event) => {
     console.error('Supabase update error:', error)
     throw createError({
       statusCode: 500,
-      message: 'Ошибка при обновлении данных'
+      message: 'Ошибка при обновлении данных',
     })
   }
 
@@ -105,7 +105,7 @@ export default defineEventHandler(async (event) => {
       telegramId: updated.telegram_id || null,
       vkId: updated.vk_id || '',
       avatar: updated.avatar || null,
-      birthDate: updated.birth_date || null
-    }
+      birthDate: updated.birth_date || null,
+    },
   }
 })

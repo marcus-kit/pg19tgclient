@@ -77,7 +77,8 @@ export function useCommunityModeration(options: UseCommunityModerationOptions) {
         }
       }
       userRolesCache.value.set(roomId, response.role)
-    } catch {
+    }
+    catch {
       currentUserRole.value = 'member'
       isMuted.value = false
       mutedUntil.value = null
@@ -91,7 +92,8 @@ export function useCommunityModeration(options: UseCommunityModerationOptions) {
         query: { roomId },
       })
       moderators.value = response.moderators
-    } catch {
+    }
+    catch {
       moderators.value = []
     }
   }
