@@ -63,3 +63,42 @@ server/
 - Middleware `twa-auth.global.ts` — не делает API если уже авторизован
 - KeepAlive включен для основных страниц (кэш в памяти)
 
+## Интеграция с billing
+
+### Источник данных
+
+Биллинговые данные хранятся в схеме `billing` и читаются через PostgreSQL Views в схеме `public`.
+
+**ВАЖНО:** НЕ использовать таблицы напрямую! Старые таблицы переименованы в *_backup.
+
+### Views (public схема)
+
+| View | Назначение |
+|------|------------|
+| contracts_view | Договоры с адресами |
+| invoices_view | Счета |
+| services_view | Услуги |
+| subscriptions_view | Подписки |
+
+### Паттерн использования
+
+```typescript
+// ПРАВИЛЬНО
+const { data } = await supabase
+  .from('invoices_view')
+  .select('*')
+  .eq('user_id', authStore.user.id)
+
+// НЕПРАВИЛЬНО
+.from('accounts')  // ❌ Таблица переименована!
+```
+
+### Связь Telegram user ↔ billing customer
+
+1. Telegram авторизация создаёт запись в `public.users`
+2. `user_customer_links` автоматически связывает по phone/email
+3. Views возвращают данные только для связанных customers
+
+### URL billing системы
+
+- Админка: https://billing.doka.team
