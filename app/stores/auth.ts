@@ -63,6 +63,8 @@ interface ReferralProgram {
   referrals: Referral[]
 }
 
+type CustomerType = 'individual' | 'company'
+
 interface Account {
   contractNumber: number
   balance: number
@@ -70,6 +72,7 @@ interface Account {
   tariff: string
   address: string
   startDate: string
+  customerType?: CustomerType
 }
 
 interface AuthState {
@@ -184,6 +187,7 @@ export const useAuthStore = defineStore('auth', {
         tariff: account.tariff || '',
         address: account.address || '',
         startDate: account.startDate || '',
+        customerType: account.customerType,
       }
       this.persist()
 

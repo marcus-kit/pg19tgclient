@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Invoice, InvoiceStatus } from '~/types/invoice'
+import type { Invoice, InvoiceStatus, InvoiceItemService } from '~/types/invoice'
 import { invoiceStatusLabels, invoiceStatusColors, formatInvoicePeriod } from '~/types/invoice'
 
 definePageMeta({
@@ -7,11 +7,10 @@ definePageMeta({
 })
 
 const { fetchInvoices } = useInvoices()
-
-// Загружаем все счета (lazy - не блокирует навигацию)
 const { invoices, pending, error, refresh } = fetchInvoices()
 
 const filter = ref<'all' | 'unpaid' | 'paid'>('all')
+const expandedInvoiceId = ref<number | null>(null)
 
 const filteredInvoices = computed(() => {
   if (filter.value === 'unpaid') {
@@ -29,18 +28,15 @@ const filters = [
   { value: 'paid', label: 'Оплаченные' },
 ]
 
-// Форматирование суммы
 function formatAmount(kopeks: number) {
   return (kopeks / 100).toLocaleString('ru-RU')
 }
 
-// Форматирование даты
 function formatDate(dateString: string | null) {
   if (!dateString) return ''
   return new Date(dateString).toLocaleDateString('ru-RU')
 }
 
-// Цвет бейджа статуса
 function getStatusBadgeClass(status: InvoiceStatus) {
   const colorMap: Record<string, string> = {
     gray: 'bg-gray-600/20 text-gray-400',
@@ -49,6 +45,32 @@ function getStatusBadgeClass(status: InvoiceStatus) {
     red: 'bg-red-500/20 text-red-400',
   }
   return colorMap[invoiceStatusColors[status]] || colorMap.gray
+}
+
+function toggleExpand(invoiceId: number) {
+  expandedInvoiceId.value = expandedInvoiceId.value === invoiceId ? null : invoiceId
+}
+
+function getNrcServices(invoice: Invoice): InvoiceItemService[] {
+  if (!invoice.items) return []
+  return invoice.items.flatMap(item =>
+    item.services.filter(s => s.chargeType === 'nrc'),
+  )
+}
+
+function getMrcServices(invoice: Invoice): InvoiceItemService[] {
+  if (!invoice.items) return []
+  return invoice.items.flatMap(item =>
+    item.services.filter(s => s.chargeType === 'mrc' || !s.chargeType),
+  )
+}
+
+function getNrcTotal(invoice: Invoice): number {
+  return getNrcServices(invoice).reduce((sum, s) => sum + s.amount, 0)
+}
+
+function getMrcTotal(invoice: Invoice): number {
+  return getMrcServices(invoice).reduce((sum, s) => sum + s.amount, 0)
 }
 </script>
 
@@ -130,6 +152,8 @@ function getStatusBadgeClass(status: InvoiceStatus) {
         v-for="invoice in filteredInvoices"
         :key="invoice.id"
         hover
+        class="cursor-pointer"
+        @click="toggleExpand(invoice.id)"
       >
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div class="flex items-start gap-4">
@@ -166,9 +190,75 @@ function getStatusBadgeClass(status: InvoiceStatus) {
               <span class="text-sm font-normal text-[var(--text-muted)]">₽</span>
             </span>
             <Icon
-              name="heroicons:chevron-right"
-              class="w-5 h-5 text-[var(--text-muted)] hidden sm:block"
+              :name="expandedInvoiceId === invoice.id ? 'heroicons:chevron-down' : 'heroicons:chevron-right'"
+              class="w-5 h-5 text-[var(--text-muted)] transition-transform"
             />
+          </div>
+        </div>
+
+        <!-- Детализация счёта NRC/MRC -->
+        <div
+          v-if="expandedInvoiceId === invoice.id && invoice.items?.length"
+          class="mt-4 pt-4 space-y-4"
+          style="border-top: 1px solid var(--glass-border);"
+          @click.stop
+        >
+          <!-- MRC (Ежемесячные) -->
+          <div v-if="getMrcServices(invoice).length">
+            <div class="flex items-center gap-2 mb-2">
+              <Icon
+                name="heroicons:calendar"
+                class="w-4 h-4 text-primary"
+              />
+              <span class="text-sm font-medium text-[var(--text-primary)]">Ежемесячные</span>
+              <span class="text-xs text-[var(--text-muted)]">(MRC)</span>
+            </div>
+            <div class="space-y-2 pl-6">
+              <div
+                v-for="(service, idx) in getMrcServices(invoice)"
+                :key="`mrc-${idx}`"
+                class="flex justify-between text-sm"
+              >
+                <span class="text-[var(--text-secondary)]">{{ service.name }}</span>
+                <span class="text-[var(--text-primary)]">{{ formatAmount(service.amount) }} ₽</span>
+              </div>
+              <div
+                class="flex justify-between text-sm font-medium pt-1"
+                style="border-top: 1px dashed var(--glass-border);"
+              >
+                <span class="text-[var(--text-muted)]">Итого MRC</span>
+                <span class="text-[var(--text-primary)]">{{ formatAmount(getMrcTotal(invoice)) }} ₽</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- NRC (Разовые) -->
+          <div v-if="getNrcServices(invoice).length">
+            <div class="flex items-center gap-2 mb-2">
+              <Icon
+                name="heroicons:bolt"
+                class="w-4 h-4 text-yellow-500"
+              />
+              <span class="text-sm font-medium text-[var(--text-primary)]">Разовые</span>
+              <span class="text-xs text-[var(--text-muted)]">(NRC)</span>
+            </div>
+            <div class="space-y-2 pl-6">
+              <div
+                v-for="(service, idx) in getNrcServices(invoice)"
+                :key="`nrc-${idx}`"
+                class="flex justify-between text-sm"
+              >
+                <span class="text-[var(--text-secondary)]">{{ service.name }}</span>
+                <span class="text-[var(--text-primary)]">{{ formatAmount(service.amount) }} ₽</span>
+              </div>
+              <div
+                class="flex justify-between text-sm font-medium pt-1"
+                style="border-top: 1px dashed var(--glass-border);"
+              >
+                <span class="text-[var(--text-muted)]">Итого NRC</span>
+                <span class="text-[var(--text-primary)]">{{ formatAmount(getNrcTotal(invoice)) }} ₽</span>
+              </div>
+            </div>
           </div>
         </div>
       </UCard>

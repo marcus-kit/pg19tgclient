@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { Subscription, Service } from '~/types/service'
-import { subscriptionStatusLabels, subscriptionStatusColors } from '~/types/service'
+import type { Subscription, Service, ServiceType } from '~/types/service'
+import { subscriptionStatusLabels, subscriptionStatusColors, serviceTypeLabels, serviceTypeIcons } from '~/types/service'
 
 definePageMeta({
   layout: 'twa',
@@ -10,37 +10,30 @@ const router = useRouter()
 const { fetchServices, fetchSubscriptions } = useServices()
 const { createTicket } = useTickets()
 
-// Состояние для запроса подключения
 const connectingServiceId = ref<string | null>(null)
 
-// Загружаем данные (lazy - не блокирует навигацию)
 const { services, pending: servicesPending, error: servicesError } = fetchServices()
 const { subscriptions, pending: subsPending, error: subsError } = fetchSubscriptions()
 
 const pending = computed(() => servicesPending.value || subsPending.value)
 const error = computed(() => servicesError.value || subsError.value)
 
-// ID подключенных услуг
 const subscribedServiceIds = computed(() => {
   return new Set(subscriptions.value.map(s => s.serviceId))
 })
 
-// Доступные для подключения услуги
 const availableServices = computed(() => {
   return services.value.filter(s => !subscribedServiceIds.value.has(s.id))
 })
 
-// Форматирование цены
 function formatPrice(kopeks: number) {
   return (kopeks / 100).toLocaleString('ru-RU')
 }
 
-// Получить цену подписки (custom или стандартная)
 function getSubscriptionPrice(sub: Subscription) {
   return sub.customPrice ?? sub.service?.priceMonthly ?? 0
 }
 
-// Статус подписки
 function getStatusColor(status: string) {
   const colorMap: Record<string, string> = {
     green: 'bg-accent/20 text-accent',
@@ -50,9 +43,21 @@ function getStatusColor(status: string) {
   return colorMap[subscriptionStatusColors[status as keyof typeof subscriptionStatusColors]] || colorMap.gray
 }
 
-// Иконка услуги
 function getServiceIcon(service: Service | undefined) {
+  if (service?.serviceType && serviceTypeIcons[service.serviceType]) {
+    return serviceTypeIcons[service.serviceType]
+  }
   return service?.icon || 'heroicons:cube'
+}
+
+function getServiceTypeBadgeClass(serviceType: ServiceType | null | undefined) {
+  if (!serviceType) return 'bg-gray-600/20 text-gray-400'
+  const classMap: Record<ServiceType, string> = {
+    connection: 'bg-blue-500/20 text-blue-400',
+    profile: 'bg-primary/20 text-primary',
+    equipment: 'bg-orange-500/20 text-orange-400',
+  }
+  return classMap[serviceType]
 }
 
 // Запрос на подключение услуги
@@ -160,10 +165,19 @@ async function requestConnection(service: Service) {
               <div class="flex-1 min-w-0">
                 <div class="flex items-start justify-between gap-4">
                   <div>
-                    <h3 class="font-semibold text-[var(--text-primary)]">
-                      {{ sub.service?.name || 'Услуга' }}
-                    </h3>
-                    <p class="text-sm text-[var(--text-muted)] mt-0.5">
+                    <div class="flex items-center gap-2 mb-1">
+                      <h3 class="font-semibold text-[var(--text-primary)]">
+                        {{ sub.service?.name || 'Услуга' }}
+                      </h3>
+                      <UBadge
+                        v-if="sub.service?.serviceType"
+                        :class="getServiceTypeBadgeClass(sub.service.serviceType)"
+                        size="sm"
+                      >
+                        {{ serviceTypeLabels[sub.service.serviceType] }}
+                      </UBadge>
+                    </div>
+                    <p class="text-sm text-[var(--text-muted)]">
                       {{ sub.service?.description || '' }}
                     </p>
                   </div>
@@ -218,15 +232,24 @@ async function requestConnection(service: Service) {
                   style="background: var(--glass-bg);"
                 >
                   <Icon
-                    :name="service.icon || 'heroicons:cube'"
+                    :name="getServiceIcon(service)"
                     class="w-5 h-5 text-[var(--text-muted)]"
                   />
                 </div>
                 <div class="flex-1">
-                  <h3 class="font-medium text-[var(--text-primary)]">
-                    {{ service.name }}
-                  </h3>
-                  <p class="text-sm text-[var(--text-muted)] mt-0.5">
+                  <div class="flex items-center gap-2 mb-0.5">
+                    <h3 class="font-medium text-[var(--text-primary)]">
+                      {{ service.name }}
+                    </h3>
+                    <UBadge
+                      v-if="service.serviceType"
+                      :class="getServiceTypeBadgeClass(service.serviceType)"
+                      size="sm"
+                    >
+                      {{ serviceTypeLabels[service.serviceType] }}
+                    </UBadge>
+                  </div>
+                  <p class="text-sm text-[var(--text-muted)]">
                     {{ service.description }}
                   </p>
                 </div>

@@ -54,7 +54,7 @@ function handleEscape(e: KeyboardEvent) {
 
 // Санитизация HTML контента для защиты от XSS
 const sanitizedContent = computed(() =>
-  DOMPurify.sanitize(news.value?.content || '')
+  DOMPurify.sanitize(news.value?.content || ''),
 )
 
 onMounted(() => {
@@ -170,13 +170,13 @@ onUnmounted(() => {
             </p>
           </div>
 
-           <!-- Content -->
-           <div class="prose dark:prose-invert max-w-none mb-6">
-             <div
-               class="text-[var(--text-secondary)] whitespace-pre-wrap"
-               v-html="sanitizedContent"
-             />
-           </div>
+          <!-- Content -->
+          <div class="prose dark:prose-invert max-w-none mb-6">
+            <div
+              class="text-[var(--text-secondary)] whitespace-pre-wrap"
+              v-html="sanitizedContent"
+            />
+          </div>
 
           <!-- Attachments -->
           <div

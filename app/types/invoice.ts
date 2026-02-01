@@ -1,4 +1,21 @@
 export type InvoiceStatus = 'draft' | 'issued' | 'paid' | 'overdue' | 'cancelled'
+export type ChargeType = 'nrc' | 'mrc'
+
+// Услуга в позиции счёта
+export interface InvoiceItemService {
+  name: string
+  quantity: number
+  price: number // в копейках
+  amount: number // в копейках
+  chargeType?: ChargeType // разовый (nrc) или ежемесячный (mrc)
+}
+
+// Позиция счёта (адрес подключения)
+export interface InvoiceItem {
+  address: string
+  contractNumber: string
+  services: InvoiceItemService[]
+}
 
 export interface Invoice {
   id: number
@@ -14,6 +31,7 @@ export interface Invoice {
   paidAt: string | null
   createdAt: string
   updatedAt: string
+  items?: InvoiceItem[] | null // снимок услуг с группировкой
 }
 
 // Формат периода для отображения (например, "Январь 2024")
