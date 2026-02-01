@@ -59,22 +59,22 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, message: 'Комната не найдена' })
   }
 
-   const { data: contract } = await supabase
-     .from('contracts_view')
-     .select('address_city, address_district, address_building')
-     .eq('id', sessionUser.accountId)
-     .single()
+  const { data: contract } = await supabase
+    .from('contracts_view')
+    .select('address_city, address_district, address_building')
+    .eq('id', sessionUser.accountId)
+    .single()
 
-   // Проверка доступа по географии
-   if (contract?.address_city !== room.city) {
-     throw createError({ statusCode: 403, message: 'Нет доступа к этой комнате' })
-   }
-   if (room.district && contract?.address_district !== room.district) {
-     throw createError({ statusCode: 403, message: 'Нет доступа к этой комнате' })
-   }
-   if (room.building && contract?.address_building !== room.building) {
-     throw createError({ statusCode: 403, message: 'Нет доступа к этой комнате' })
-   }
+  // Проверка доступа по географии
+  if (contract?.address_city !== room.city) {
+    throw createError({ statusCode: 403, message: 'Нет доступа к этой комнате' })
+  }
+  if (room.district && contract?.address_district !== room.district) {
+    throw createError({ statusCode: 403, message: 'Нет доступа к этой комнате' })
+  }
+  if (room.building && contract?.address_building !== room.building) {
+    throw createError({ statusCode: 403, message: 'Нет доступа к этой комнате' })
+  }
 
   // Строим запрос
   let messagesQuery = supabase

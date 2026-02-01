@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import DOMPurify from 'dompurify'
 import type { NewsCategory } from '~/types/news'
 
 interface Props {
@@ -50,6 +51,11 @@ function formatFileSize(bytes: number | null) {
 function handleEscape(e: KeyboardEvent) {
   if (e.key === 'Escape') emit('close')
 }
+
+// Санитизация HTML контента для защиты от XSS
+const sanitizedContent = computed(() =>
+  DOMPurify.sanitize(news.value?.content || '')
+)
 
 onMounted(() => {
   document.addEventListener('keydown', handleEscape)
@@ -164,13 +170,13 @@ onUnmounted(() => {
             </p>
           </div>
 
-          <!-- Content -->
-          <div class="prose dark:prose-invert max-w-none mb-6">
-            <div
-              class="text-[var(--text-secondary)] whitespace-pre-wrap"
-              v-html="news.content"
-            />
-          </div>
+           <!-- Content -->
+           <div class="prose dark:prose-invert max-w-none mb-6">
+             <div
+               class="text-[var(--text-secondary)] whitespace-pre-wrap"
+               v-html="sanitizedContent"
+             />
+           </div>
 
           <!-- Attachments -->
           <div

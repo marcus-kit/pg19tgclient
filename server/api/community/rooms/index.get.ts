@@ -29,33 +29,33 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, message: 'Требуется авторизация' })
   }
 
-   // Получаем аккаунт с адресом
-   const { data: contract } = await supabase
-     .from('contracts_view')
-     .select('id, address_city, address_district, address_building')
-     .eq('id', sessionUser.accountId)
-     .single()
+  // Получаем аккаунт с адресом
+  const { data: contract } = await supabase
+    .from('contracts_view')
+    .select('id, address_city, address_district, address_building')
+    .eq('id', sessionUser.accountId)
+    .single()
 
-   if (!contract?.address_city) {
-     throw createError({ statusCode: 400, message: 'Адрес не указан в профиле' })
-   }
+  if (!contract?.address_city) {
+    throw createError({ statusCode: 400, message: 'Адрес не указан в профиле' })
+  }
 
-   // Обеспечиваем существование комнат для адреса
-   await supabase.rpc('ensure_community_rooms', {
-     p_city: contract.address_city,
-     p_district: contract.address_district || null,
-     p_building: contract.address_building || null,
-   })
+  // Обеспечиваем существование комнат для адреса
+  await supabase.rpc('ensure_community_rooms', {
+    p_city: contract.address_city,
+    p_district: contract.address_district || null,
+    p_building: contract.address_building || null,
+  })
 
-   // Строим условия для получения комнат
-   // 1. Город - всегда доступен
-   // 2. Район - если совпадает
-   // 3. Дом - если совпадает район и дом
-   const query = supabase
-     .from('community_rooms')
-     .select('*')
-     .eq('city', contract.address_city)
-     .eq('is_active', true)
+  // Строим условия для получения комнат
+  // 1. Город - всегда доступен
+  // 2. Район - если совпадает
+  // 3. Дом - если совпадает район и дом
+  const query = supabase
+    .from('community_rooms')
+    .select('*')
+    .eq('city', contract.address_city)
+    .eq('is_active', true)
 
   const { data: allRooms, error } = await query.order('level', { ascending: true })
 
@@ -64,17 +64,17 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 500, message: 'Ошибка загрузки комнат' })
   }
 
-   // Фильтруем комнаты по доступу
-   const accessibleRooms = (allRooms as RoomRow[]).filter((room) => {
-     if (room.level === 'city') return true
-     if (room.level === 'district') {
-       return room.district === contract.address_district
-     }
-     if (room.level === 'building') {
-       return room.district === contract.address_district && room.building === contract.address_building
-     }
-     return false
-   })
+  // Фильтруем комнаты по доступу
+  const accessibleRooms = (allRooms as RoomRow[]).filter((room) => {
+    if (room.level === 'city') return true
+    if (room.level === 'district') {
+      return room.district === contract.address_district
+    }
+    if (room.level === 'building') {
+      return room.district === contract.address_district && room.building === contract.address_building
+    }
+    return false
+  })
 
   const roomIds = accessibleRooms.map(r => r.id)
 

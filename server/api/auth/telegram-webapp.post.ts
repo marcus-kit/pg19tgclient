@@ -87,10 +87,10 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-     // Получаем аккаунт пользователя
-     const { data: contract, error: accountError } = await supabase
-       .from('contracts_view')
-       .select(`
+    // Получаем аккаунт пользователя
+    const { data: contract, error: accountError } = await supabase
+      .from('contracts_view')
+      .select(`
          id,
          contract_number,
          balance,
@@ -98,20 +98,20 @@ export default defineEventHandler(async (event) => {
          address_full,
          start_date
        `)
-       .eq('user_id', user.id)
-       .single()
+      .eq('user_id', user.id)
+      .single()
 
-     if (accountError || !contract) {
-       throw createError({
-         statusCode: 404,
-         message: 'Договор не найден',
-       })
-     }
+    if (accountError || !contract) {
+      throw createError({
+        statusCode: 404,
+        message: 'Договор не найден',
+      })
+    }
 
-     // Получаем подписки с тарифами
-     const { data: subscriptions } = await supabase
-       .from('subscriptions')
-       .select(`
+    // Получаем подписки с тарифами
+    const { data: subscriptions } = await supabase
+      .from('subscriptions')
+      .select(`
          id,
          status,
          services (
@@ -120,21 +120,21 @@ export default defineEventHandler(async (event) => {
            type
          )
        `)
-       .eq('account_id', contract.id)
-       .eq('status', 'active')
+      .eq('account_id', contract.id)
+      .eq('status', 'active')
 
     // Определяем основной тариф (интернет)
     const internetSub = subscriptions?.find((s: any) => s.services?.type === 'internet')
     const tariffName = internetSub?.services?.name || 'Не подключен'
 
     // Создаём сессию с cookie
-     console.log('[TWA Auth] Creating session for user:', user.id)
-     await createUserSession(
-       event,
-       user.id,
-       contract.id,
-       'telegram',
-       telegramUser.id.toString(),
+    console.log('[TWA Auth] Creating session for user:', user.id)
+    await createUserSession(
+      event,
+      user.id,
+      contract.id,
+      'telegram',
+      telegramUser.id.toString(),
       {
         telegram_username: telegramUser.username,
         telegram_photo: telegramUser.photo_url,
@@ -170,14 +170,14 @@ export default defineEventHandler(async (event) => {
         nickname: user.nickname || null,
         role: 'user',
       },
-       account: {
-         contractNumber: contract.contract_number,
-         balance: contract.balance,
-         status: contract.status,
-         tariff: tariffName,
-         address: contract.address_full || '',
-         startDate: contract.start_date,
-       },
+      account: {
+        contractNumber: contract.contract_number,
+        balance: contract.balance,
+        status: contract.status,
+        tariff: tariffName,
+        address: contract.address_full || '',
+        startDate: contract.start_date,
+      },
     }
   }
   catch (e: any) {
